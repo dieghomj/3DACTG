@@ -1,0 +1,68 @@
+#include "CScene.h"
+#include "CSoundManager.h"
+
+CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
+	: m_pDx9(&pDx9)
+	, m_pDx11(&pDx11)
+	, m_hWnd(hWnd)
+	, m_pTime(&pTime)
+	, m_pManager(&pManager)
+
+	, m_mousePos		( {0,0} )
+	, m_mouseSeudoPos({ WND_W / 2,WND_H / 2 })
+	, m_mouseBeforePos	( {0,0} )
+	, m_mouseDelta		({ 0,0 })
+	, m_mouseSense		( 0.01f )
+{
+	//サウンドデータの読み込み
+	CSoundManager::GetInstance()->Load(m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerShot, 16, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_BossShot, 32, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_EnemyHit, 16, m_hWnd);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 8, m_hWnd);
+
+}
+
+CScene::~CScene()
+{
+
+	//外部で作成しているので、ここでは破棄しない
+	m_pManager = nullptr;
+	m_hWnd = nullptr;
+	m_pDx11 = nullptr;
+	m_pDx9 = nullptr;
+}
+
+void CScene::Update()
+{
+	UpdateMousePos();
+
+	if (GetAsyncKeyState('P') & 0x0001)
+	{
+		m_IsPause = !m_IsPause;
+	}
+
+}
+
+void CScene::UpdateMousePos()
+{
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(m_hWnd, &mousePos);
+
+	// Calculate delta from center
+	POINT center = { WND_W / 2, WND_H / 2 };
+	m_mouseDelta.x = mousePos.x - center.x;
+	m_mouseDelta.y = mousePos.y - center.y;
+	m_mouseSeudoPos.x += m_mouseDelta.x;
+	m_mouseSeudoPos.y += m_mouseDelta.y;
+	//// Reset cursor to center
+	ClientToScreen(m_hWnd, &center);
+	SetCursorPos(center.x, center.y);
+
+}
+
+POINT CScene::GetMouseSeudoPos()
+{
+	return m_mouseSeudoPos;
+}
