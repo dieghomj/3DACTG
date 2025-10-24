@@ -6,6 +6,7 @@
 //クラスの前方宣言.
 class CDirectX9;
 class CDirectX11;
+class CTest;
 
 /**************************************************
 *	メインクラス.
@@ -49,7 +50,6 @@ private:
 	CScene*			m_pTitle;
 	CScene*			m_pTest;
 	CScene*			m_pResult;
-	//CScene*			m_pGameOver;
 	
 	CTime*			m_pTime;
 };
