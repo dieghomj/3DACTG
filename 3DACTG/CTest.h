@@ -23,6 +23,10 @@ private:
 	CFont* m_SDFText;
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
+	
+	CStaticMesh* m_pWallStaticMesh;
+	std::vector<CStaticMeshObject*> m_pWalls;
+
 	CPlayer* m_pPlayer;
-	int grid[32][32] = { 0 };
+	int grid[64][64] = { 0 };
 };

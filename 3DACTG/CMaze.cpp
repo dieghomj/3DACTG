@@ -3,6 +3,8 @@
 #include <random>
 #include <vector>
 
+
+
 CMaze::CMaze()
 {
 }
@@ -11,25 +13,29 @@ CMaze::~CMaze()
 {
 }
 
-void CMaze::GenerateMaze(int* mOut, int width, int height)
+
+
+void CMaze::GenerateMaze(int* out, int stride, int regionWidth, int regionHeight, int startX, int startY)
 {
 
-	for (int i = 0; i < width; i++)
-	{
-		for( int j = 0; j < height; j++)
-		{
-			mOut[i * width + j] = 0;
-		}
-	}
+	for (int y = 0; y < regionHeight; ++y)
+		for (int x = 0; x < regionWidth; ++x)
+			out[y * stride + x] = 0;
 
-	CarvePassages(1, 1, mOut, 32, 32);
+	// Clamp start inside region
+	ClampStart(startX, startY, regionWidth, regionHeight);
+
+
+	CarvePassages(startX, startY, out, stride, regionWidth, regionHeight);
 }
 
-void CMaze::CarvePassages(int cx, int cy, int* maze, int width, int height)
+void CMaze::CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth, int regionHeight)
 {
 
 	Direction directions[4] = { North, South, East, West };
 	ShuffleDirections(directions, 4);
+
+	const int curIdx = cy * stride + cx;
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -38,20 +44,18 @@ void CMaze::CarvePassages(int cx, int cy, int* maze, int width, int height)
 		const int nx = cx + d.x;
 		const int ny = cy + d.y;
 
-		if (!IsInBounds(nx, ny, width, height))
+		if (!IsInBounds(nx, ny, regionWidth, regionHeight))
 			continue;
 
-		const int nextIdx = ny * width + nx;
+		const int nextIdx = ny * stride + nx;
 		if (maze[nextIdx] != 0)
 			continue;
 
-		const int curIdx = cy * width + cx;
-
-		// Ú‘±ƒtƒ‰ƒO‚ð‘o•ûŒü‚É—§‚Ä‚é
+		// Carve both ways
 		maze[curIdx] |= dir;
 		maze[nextIdx] |= GetOppositeDirection(dir);
 
-		CarvePassages(nx, ny, maze, width, height);
+		CarvePassages(nx, ny, maze, stride, regionWidth, regionHeight);
 	}
 
 }
@@ -76,9 +80,9 @@ CMaze::Pair CMaze::GetMovementFromDirection(Direction dir)
 	switch (dir)
 	{
 	case North:
-		return { 0, 1 };
+		return { 0, -1 };
 	case South:
-		return { 0, -1};
+		return { 0,  1 };
 	case East:
 		return { 1, 0};
 	case West:
@@ -88,7 +92,7 @@ CMaze::Pair CMaze::GetMovementFromDirection(Direction dir)
 
 bool CMaze::IsInBounds(int x, int y, int width, int height)
 {
-	return (x > 0 && x < (width) && y > 0 && y < (height));
+	return (x >= 0 && x < (width) && y >= 0 && y < (height));
 }
 
 void CMaze::ShuffleDirections(Direction* directions, int size)
@@ -105,5 +109,13 @@ void CMaze::ShuffleDirections(Direction* directions, int size)
 		directions[i] = directions[j];
 		directions[j] = tmp;
 	}
+}
+
+void CMaze::ClampStart(int& startX, int& startY, int regionWidth, int regionHeight)
+{
+	if (startX < 0) startX = 0;
+	if (startY < 0) startY = 0;
+	if (startX >= regionWidth)  startX = regionWidth - 1;
+	if (startY >= regionHeight) startY = regionHeight - 1;
 }
 
