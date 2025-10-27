@@ -14,18 +14,18 @@ public:
 	//サウンドリスト列挙型.
 	enum enList
 	{
-		BGM_Bonus,	//ボーナスステージ.
-		BGM_Battle,	//ボーナスステージ.
-		BGM_Menu,	//ボーナスステージ.
-		SE_Jump,	//ジャンプ.
-		SE_Clear,	//クリア.
+		BGM_Bonus,	
+		BGM_Battle,	
+		BGM_Menu,	
+		SE_Jump,		//ジャンプ.
+		SE_Clear,		//クリア.
 		SE_PlayerHit,
 		SE_PlayerShot,	//.
 		SE_EnemyHit,	//.
-		SE_BossShot,//.
-		SE_BossRotShot,//.
-		SE_Boss,	//.
-		SE_Explosion,//.
+		SE_BossShot,	//.
+		SE_BossRotShot,	//.
+		SE_Boss,		//.
+		SE_Explosion,	//.
 
 		//音が増えたら「ここ」に追加してください.
 		max,		//最大数.

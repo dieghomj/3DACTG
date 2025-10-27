@@ -36,11 +36,6 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
-	//if (CSoundManager::GetInstance()->Load(m_hWnd) == false) {
-	//	_ASSERT_EXPR(false, _T("サウンドマネージャーインスタンス生成失敗"));
-	//	return E_FAIL;
-	//}
-
 	if (FAILED(m_pGroundStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
 		_T("Data\\Mesh\\Static\\Ground\\Ground.x"))))

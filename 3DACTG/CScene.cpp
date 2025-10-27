@@ -24,10 +24,6 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 {
 	//サウンドデータの読み込み
 	CSoundManager::GetInstance()->Load(m_hWnd);
-	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerShot, 16, m_hWnd);
-	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_BossShot, 32, m_hWnd);
-	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_EnemyHit, 16, m_hWnd);
-	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 8, m_hWnd);
 	m_GlobalLight.vDirection = D3DXVECTOR3(1.5f, 1.f, -1.f);	//ライト方向
 
 }

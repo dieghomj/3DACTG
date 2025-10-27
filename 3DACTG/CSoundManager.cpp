@@ -33,17 +33,7 @@ bool CSoundManager::Load( HWND hWnd )
 	};
 	SoundList SList[] =
 	{
-		{ enList::SE_Jump,		_T("Data\\Sound\\SE\\Jump.wav"),			_T("SE_Jump")	},
-		{ enList::BGM_Bonus,	_T("Data\\Sound\\BGM\\BonusGameHouse.mp3"),	_T("BGM_Bonus")	},
-		{ enList::BGM_Battle,	_T("Data\\Sound\\BGM\\battle.mp3"),			_T("BGM_Battle")},
-		{ enList::BGM_Menu,		_T("Data\\Sound\\BGM\\menu.mp3"),			_T("BGM_Menu")	},
-		{ enList::SE_Clear,		_T("Data\\Sound\\SE\\Clear.wav"),			_T("SE_Clear")	},
-		{ enList::SE_PlayerHit,	_T("Data\\Sound\\SE\\Malfunction.wav"),	_T("SE_PlayerHit")	},
-		{ enList::SE_EnemyHit,	_T("Data\\Sound\\SE\\DAMAGED.wav"),			_T("SE_Damage")	},
-		{ enList::SE_PlayerShot,_T("Data\\Sound\\SE\\Shot.wav"),	_T("SE_Shot")	},
-		{ enList::SE_BossShot,	_T("Data\\Sound\\SE\\BossShot.wav"),		_T("SE_BossShot")	},
-		{ enList::SE_BossRotShot,_T("Data\\Sound\\SE\\BossRotShot.wav"),	_T("SE_BossRotShot")	},
-		{ enList::SE_Boss,		_T("Data\\Sound\\SE\\Boss.wav"),			_T("SE_Boss")	},
+		{ enList::SE_Jump,		_T("Data\\Sound\\SE\\Jump.wav"),_T("SE_Jump")},
 	};
 	//配列の最大要素数を算出 (配列全体のサイズ/配列1つ分のサイズ).
 	int list_max = sizeof( SList ) / sizeof( SList[0] );
