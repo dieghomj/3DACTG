@@ -73,6 +73,9 @@
     <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Player">
       <UniqueIdentifier>{8a9f52ea-1f52-4df4-a91d-2ccb5d716a23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Maze">
+      <UniqueIdentifier>{e4f77958-772e-4870-8bc4-91449d4628da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -164,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CMaze.cpp">
+      <Filter>Source\Maze</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CMaze.h">
+      <Filter>Source\Maze</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

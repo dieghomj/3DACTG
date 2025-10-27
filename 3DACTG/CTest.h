@@ -24,5 +24,5 @@ private:
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
 	CPlayer* m_pPlayer;
-
+	int grid[32][32] = { 0 };
 };

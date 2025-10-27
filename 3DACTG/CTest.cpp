@@ -1,5 +1,6 @@
 #include "CTest.h"
 #include "CSoundManager.h"
+#include "CMaze.h"
 #include <stdio.h>
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
@@ -14,10 +15,10 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 CTest::~CTest()
 {
-	SAFE_DELETE(m_pPlayer);
-	SAFE_DELETE(m_pGround);
-	SAFE_DELETE(m_pGroundStaticMesh);
-	SAFE_DELETE(m_SDFText);
+	//SAFE_DELETE(m_pPlayer);
+	//SAFE_DELETE(m_pGround);
+	//SAFE_DELETE(m_pGroundStaticMesh);
+	//SAFE_DELETE(m_SDFText);
 
 }
 
@@ -65,6 +66,7 @@ void CTest::Release()
 
 void CTest::Start()
 {
+	CMaze::GenerateMaze(grid, 8, 8);
 }
 
 void CTest::Update()
@@ -94,6 +96,18 @@ void CTest::Draw()
 	m_SDFText->SetAlpha(1.0f);               // Fully opaque
 	
 	TCHAR text[64];
+
+	for( int i = 0; i < 8; i++ )
+	{
+		for( int j = 0; j < 8; j++ )
+		{
+			_stprintf_s(text, _T("%d"),grid[i][j]);
+
+			m_SDFText->Render( text, 20 + j * 20, 100 + i * 30, 24.f );
+		}
+	}
+
+
 	_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
 	m_SDFText->Render(text, 50, 50, 30.f);
 }	

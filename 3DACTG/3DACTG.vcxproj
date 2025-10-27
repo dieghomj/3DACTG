@@ -163,6 +163,7 @@
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CMain.cpp" />
+    <ClCompile Include="CMaze.cpp" />
     <ClCompile Include="CRay.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CMain.h" />
+    <ClInclude Include="CMaze.h" />
     <ClInclude Include="CRay.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneManager.h" />
