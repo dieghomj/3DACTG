@@ -87,16 +87,17 @@ HRESULT CMain::Create()
 	{
 		return E_FAIL;
 	}
-	
 
 	//シーン管理クラスのインスタンス生成
 	m_pSceneManager = new CSceneManager();
 
+	//テストシーンのインスタンス生成.
 	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 	//ゲームシーンクラスのインスタンス生成.
 	m_pSceneManager->AddScene(m_pTest, "TEST");
 
+	//シーン変更.
 	m_pSceneManager->ChangeScene("TEST");
 
 	return S_OK;

@@ -5,6 +5,7 @@
 #include "CSceneManager.h"
 #include "CSprite2D.h"
 #include "CCommon.h"
+#include "CCamera.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -39,6 +40,13 @@ protected:
 	HWND			m_hWnd;
 	CTime*			m_pTime;
 	CSceneManager*	m_pManager;
+
+	D3DXMATRIX m_mView;
+	D3DXMATRIX m_mProj;
+
+	LIGHT m_GlobalLight;
+	CAMERA m_Camera;
+	CCamera* m_pCamera;
 
 	bool m_IsPause = false;
 

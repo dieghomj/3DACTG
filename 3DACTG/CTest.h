@@ -1,6 +1,9 @@
 #pragma once
 #include "CScene.h"
 #include "CFont.h"
+#include "CCamera.h"
+#include "CStaticMeshObject.h"
+
 class CTest : public CScene
 {
 public:
@@ -17,5 +20,7 @@ public:
 private:
 
 	CFont* m_SDFText;
+	CStaticMesh* m_pGroundStaticMesh;
+	CStaticMeshObject* m_pGround;
 
 };

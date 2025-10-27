@@ -159,11 +159,10 @@ HRESULT CStaticMesh::CreateModel()
 HRESULT CStaticMesh::CreateMaterials()
 {
 	//ファイルのパス(ディレクトリ)を確保.
-	const int PATH_MAX = 64;
-	TCHAR path[PATH_MAX] = _T( "" );
+	TCHAR path[MAX_PATH] = _T( "" );
 	int path_count = lstrlen( m_Model.FileName );
 	for( int k = path_count; k >= 0; k-- ) {
-		if( m_Model.FileName[k] == '\\' ) {
+		if( m_Model.FileName[k] == '\\'  || m_Model.FileName[k] == _T('/')) {
 			for( int j = 0; j <= k; j++ ) {
 				path[j] = m_Model.FileName[j];
 			}

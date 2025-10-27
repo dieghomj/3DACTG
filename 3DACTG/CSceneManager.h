@@ -14,7 +14,7 @@ public:
 	//<----------
 	
 	//シーンリストにシーンを追加
-	void AddScene(CScene* scene, const char* name);
+	HRESULT AddScene(CScene* scene, const char* name);
 	//シーン変更
 	CScene* ChangeScene(const char* name);
 

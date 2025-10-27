@@ -2,17 +2,25 @@
 #include "CSoundManager.h"
 
 CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
-	: m_pDx9(&pDx9)
-	, m_pDx11(&pDx11)
-	, m_hWnd(hWnd)
-	, m_pTime(&pTime)
-	, m_pManager(&pManager)
+	: m_pDx9			(&pDx9)
+	, m_pDx11			(&pDx11)
+	, m_hWnd			(hWnd)
+	, m_pTime			(&pTime)
+	, m_pManager		(&pManager)
 
-	, m_mousePos		( {0,0} )
-	, m_mouseSeudoPos({ WND_W / 2,WND_H / 2 })
-	, m_mouseBeforePos	( {0,0} )
-	, m_mouseDelta		({ 0,0 })
+	, m_mView			()
+	, m_mProj			()
+
+	, m_GlobalLight		()
+	, m_Camera			()
+	, m_pCamera			(nullptr)
+
+	, m_mousePos		({ 0, 0 })
+	, m_mouseSeudoPos	({ WND_W / 2,WND_H / 2 })
+	, m_mouseBeforePos	({ 0, 0 })
+	, m_mouseDelta		({ 0, 0 })
 	, m_mouseSense		( 0.01f )
+
 {
 	//サウンドデータの読み込み
 	CSoundManager::GetInstance()->Load(m_hWnd);
@@ -20,11 +28,14 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_BossShot, 32, m_hWnd);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_EnemyHit, 16, m_hWnd);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 8, m_hWnd);
+	m_GlobalLight.vDirection = D3DXVECTOR3(1.5f, 1.f, -1.f);	//ライト方向
 
 }
 
 CScene::~CScene()
 {
+
+	SAFE_DELETE(m_pCamera);
 
 	//外部で作成しているので、ここでは破棄しない
 	m_pManager = nullptr;

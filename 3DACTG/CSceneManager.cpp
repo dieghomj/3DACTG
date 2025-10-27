@@ -11,10 +11,16 @@ CSceneManager::~CSceneManager()
 {
 }
 
-void CSceneManager::AddScene(CScene* scene, const char* name)
+HRESULT CSceneManager::AddScene(CScene* scene, const char* name)
 {
+	
 	scene->Create();
-	scene->LoadData();
+
+	if (FAILED(scene->LoadData()))
+	{
+		return E_FAIL;
+	}
+	
 	m_pSceneList[name] = scene;
 }
 

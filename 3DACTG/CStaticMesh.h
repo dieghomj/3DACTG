@@ -61,7 +61,7 @@ public:
 		D3DXVECTOR4	Specular;	//スペキュラ.
 		D3DXVECTOR4 Emissive;	//エミッシブ.
 		float		Power;		//スペキュラパワー.
-		TCHAR TextureName[64];	//テクスチャファイル名.
+		TCHAR TextureName[MAX_PATH];	//テクスチャファイル名.
 		ID3D11ShaderResourceView* pTexture;//テクスチャ.
 		DWORD dwNumFace;		//マテリアルのポリゴン数.
 

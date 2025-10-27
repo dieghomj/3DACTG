@@ -339,7 +339,7 @@ void CDirectX11::SetDepth(bool flag)
 void CDirectX11::ClearBackBuffer()
 {
 	//画面のクリア.
-	float ClearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };	//クリア色（RGBAの順）.
+	float ClearColor[4] = { 0.2f, 0.4f, 0.75f, 1.0f };	//クリア色（RGBAの順）.
 	//カラーバックバッファ.
 	m_pContext11->ClearRenderTargetView(
 		m_pBackBuffer_TexRTV, ClearColor );

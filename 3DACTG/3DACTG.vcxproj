@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CBoundingSphere.cpp" />
+    <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CCharacter.cpp" />
     <ClCompile Include="CDebugText.cpp" />
     <ClCompile Include="CDirectX11.cpp" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBoundingSphere.h" />
+    <ClInclude Include="CCamera.h" />
     <ClInclude Include="CCharacter.h" />
     <ClInclude Include="CDebugText.h" />
     <ClInclude Include="CDirectX11.h" />
