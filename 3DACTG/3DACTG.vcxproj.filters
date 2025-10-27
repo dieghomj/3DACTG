@@ -64,6 +64,15 @@
     <Filter Include="Source\Camera">
       <UniqueIdentifier>{a13bdd37-f6f4-4773-a40b-2f90adabb417}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character">
+      <UniqueIdentifier>{f0a5b4e6-8d8f-4cd6-9263-2618e0988c18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter">
+      <UniqueIdentifier>{5a6dbde2-ca15-4ab3-bbbe-03e78a504654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Player">
+      <UniqueIdentifier>{8a9f52ea-1f52-4df4-a91d-2ccb5d716a23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -94,9 +103,6 @@
       <Filter>Source\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CStaticMeshObject.cpp">
-      <Filter>Source\GameObject\StaticMeshObject</Filter>
-    </ClCompile>
-    <ClCompile Include="CCharacter.cpp">
       <Filter>Source\GameObject\StaticMeshObject</Filter>
     </ClCompile>
     <ClCompile Include="CUIObject.cpp">
@@ -150,6 +156,15 @@
     <ClCompile Include="CCamera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="CCharacter.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimCharacter.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
@@ -183,9 +198,6 @@
       <Filter>Source\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CStaticMeshObject.h">
-      <Filter>Source\GameObject\StaticMeshObject</Filter>
-    </ClInclude>
-    <ClInclude Include="CCharacter.h">
       <Filter>Source\GameObject\StaticMeshObject</Filter>
     </ClInclude>
     <ClInclude Include="CUIObject.h">
@@ -238,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="CCamera.h">
       <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CCharacter.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimCharacter.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

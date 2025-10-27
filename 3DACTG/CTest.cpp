@@ -7,12 +7,18 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_SDFText				(nullptr)
 	, m_pGroundStaticMesh	(nullptr)
 	, m_pGround				(nullptr)
+	, m_pPlayer				(nullptr)
 {
 	m_pDx11->SetDepth(true);
 }
 
 CTest::~CTest()
 {
+	SAFE_DELETE(m_pPlayer);
+	SAFE_DELETE(m_pGround);
+	SAFE_DELETE(m_pGroundStaticMesh);
+	SAFE_DELETE(m_SDFText);
+
 }
 
 void CTest::Create()
@@ -26,6 +32,7 @@ void CTest::Create()
 
 	m_pGroundStaticMesh = new CStaticMesh();
 	m_pGround = new CStaticMeshObject();
+	m_pPlayer = new CPlayer();
 
 }
 
@@ -46,6 +53,8 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
+	m_pPlayer->SetPosition(0.f, 1.f, 0.f);
+
 	return S_OK;
 
 }
@@ -65,9 +74,14 @@ void CTest::Update()
 
 	m_pGround->Update();
 
+	m_pPlayer->Update();
+
 	m_pCamera->FirstPersonCamera(
-		D3DXVECTOR3(0.f,1.f,0.f),
+		m_pPlayer->GetPosition(),
 		m_mouseDelta, m_mouseSense);
+	float rotY = m_pCamera->GetYaw();
+	m_pPlayer->SetRotation(0, rotY, 0);
+
 }
 
 void CTest::Draw()
@@ -83,4 +97,3 @@ void CTest::Draw()
 	_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
 	m_SDFText->Render(text, 50, 50, 30.f);
 }	
-

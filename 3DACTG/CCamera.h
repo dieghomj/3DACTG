@@ -24,6 +24,8 @@ public:
 	// リサイズ時などにアスペクトだけ更新
 	void SetAspect(float aspect) { m_Aspect = aspect; }
 
+	float GetYaw()    const { return m_Yaw; }
+	float GetPitch()  const { return m_Pitch; }
 	float GetFovY()   const { return m_FovY; }
 	float GetAspect() const { return m_Aspect; }
 	float GetNearZ()  const { return m_NearZ; }

@@ -3,6 +3,7 @@
 #include "CFont.h"
 #include "CCamera.h"
 #include "CStaticMeshObject.h"
+#include "CPlayer.h"
 
 class CTest : public CScene
 {
@@ -22,5 +23,6 @@ private:
 	CFont* m_SDFText;
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
+	CPlayer* m_pPlayer;
 
 };

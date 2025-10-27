@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CAnimCharacter.cpp" />
     <ClCompile Include="CBoundingSphere.cpp" />
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CCharacter.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="CTest.cpp" />
     <ClCompile Include="CTime.cpp" />
     <ClCompile Include="CUIObject.cpp" />
+    <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -185,6 +187,7 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CAnimCharacter.h" />
     <ClInclude Include="CBoundingSphere.h" />
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CCharacter.h" />
@@ -213,6 +216,7 @@
     <ClInclude Include="CUIObject.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="MyMacro.h" />
+    <ClInclude Include="CPlayer.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
