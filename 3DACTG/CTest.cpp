@@ -93,12 +93,13 @@ void CTest::Start()
 {
 	// 環境設定
 	m_GlobalLight.fIntensity = 0.3f;
-	m_Fog.Color = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_Fog.Enable = false;
+
+	m_Fog.Color = D3DXVECTOR4(0.8f, 0.2f, 0.2f, 1.0f);
+	m_Fog.Enable = true;
 	m_Fog.Mode = D3DFOG_LINEAR;
 	m_Fog.Start = 10.0f;
 	m_Fog.End = 150.0f;
-	m_Fog.Density = 0.05f;
+	m_Fog.Density = 0.08f;
 
 	GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 
@@ -168,7 +169,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 
 	CMaze::GenerateMaze(&grid[0][0], stride, regionWidth, regionHeight); // 迷路生成
 	const float wallSize = 4.0f;	// 壁のサイズ
-	const float wallHeight = 1.0f;	// 壁の高さ
+	const float wallHeight = 0.0f;	// 壁の高さ
 
 	// 迷路の壁を配置
 	for (int i = 0; i < regionHeight; ++i)
