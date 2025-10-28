@@ -20,6 +20,7 @@ public:
 
 private:
 	void GenerateMaze(int regionHeight, int regionWidth, int stride);
+	void ClearMaze();
 
 private:
 

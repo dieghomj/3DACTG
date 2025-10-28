@@ -103,11 +103,7 @@ void CTest::Update()
 
 	if (GetAsyncKeyState('R') & 0x0001)
 	{
-		for (auto& wall : m_pWalls)
-		{
-			delete wall;
-		}
-		m_pWalls.clear();
+		ClearMaze();
 		GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 	}
 
@@ -176,14 +172,14 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			float z = (i - regionHeight / 2.0f) * wallSize + (wallSize / 2.0f); // ZÀ•W
 
 			// •Ç‚ð’Ç‰Á
-			if (!(grid[i][j] & CMaze::North) || (i == 0))
+			if (!(grid[i][j] & CMaze::North) )
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z - wallSize / 2.0f); // –k‚Ì•Ç
 				m_pWalls.push_back(wall);
 			}
-			if (!(grid[i][j] & CMaze::West) || (j == 0))
+			if (!(grid[i][j] & CMaze::West))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
@@ -193,22 +189,30 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			}
 
 			// ’[‚Ì•Ç‚ð’Ç‰Á
-			if (i == (regionHeight - 1))
+			if (i == (regionHeight - 1) && !(grid[i][j] & CMaze::South))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z + wallSize / 2.0f); // “ì‚Ì•Ç
 				m_pWalls.push_back(wall);
 			}
-			if (j == regionWidth - 1)
+			if (j == (regionWidth - 1) && !(grid[i][j] & CMaze::East))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x + wallSize / 2.0f, wallHeight, z); // “Œ‚Ì•Ç
 				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
 				m_pWalls.push_back(wall);
-
 			}
 		}
 	}
+}
+
+void CTest::ClearMaze()
+{
+	for (auto& wall : m_pWalls)
+	{
+		delete wall;
+	}
+	m_pWalls.clear();
 }

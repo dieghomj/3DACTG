@@ -26,6 +26,52 @@ void CMaze::GenerateMaze(int* out, int stride, int regionWidth, int regionHeight
 	ClampStart(startX, startY, regionWidth, regionHeight);
 	// ’Ê˜H‚ðŒ@‚é
 	CarvePassages(startX, startY, out, stride, regionWidth, regionHeight);
+
+	BuildMazeBorders(out, stride, regionWidth, regionHeight);
+
+	CarveEntrances(out,stride,regionWidth,regionHeight);
+
+}
+
+void CMaze::CarveEntrances(int* maze, int stride, int regionWidth, int regionHeight)
+{
+		
+	int entranceX = 0;
+	int entranceY = 0;
+
+	int exitX = regionWidth - 1;
+	int exitY = regionHeight - 1;
+
+	maze[entranceY * stride + entranceX] |= West;
+	maze[exitY * stride + exitX]		 |= East;
+
+}
+
+void CMaze::BuildMazeBorders(int* maze, int stride, int regionWidth, int regionHeight)
+{
+	for (int y = 0; y < regionHeight; ++y)
+	{
+		for (int x = 0; x < regionWidth; ++x)
+		{
+			const int idx = y * stride + x;
+			if (y == 0)
+			{
+				maze[idx] &= ~North;
+			}
+			if (y == regionHeight - 1)
+			{
+				maze[idx] &= ~South;
+			}
+			if (x == 0)
+			{
+				maze[idx] &= ~West;
+			}
+			if (x == regionWidth - 1)
+			{
+				maze[idx] &= ~East;
+			}
+		}
+	}
 }
 
 // ’Ê˜H‚ðŒ@‚éÄ‹AŠÖ”

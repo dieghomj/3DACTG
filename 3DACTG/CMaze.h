@@ -31,6 +31,9 @@ public:
 private:
 
 	static void CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth, int regionHeight);
+	static void CarveEntrances(int* maze, int stride, int regionWidth, int regionHeight);
+	static void FindTwoFurthestPoints(int* maze, int stride, int regionWidth, int regionHeight, Pair& outPointA, Pair& outPointB);
+	static void BuildMazeBorders(int* maze, int stride, int regionWidth, int regionHeight);
 	static Direction GetOppositeDirection(Direction dir);
 	static Pair GetMovementFromDirection(Direction dir);
 	static bool IsInBounds(int x, int y, int width, int height);
