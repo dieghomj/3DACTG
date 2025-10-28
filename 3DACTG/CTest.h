@@ -4,6 +4,9 @@
 #include "CCamera.h"
 #include "CStaticMeshObject.h"
 #include "CPlayer.h"
+#include "CMinimap.h"
+#include "CUIObject.h"
+#include "CSprite2D.h"
 
 class CTest : public CScene
 {
@@ -30,6 +33,9 @@ private:
 	
 	CStaticMesh* m_pWallStaticMesh;
 	std::vector<CStaticMeshObject*> m_pWalls;
+	CMiniMapTexture* m_pMiniMap;
+	CSprite2D* m_pMiniMapSprite;
+	CUIObject* m_pMiniMapUI;
 
 	CPlayer* m_pPlayer;
 	int grid[64][64] = { 0 };
