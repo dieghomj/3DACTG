@@ -34,28 +34,29 @@ private :
 	void UpdateMousePos();
 
 protected:
-	CDirectX9* m_pDx9;
-	CDirectX11* m_pDx11;
+	CDirectX9*		m_pDx9;
+	CDirectX11*		m_pDx11;
 	//ウィンドウハンドル.
 	HWND			m_hWnd;
 	CTime*			m_pTime;
 	CSceneManager*	m_pManager;
 
-	D3DXMATRIX m_mView;
-	D3DXMATRIX m_mProj;
+	D3DXMATRIX		m_mView;
+	D3DXMATRIX		m_mProj;
 
-	LIGHT m_GlobalLight;
-	CAMERA m_Camera;
-	CCamera* m_pCamera;
+	LIGHT			m_GlobalLight;
+	FOG				m_Fog;
+	CAMERA			m_Camera;
+	CCamera*		m_pCamera;
 
-	bool m_IsPause = false;
+	bool			m_IsPause = false;
 
 	//mouse入力
-	POINT m_mousePos;
-	POINT m_mouseSeudoPos;
-	POINT m_mouseBeforePos;
-	POINT m_mouseDelta;
-	float m_mouseSense;
+	POINT			m_mousePos;
+	POINT			m_mouseSeudoPos;
+	POINT			m_mouseBeforePos;
+	POINT			m_mouseDelta;
+	float			m_mouseSense;
 
 private:
 	//=delete「削除定義」と呼ばれる機能.

@@ -56,3 +56,12 @@ struct LIGHT
 	D3DXMATRIX	mRotation;	//回転行列.
 	float		fIntensity;	//強度(明るさ).
 };
+
+struct FOG {
+	bool		Enable;		//フォグ有効無効.
+	D3DXVECTOR4 Color;		//フォグの色.
+	float		Start;		//フォグ開始距離.
+	float		End;		//フォグ終了距離.
+	float		Density;	//フォグ密度(指数関数フォグ用).
+	int			Mode;		//フォグの種類(線形,指数関数,指数関数2乗).
+};

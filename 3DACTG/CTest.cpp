@@ -15,11 +15,18 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 CTest::~CTest()
 {
-	//SAFE_DELETE(m_pPlayer);
-	//SAFE_DELETE(m_pGround);
-	//SAFE_DELETE(m_pGroundStaticMesh);
-	//SAFE_DELETE(m_SDFText);
+	for (auto& wall : m_pWalls)
+	{
+		delete wall;
+	}
+	m_pWalls.clear();
 
+	delete m_pWallStaticMesh;
+	m_pWallStaticMesh = nullptr;
+	SAFE_DELETE(m_pPlayer);
+	SAFE_DELETE(m_pGround);
+	SAFE_DELETE(m_pGroundStaticMesh);
+	SAFE_DELETE(m_SDFText);
 }
 
 void CTest::Create()
@@ -79,18 +86,20 @@ HRESULT CTest::LoadData()
 
 void CTest::Release()
 {
-	for (auto& wall : m_pWalls)
-	{
-		delete wall;
-	}
-	m_pWalls.clear();
-
-	delete m_pWallStaticMesh;
-	m_pWallStaticMesh = nullptr;
+	
 }
 
 void CTest::Start()
 {
+	// 環境設定
+	m_GlobalLight.fIntensity = 0.3f;
+
+	m_Fog.Color = D3DXVECTOR4(0.8f, 0.2f, 0.2f, 1.0f);
+	m_Fog.Enable = true;
+	m_Fog.Mode = D3DFOG_LINEAR;
+	m_Fog.Start = 10.0f;
+	m_Fog.End = 150.0f;
+	m_Fog.Density = 0.08f;
 
 	GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 
@@ -126,13 +135,13 @@ void CTest::Update()
 
 void CTest::Draw()
 {
-	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
-	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
 	for (auto& wall : m_pWalls)
 	{
-		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -160,7 +169,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 
 	CMaze::GenerateMaze(&grid[0][0], stride, regionWidth, regionHeight); // 迷路生成
 	const float wallSize = 4.0f;	// 壁のサイズ
-	const float wallHeight = 1.0f;	// 壁の高さ
+	const float wallHeight = 0.0f;	// 壁の高さ
 
 	// 迷路の壁を配置
 	for (int i = 0; i < regionHeight; ++i)

@@ -28,7 +28,7 @@ public:
 	CPlayer();
 	virtual ~CPlayer() override;
 	virtual void Update() override;
-	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera) override;
+	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
 
 private:
 	void RadioControl();

@@ -11,7 +11,7 @@ public:
 	// CGameObject ÇâÓÇµÇƒåpè≥Ç≥ÇÍÇ‹ÇµÇΩ
 	void Update() override;
 
-	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera) override;
+	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
 
 	void ThirdPersonCamera(
 		const D3DXVECTOR3& TargetPos, float TargetRotY);

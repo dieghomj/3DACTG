@@ -12,6 +12,7 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_mProj			()
 
 	, m_GlobalLight		()
+	, m_Fog				()
 	, m_Camera			()
 	, m_pCamera			(nullptr)
 

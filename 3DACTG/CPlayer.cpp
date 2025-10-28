@@ -20,9 +20,9 @@ void CPlayer::Update()
 	CSkinMeshObject::Update();
 }
 
-void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera)
+void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
-	CSkinMeshObject::Draw(View, Proj, Light, Camera);
+	CSkinMeshObject::Draw(View, Proj, Light, Camera, Fog); 
 }
 
 void CPlayer::RadioControl()

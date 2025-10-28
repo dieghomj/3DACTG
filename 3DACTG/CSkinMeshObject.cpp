@@ -22,7 +22,7 @@ void CSkinMeshObject::Update()
 }
 
 void CSkinMeshObject::Draw(
-	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera)
+	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
 	if( m_pMesh == nullptr ){
 		return;
