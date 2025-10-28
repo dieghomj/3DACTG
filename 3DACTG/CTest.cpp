@@ -94,10 +94,10 @@ void CTest::Start()
 	// ŠÂ‹«Ý’è
 	m_GlobalLight.fIntensity = 0.3f;
 
-	m_Fog.Color = D3DXVECTOR4(0.8f, 0.2f, 0.2f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.2f, 0.01f, 0.01f, 1.0f);
 	m_Fog.Enable = true;
 	m_Fog.Mode = D3DFOG_LINEAR;
-	m_Fog.Start = 10.0f;
+	m_Fog.Start = 20.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 
@@ -148,18 +148,76 @@ void CTest::Draw()
 	m_SDFText->SetAlpha(1.0f);               // Fully opaque
 	
 	TCHAR text[64];
+	
+	// --- MiniMap (character based) ---
+		// layout
+	const int regionH = m_MazeCellH;
+	const int regionW = m_MazeCellW;
+	const float mmCell = 9.f;    // pixels per cell
+	const float mmFont = 11.f;    // font size for minimap chars
+	const float mmStartX = 20.0f; // minimap top-left
+	const float mmStartY = 20.0f;
 
-	for( int i = 0; i < 8; i++ )
+	// draw cells and walls
+	for (int i = 0; i < regionH; ++i)
 	{
-		for( int j = 0; j < 8; j++ )
+		for (int j = 0; j < regionW; ++j)
 		{
-			_stprintf_s(text, _T("%d"),grid[i][j]);
+			float cx = mmStartX + j * mmCell;
+			float cy = mmStartY + i * mmCell;
 
-			m_SDFText->Render( text, 20 + j * (44.f), 100 + i * 30, 24.f);
+			// cell center marker
+			_stprintf_s(text, _T(" "));
+			m_SDFText->Render(text, cx, cy, mmFont);
+
+			// North wall (draw a horizontal '-' above cell)
+			if (!(grid[i][j] & CMaze::North))
+			{
+				_stprintf_s(text, _T("_"));
+				m_SDFText->Render(text, cx, cy - mmCell * 0.5f, mmFont);
+			}
+			// West wall (draw a vertical '|' left of cell)
+			if (!(grid[i][j] & CMaze::West))
+			{
+				_stprintf_s(text, _T("|"));
+				m_SDFText->Render(text, cx - mmCell * 0.5f, cy, mmFont);
+			}
+
+			// Border walls for southern and eastern edges
+			if (i == (regionH - 1) && !(grid[i][j] & CMaze::South))
+			{
+				_stprintf_s(text, _T("_"));
+				m_SDFText->Render(text, cx, cy + mmCell * 0.5f, mmFont);
+			}
+			if (j == (regionW - 1) && !(grid[i][j] & CMaze::East))
+			{
+				_stprintf_s(text, _T("|"));
+				m_SDFText->Render(text, cx + mmCell * 0.5f, cy, mmFont);
+			}
 		}
 	}
 
+	// draw player on minimap
+	{
+		D3DXVECTOR3 ppos = m_pPlayer->GetPosition();
+		const float wallSize = 4.0f; // must match GenerateMaze usage
+		// convert world position to grid indices (same origin used for walls in GenerateMaze)
+		float worldOffsetX = (regionW / 2.0f) * wallSize;
+		float worldOffsetZ = (regionH / 2.0f) * wallSize;
+		int px = static_cast<int>((ppos.x + worldOffsetX) / wallSize);
+		int pz = static_cast<int>((ppos.z + worldOffsetZ) / wallSize);
+		px = max(0, min(regionW - 1, px));
+		pz = max(0, min(regionH - 1, pz));
 
+		float pcx = mmStartX + px * mmCell;
+		float pcy = mmStartY + pz * mmCell;
+		_stprintf_s(text, _T("*"));
+		m_SDFText->SetColor(1.0f, 0.0f, 0.0f); // player red
+		m_SDFText->Render(text, pcx, pcy, mmFont);
+		m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
+	}
+
+	// existing mouse delta debug
 	_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
 	m_SDFText->Render(text, 50, 50, 30.f);
 }	
