@@ -19,6 +19,9 @@ public:
 	void Draw() override;
 
 private:
+	void GenerateMaze(int regionHeight, int regionWidth, int stride);
+
+private:
 
 	CFont* m_SDFText;
 	CStaticMesh* m_pGroundStaticMesh;
@@ -29,4 +32,9 @@ private:
 
 	CPlayer* m_pPlayer;
 	int grid[64][64] = { 0 };
+
+	//
+	const int m_MazeCellW	= 32;
+	const int m_MazeCellH	= 32;
+	const int m_MazeStride	= 64;
 };

@@ -91,64 +91,25 @@ void CTest::Release()
 
 void CTest::Start()
 {
-	const int regionWidth = 8;
-	const int regionHeight = 8;
-	const int stride = 64;
 
-	CMaze::GenerateMaze(&grid[0][0], stride, regionWidth, regionHeight);
-	const float wallSize = 4.0f;
-	const float wallHeight = 1.0f;
+	GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 
-	for (int i = 0; i < regionHeight; ++i)
-	{
-		for (int j = 0; j < regionWidth; ++j)
-		{
-			float x = (j - regionWidth / 2.0f) * wallSize + (wallSize / 2.0f);
-			float z = (i - regionHeight / 2.0f) * wallSize + (wallSize / 2.0f);
-
-			if (grid[i][j] & CMaze::North)
-			{
-				CStaticMeshObject* wall = new CStaticMeshObject();
-				wall->AttachMesh(*m_pWallStaticMesh);
-				wall->SetPosition(x, wallHeight, z + wallSize / 2.0f);
-				m_pWalls.push_back(wall);
-			}
-			if (grid[i][j] & CMaze::West)
-			{
-				CStaticMeshObject* wall = new CStaticMeshObject();
-				wall->AttachMesh(*m_pWallStaticMesh);
-				wall->SetPosition(x - wallSize / 2.0f, wallHeight, z);
-				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
-				m_pWalls.push_back(wall);
-			}
-
-			/*if (i == regionHeight - 1) {
-				if (grid[i][j] & CMaze::South)
-				{
-					CStaticMeshObject* wall = new CStaticMeshObject();
-					wall->AttachMesh(*m_pWallStaticMesh);
-					wall->SetPosition(x, wallHeight, z + wallSize / 2.0f);
-					m_pWalls.push_back(wall);
-				}
-			}
-			if (j == regionWidth - 1) {
-				if (grid[i][j] & CMaze::East)
-				{
-					CStaticMeshObject* wall = new CStaticMeshObject();
-					wall->AttachMesh(*m_pWallStaticMesh);
-					wall->SetPosition(x + wallSize / 2.0f, wallHeight, z);
-					wall->SetRotation(0, D3DX_PI / 2.0f, 0);
-					m_pWalls.push_back(wall);
-				}
-			}*/
-		}
-	}
 }
 
 void CTest::Update()
 {
 	
 	CScene::Update();
+
+	if (GetAsyncKeyState('R') & 0x0001)
+	{
+		for (auto& wall : m_pWalls)
+		{
+			delete wall;
+		}
+		m_pWalls.clear();
+		GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	}
 
 	m_pGround->Update();
 
@@ -197,3 +158,57 @@ void CTest::Draw()
 	_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
 	m_SDFText->Render(text, 50, 50, 30.f);
 }	
+
+void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
+{
+
+	CMaze::GenerateMaze(&grid[0][0], stride, regionWidth, regionHeight); // 迷路生成
+	const float wallSize = 4.0f;	// 壁のサイズ
+	const float wallHeight = 1.0f;	// 壁の高さ
+
+	// 迷路の壁を配置
+	for (int i = 0; i < regionHeight; ++i)
+	{
+		for (int j = 0; j < regionWidth; ++j)
+		{
+			// 壁の位置計算
+			float x = (j - regionWidth / 2.0f) * wallSize + (wallSize / 2.0f);	// X座標
+			float z = (i - regionHeight / 2.0f) * wallSize + (wallSize / 2.0f); // Z座標
+
+			// 壁を追加
+			if (!(grid[i][j] & CMaze::North) || (i == 0))
+			{
+				CStaticMeshObject* wall = new CStaticMeshObject();
+				wall->AttachMesh(*m_pWallStaticMesh);
+				wall->SetPosition(x, wallHeight, z - wallSize / 2.0f); // 北の壁
+				m_pWalls.push_back(wall);
+			}
+			if (!(grid[i][j] & CMaze::West) || (j == 0))
+			{
+				CStaticMeshObject* wall = new CStaticMeshObject();
+				wall->AttachMesh(*m_pWallStaticMesh);
+				wall->SetPosition(x - wallSize / 2.0f, wallHeight, z);// 西の壁
+				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
+				m_pWalls.push_back(wall);
+			}
+
+			// 端の壁を追加
+			if (i == (regionHeight - 1))
+			{
+				CStaticMeshObject* wall = new CStaticMeshObject();
+				wall->AttachMesh(*m_pWallStaticMesh);
+				wall->SetPosition(x, wallHeight, z + wallSize / 2.0f); // 南の壁
+				m_pWalls.push_back(wall);
+			}
+			if (j == regionWidth - 1)
+			{
+				CStaticMeshObject* wall = new CStaticMeshObject();
+				wall->AttachMesh(*m_pWallStaticMesh);
+				wall->SetPosition(x + wallSize / 2.0f, wallHeight, z); // 東の壁
+				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
+				m_pWalls.push_back(wall);
+
+			}
+		}
+	}
+}

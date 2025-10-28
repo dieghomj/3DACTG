@@ -14,7 +14,7 @@ CMaze::~CMaze()
 }
 
 
-
+// 迷路を生成
 void CMaze::GenerateMaze(int* out, int stride, int regionWidth, int regionHeight, int startX, int startY)
 {
 
@@ -22,19 +22,21 @@ void CMaze::GenerateMaze(int* out, int stride, int regionWidth, int regionHeight
 		for (int x = 0; x < regionWidth; ++x)
 			out[y * stride + x] = 0;
 
-	// Clamp start inside region
+	//範囲内に開始位置をクランプ
 	ClampStart(startX, startY, regionWidth, regionHeight);
-
-
+	// 通路を掘る
 	CarvePassages(startX, startY, out, stride, regionWidth, regionHeight);
 }
 
+// 通路を掘る再帰関数
 void CMaze::CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth, int regionHeight)
 {
-
+	// ランダムな方向の配列を作成
 	Direction directions[4] = { North, South, East, West };
 	ShuffleDirections(directions, 4);
 
+	// 現在のセルのインデックスを計算
+	// 説明: strideは1行あたりのセル数を示す
 	const int curIdx = cy * stride + cx;
 
 	for (int i = 0; i < 4; ++i)
@@ -51,7 +53,7 @@ void CMaze::CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth
 		if (maze[nextIdx] != 0)
 			continue;
 
-		// Carve both ways
+		// 現在のセルと隣接セルの間の壁を取り除く
 		maze[curIdx] |= dir;
 		maze[nextIdx] |= GetOppositeDirection(dir);
 
@@ -60,6 +62,7 @@ void CMaze::CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth
 
 }
 
+// 指定された方向の反対方向を取得
 CMaze::Direction CMaze::GetOppositeDirection(Direction dir)
 {
 	switch (dir)
@@ -74,7 +77,7 @@ CMaze::Direction CMaze::GetOppositeDirection(Direction dir)
 			return East;
 	}
 }
-
+// 指定された方向に対応する移動量を取得
 CMaze::Pair CMaze::GetMovementFromDirection(Direction dir)
 {
 	switch (dir)
@@ -89,12 +92,12 @@ CMaze::Pair CMaze::GetMovementFromDirection(Direction dir)
 		return { -1, 0};
 	}
 }
-
+// 指定された座標が迷路の範囲内にあるか確認
 bool CMaze::IsInBounds(int x, int y, int width, int height)
 {
 	return (x >= 0 && x < (width) && y >= 0 && y < (height));
 }
-
+// 配列内の方向をランダムにシャッフル
 void CMaze::ShuffleDirections(Direction* directions, int size)
 {
 	if (directions == nullptr || size <= 1)
@@ -110,7 +113,7 @@ void CMaze::ShuffleDirections(Direction* directions, int size)
 		directions[j] = tmp;
 	}
 }
-
+// 開始位置を迷路の範囲内にクランプ
 void CMaze::ClampStart(int& startX, int& startY, int regionWidth, int regionHeight)
 {
 	if (startX < 0) startX = 0;
