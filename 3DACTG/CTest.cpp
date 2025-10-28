@@ -46,6 +46,10 @@ void CTest::Create()
 	// 地面オブジェクト作成
 	m_pGround = new CStaticMeshObject();
 	
+	m_pMiniMap = new CMiniMapTexture();
+	m_pMiniMapSprite = new CSprite2D();
+	m_pMiniMapUI = new CUIObject();
+
 	// プレイヤー作成
 	m_pPlayer = new CPlayer();
 	
@@ -75,6 +79,8 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
+	//m_pMiniMap->Init(*m_pDx11->GetDevice(), *m_pDx11->GetContext(), m_MazeCellW, m_MazeCellH);
+
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
@@ -102,6 +108,8 @@ void CTest::Start()
 	m_Fog.Density = 0.08f;
 
 	GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
+
+
 
 }
 
