@@ -44,6 +44,8 @@ public:
 	{
 		D3DXVECTOR4	CameraPos;		//カメラ位置(視点位置).
 		D3DXVECTOR4	vLightDir;		//ライト方向.
+		D3DXVECTOR4 FogColor;		//フォグの色.
+		D3DXVECTOR4 FogParams;		//フォグのパラメータ(x=開始距離,y=終了距離,z=未使用,w=未使用).
 	};
 
 	//頂点の構造体.
@@ -114,7 +116,7 @@ public:
 
 	//レンダリング用.
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj,
-		LIGHT& Light, D3DXVECTOR3& CamPos);
+		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog);
 
 	//座標情報を設定.
 	void SetPosition( const D3DXVECTOR3& Pos ) { m_Position = Pos; }

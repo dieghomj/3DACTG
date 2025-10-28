@@ -22,7 +22,7 @@ void CCamera::Update()
 
 }
 
-void CCamera::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera)
+void CCamera::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
 	D3DXVECTOR3 cam_pos = m_vPosition;
 	D3DXVECTOR3 cam_look = m_vLook;

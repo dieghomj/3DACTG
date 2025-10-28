@@ -612,7 +612,7 @@ HRESULT CStaticMesh::CreateConstantBuffer()
 //  最終的に画面に出力するのは別クラスのレンダリング関数がやる.
 void CStaticMesh::Render(
 	D3DXMATRIX& mView, D3DXMATRIX& mProj,
-	LIGHT& Light, D3DXVECTOR3& CamPos)
+	LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog)
 {
 	//ワールド行列、スケール行列、回転行列、平行移動行列.
 	D3DXMATRIX mWorld, mScale, mRot, mTran;
@@ -663,6 +663,11 @@ void CStaticMesh::Render(
 		//ライト方向.
 		cb.vLightDir = D3DXVECTOR4(
 			Light.vDirection.x, Light.vDirection.y, Light.vDirection.z, 0.0f );
+
+		//----- フォグ情報 -----.
+		cb.FogColor = Fog.Color; // example
+		cb.FogParams = D3DXVECTOR4(Fog.Start, Fog.End, Fog.Density * Fog.Enable, Fog.Mode); // start, end, density, mode
+
 		//ライト方向の正規化(ノーマライズ）.
 		// ※モデルからライトへ向かう方向. ディレクショナルライトで重要な要素.
 		D3DXVec4Normalize( &cb.vLightDir, &cb.vLightDir );

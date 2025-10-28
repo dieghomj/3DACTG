@@ -31,7 +31,7 @@ public:
 	}
 
 protected:
-	void Draw( D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera) override final;
+	void Draw( D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override final;
 
 protected:
 	CSprite3D*	m_pSprite;

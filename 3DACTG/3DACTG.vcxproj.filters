@@ -76,13 +76,13 @@
     <Filter Include="Source\Maze">
       <UniqueIdentifier>{e4f77958-772e-4870-8bc4-91449d4628da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{1941b590-46a5-44f9-a55f-0e96abf1a92a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
       <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="WinMain.cpp">
       <Filter>Source</Filter>
@@ -171,19 +171,13 @@
     <ClCompile Include="CMaze.cpp">
       <Filter>Source\Maze</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
       <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Global.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="MyMacro.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="CFont.h">
       <Filter>Source\Text</Filter>
@@ -269,30 +263,39 @@
     <ClInclude Include="CMaze.h">
       <Filter>Source\Maze</Filter>
     </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMacro.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Data\Shader\DebugText.hlsl">
+    <FxCompile Include="Data\Shader\DebugText.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\Mesh.hlsl">
+    <FxCompile Include="Data\Shader\Mesh.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\Ray.hlsl">
+    <FxCompile Include="Data\Shader\Ray.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\SkinMesh.hlsl">
+    <FxCompile Include="Data\Shader\SkinMesh.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\Sprite2D.hlsl">
+    <FxCompile Include="Data\Shader\Sprite2D.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\Sprite3D.hlsl">
+    <FxCompile Include="Data\Shader\Sprite3D.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\StaticMesh.hlsl">
+    <FxCompile Include="Data\Shader\StaticMesh.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Data\Shader\Text.hlsl">
+    <FxCompile Include="Data\Shader\Text.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
