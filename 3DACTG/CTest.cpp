@@ -109,8 +109,6 @@ void CTest::Start()
 
 	GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 
-
-
 }
 
 void CTest::Update()
@@ -143,91 +141,27 @@ void CTest::Update()
 
 void CTest::Draw()
 {
+
 	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
 	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
 	for (auto& wall : m_pWalls)
 	{
+		wall->UpdateBSpherePos();
 		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
-	m_SDFText->SetAlpha(1.0f);               // Fully opaque
-	
+	m_SDFText->SetAlpha(1.0f);      
+
 	TCHAR text[64];
 	
-	// --- MiniMap (character based) ---
-		// layout
-	const int regionH = m_MazeCellH;
-	const int regionW = m_MazeCellW;
-	const float mmCell = 9.f;    // pixels per cell
-	const float mmFont = 11.f;    // font size for minimap chars
-	const float mmStartX = 20.0f; // minimap top-left
-	const float mmStartY = 20.0f;
+	DrawTextMinimap(20, 20, 9, 11, 4);
 
-	// draw cells and walls
-	for (int i = 0; i < regionH; ++i)
-	{
-		for (int j = 0; j < regionW; ++j)
-		{
-			float cx = mmStartX + j * mmCell;
-			float cy = mmStartY + i * mmCell;
-
-			// cell center marker
-			_stprintf_s(text, _T(" "));
-			m_SDFText->Render(text, cx, cy, mmFont);
-
-			// North wall (draw a horizontal '-' above cell)
-			if (!(grid[i][j] & CMaze::North))
-			{
-				_stprintf_s(text, _T("_"));
-				m_SDFText->Render(text, cx, cy - mmCell * 0.5f, mmFont);
-			}
-			// West wall (draw a vertical '|' left of cell)
-			if (!(grid[i][j] & CMaze::West))
-			{
-				_stprintf_s(text, _T("|"));
-				m_SDFText->Render(text, cx - mmCell * 0.5f, cy, mmFont);
-			}
-
-			// Border walls for southern and eastern edges
-			if (i == (regionH - 1) && !(grid[i][j] & CMaze::South))
-			{
-				_stprintf_s(text, _T("_"));
-				m_SDFText->Render(text, cx, cy + mmCell * 0.5f, mmFont);
-			}
-			if (j == (regionW - 1) && !(grid[i][j] & CMaze::East))
-			{
-				_stprintf_s(text, _T("|"));
-				m_SDFText->Render(text, cx + mmCell * 0.5f, cy, mmFont);
-			}
-		}
-	}
-
-	// draw player on minimap
-	{
-		D3DXVECTOR3 ppos = m_pPlayer->GetPosition();
-		const float wallSize = 4.0f; // must match GenerateMaze usage
-		// convert world position to grid indices (same origin used for walls in GenerateMaze)
-		float worldOffsetX = (regionW / 2.0f) * wallSize;
-		float worldOffsetZ = (regionH / 2.0f) * wallSize;
-		int px = static_cast<int>((ppos.x + worldOffsetX) / wallSize);
-		int pz = static_cast<int>((ppos.z + worldOffsetZ) / wallSize);
-		px = max(0, min(regionW - 1, px));
-		pz = max(0, min(regionH - 1, pz));
-
-		float pcx = mmStartX + px * mmCell;
-		float pcy = mmStartY + pz * mmCell;
-		_stprintf_s(text, _T("*"));
-		m_SDFText->SetColor(1.0f, 0.0f, 0.0f); // player red
-		m_SDFText->Render(text, pcx, pcy, mmFont);
-		m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
-	}
-
-	// existing mouse delta debug
-	_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
-	m_SDFText->Render(text, 50, 50, 30.f);
+	// --- マウス移動量表示 ---
+	//_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
+	//m_SDFText->Render(text, 50, 50, 30.f);
 }	
 
 void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
@@ -281,6 +215,11 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			}
 		}
 	}
+
+	for(int i = 0; i < m_pWalls.size(); ++i)
+	{
+		m_pWalls[i]->CreateBSphereForMesh(*m_pWallStaticMesh);
+	}
 }
 
 void CTest::ClearMaze()
@@ -290,4 +229,79 @@ void CTest::ClearMaze()
 		delete wall;
 	}
 	m_pWalls.clear();
+}
+
+void CTest::DrawTextMinimap(int startX, int startY, int cell, int font, int wallSize)
+{
+	// --- MiniMap (文字) ---
+		// レイアウト
+	const int regionH = m_MazeCellH;	// 高さ
+	const int regionW = m_MazeCellW;	// 幅
+	const float mmCell = cell;			// セールサイズ
+	const float mmFont = font;			// フォントサイズ
+	const float mmStartX = startX;		//上左ｘ座標
+	const float mmStartY = startY;		//上左ｙ座標
+	
+	TCHAR text[64];
+	
+	// 迷路描画
+	for (int i = 0; i < regionH; ++i)
+	{
+		for (int j = 0; j < regionW; ++j)
+		{
+			float cx = mmStartX + j * mmCell;
+			float cy = mmStartY + i * mmCell;
+
+			// セールの真ん中に空白を描画
+			_stprintf_s(text, _T(" "));
+			m_SDFText->Render(text, cx, cy, mmFont);
+
+			// 北壁 (セルの上に'_'を描画)
+			if (!(grid[i][j] & CMaze::North))
+			{
+				_stprintf_s(text, _T("_"));
+				m_SDFText->Render(text, cx, cy - mmCell * 0.5f, mmFont);
+			}
+			// 西壁 (セルの左に'|'を描画)
+			if (!(grid[i][j] & CMaze::West))
+			{
+				_stprintf_s(text, _T("|"));
+				m_SDFText->Render(text, cx - mmCell * 0.5f, cy, mmFont);
+			}
+
+			// 南壁を描画
+			if (i == (regionH - 1) && !(grid[i][j] & CMaze::South))
+			{
+				_stprintf_s(text, _T("_"));
+				m_SDFText->Render(text, cx, cy + mmCell * 0.5f, mmFont);
+			}
+			// 東壁 (セルの右に'|'を描画)
+			if (j == (regionW - 1) && !(grid[i][j] & CMaze::East))
+			{
+				_stprintf_s(text, _T("|"));
+				m_SDFText->Render(text, cx + mmCell * 0.5f, cy, mmFont);
+			}
+		}
+	}
+
+	// プレイヤー位置描画
+	{
+		D3DXVECTOR3 ppos = m_pPlayer->GetPosition();
+		// ワールド座標 -> グリッド座標変換
+		float worldOffsetX = (regionW * 0.5f) * wallSize;
+		float worldOffsetZ = (regionH * 0.5f) * wallSize;
+		int px = static_cast<int>((ppos.x + worldOffsetX) / wallSize);
+		int pz = static_cast<int>((ppos.z + worldOffsetZ) / wallSize);
+		px = max(0, min(regionW - 1, px));
+		pz = max(0, min(regionH - 1, pz));
+
+		float pcx = mmStartX + px * mmCell;
+		float pcy = mmStartY + pz * mmCell;
+		_stprintf_s(text, _T("*"));
+
+		m_SDFText->SetColor(1.0f, 0.0f, 0.0f);
+		m_SDFText->Render(text, pcx, pcy, mmFont);
+
+		m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
+	}
 }

@@ -24,6 +24,7 @@ public:
 private:
 	void GenerateMaze(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
+	void DrawTextMinimap(int startX, int startY, int cell, int font, int wallSize);
 
 private:
 
