@@ -2,14 +2,14 @@
 
 CStaticMeshObject::CStaticMeshObject()
 	: m_pMesh			( nullptr )
-	, m_pBSphere		( nullptr )
+	, m_pCollider		( nullptr )
 {
-	m_pBSphere = new CBoundingSphere();
+	m_pCollider = new CCollider();
 }
 
 CStaticMeshObject::~CStaticMeshObject()
 {
-	SAFE_DELETE( m_pBSphere );
+	SAFE_DELETE( m_pCollider );
 	DetachMesh();
 }
 
@@ -34,6 +34,32 @@ void CStaticMeshObject::Draw(
 
 	//レンダリング.
 	m_pMesh->Render( View, Proj, Light, Camera.vPosition, Fog);
+}
+
+HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
+{
+	if (!m_pMesh) return E_FAIL;
+	if (!m_pCollider && !(m_pCollider = new CCollider())) return E_FAIL;
+	if (FAILED(m_pCollider->Init())) return E_FAIL;
+
+	// Set initial world position for collider
+	m_pCollider->SetPosition(m_vPosition);
+	m_pCollider->SetRotation(m_vRotation);
+	m_pCollider->SetScale(m_vScale);
+
+	HRESULT hr = E_FAIL;
+	switch (shape)
+	{
+	case CCollider::COLLIDER_SHAPE_SPHERE:
+		hr = m_pCollider->CreateSphereForMesh(*m_pMesh);
+		break;
+	case CCollider::COLLIDER_SHAPE_BOX:
+		hr = m_pCollider->CreateBoxForMesh(*m_pMesh);
+		break;
+	default:
+		return E_FAIL;
+	}
+	return hr;
 }
 
 //レイとメッシュの当たり判定

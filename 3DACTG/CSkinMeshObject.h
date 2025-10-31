@@ -3,6 +3,7 @@
 #include "CGameObject.h"
 #include "CSkinMesh.h"
 #include "CBoundingSphere.h"
+#include "CCollider.h"
 
 /************************************************************
 *	スキンメッシュオブジェクトクラス.
@@ -25,20 +26,20 @@ public:
 
 	//バウンディングスフィア取得
 	CBoundingSphere* GetBSphere() const {
-		return m_pBSphere;
+		return m_pCollider->GetBSphere();
 	}
 	//モデルに合わせたバウンディングスフィア作成のラッパー関数
 	HRESULT CreateBSphereForMesh(const CStaticMesh& pMesh) {
-		return m_pBSphere->CreateSphereForMesh(pMesh);
+		return m_pCollider->CreateSphereForMesh(pMesh);
 	}
 	//バウンディングスフィアをオブジェクト位置に合わせる
 	//※モデルの原点が中心の場合を想定
-	void UpdateBSpherePos() {
-		m_pBSphere->SetPosition(m_vPosition);
+	void UpdateColliderPos() {
+		m_pCollider->SetPosition(m_vPosition);
 	}
 
 protected:
 	CSkinMesh*					m_pMesh;
-	CBoundingSphere*			m_pBSphere;
+	CCollider*			m_pCollider;
 	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//アニメーションコントローラ
 };

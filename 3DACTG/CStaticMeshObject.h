@@ -3,6 +3,8 @@
 #include "CGameObject.h"
 #include "CStaticMesh.h"
 #include "CBoundingSphere.h"
+#include "CBoundingCube.h"
+#include "CCollider.h"
 #include "CRay.h"
 
 /************************************************************
@@ -11,6 +13,7 @@
 class CStaticMeshObject
 	: public CGameObject
 {
+
 public:
 	CStaticMeshObject();
 	virtual ~CStaticMeshObject() override;
@@ -27,18 +30,18 @@ public:
 	void DetachMesh(){
 		m_pMesh = nullptr;
 	}
+
+	HRESULT CreateCollider(CCollider::COLLIDER_SHAPE shape);
+
 	//バウンディングスフィア取得
-	CBoundingSphere* GetBSphere() const {
-		return m_pBSphere;
+	CCollider* GetCollider() const {
+		return m_pCollider;
 	}
-	//モデルに合わせたバウンディングスフィア作成のラッパー関数
-	HRESULT CreateBSphereForMesh(const CStaticMesh& pMesh) {
-		return m_pBSphere->CreateSphereForMesh(pMesh);
-	}
+
 	//バウンディングスフィアをオブジェクト位置に合わせる
 	//※モデルの原点が中心の場合を想定
-	void UpdateBSpherePos() {
-		m_pBSphere->SetPosition(m_vPosition);
+	void UpdateCollider() {
+		m_pCollider->SetPosition(m_vPosition);
 	}
 
 	//レイとメッシュの当たり判定
@@ -63,5 +66,5 @@ private:
 
 protected:
 	CStaticMesh*		m_pMesh;
-	CBoundingSphere*	m_pBSphere;
+	CCollider*			m_pCollider;
 };

@@ -7,6 +7,7 @@
 #include "CMinimap.h"
 #include "CUIObject.h"
 #include "CSprite2D.h"
+#include "CDebugBSphere.h"
 
 class CTest : public CScene
 {
@@ -39,10 +40,13 @@ private:
 	CUIObject* m_pMiniMapUI;
 
 	CPlayer* m_pPlayer;
-	int grid[64][64] = { 0 };
+	
+	CDebugColliderRender* m_pDbgCollider = nullptr;
+	bool m_ShowCollider = true;
 
 	//
-	const int m_MazeCellW	= 32;
-	const int m_MazeCellH	= 32;
+	int grid[64][64] = { 0 };
+	const int m_MazeCellW	= 8;
+	const int m_MazeCellH	= 8;
 	const int m_MazeStride	= 64;
 };

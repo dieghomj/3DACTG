@@ -174,6 +174,22 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
+    <ClCompile Include="CMinimap.cpp" />
+    <ClCompile Include="CDebugBSphere.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoundingCube.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollider.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CDebugColliderRender.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CDebugBBox.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
@@ -272,6 +288,22 @@
     <ClInclude Include="stdafx.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
+    <ClInclude Include="CMinimap.h" />
+    <ClInclude Include="CDebugBSphere.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoundingCube.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollider.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CDebugColliderRender.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CDebugBBox.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
@@ -296,6 +328,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="Data\Shader\Text.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\DebugLine.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

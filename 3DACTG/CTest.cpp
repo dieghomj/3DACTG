@@ -1,6 +1,7 @@
 #include "CTest.h"
 #include "CSoundManager.h"
 #include "CMaze.h"
+#include "CDebugColliderRender.h"
 #include <stdio.h>
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
@@ -27,6 +28,7 @@ CTest::~CTest()
 	SAFE_DELETE(m_pGround);
 	SAFE_DELETE(m_pGroundStaticMesh);
 	SAFE_DELETE(m_SDFText);
+	SAFE_DELETE(m_pDbgCollider);
 }
 
 void CTest::Create()
@@ -44,7 +46,7 @@ void CTest::Create()
 	// 地面メッシュ作成
 	m_pGroundStaticMesh = new CStaticMesh();
 	// 地面オブジェクト作成
-	m_pGround = new CStaticMeshObject();
+	m_pGround = new CStaticMeshObject();		
 	
 	m_pMiniMap = new CMiniMapTexture();
 	m_pMiniMapSprite = new CSprite2D();
@@ -55,6 +57,8 @@ void CTest::Create()
 	
 	// 壁メッシュ作成
 	m_pWallStaticMesh = new CStaticMesh();
+
+	m_pDbgCollider = new CDebugColliderRender();
 
 }
 
@@ -75,6 +79,11 @@ HRESULT CTest::LoadData()
 	if (FAILED(m_pWallStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
 		_T("Data\\Mesh\\Static\\Wall\\Wall.x"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pDbgCollider->Init(*m_pDx11)))
 	{
 		return E_FAIL;
 	}
@@ -121,6 +130,10 @@ void CTest::Update()
 		ClearMaze();
 		GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 	}
+	if (GetAsyncKeyState('B') & 0x0001) // 表示切替
+	{
+		m_ShowCollider = !m_ShowCollider;
+	}
 
 	m_pGround->Update();
 
@@ -148,8 +161,22 @@ void CTest::Draw()
 
 	for (auto& wall : m_pWalls)
 	{
-		wall->UpdateBSpherePos();
+		wall->UpdateCollider();
 		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	}
+
+	if (m_pDbgCollider && m_ShowCollider)
+	{
+		m_pDx11->SetDepth(false);
+		for (auto& wall : m_pWalls)
+		{
+			if (auto* col = wall->GetCollider())
+			{
+				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
+					CCollider::COLLIDER_SHAPE_BOX, *col);
+			}
+		}
+		m_pDx11->SetDepth(true);
 	}
 
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -215,10 +242,10 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			}
 		}
 	}
-
+	
 	for(int i = 0; i < m_pWalls.size(); ++i)
 	{
-		m_pWalls[i]->CreateBSphereForMesh(*m_pWallStaticMesh);
+		m_pWalls[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 }
 

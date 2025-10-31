@@ -153,9 +153,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CAnimCharacter.cpp" />
+    <ClCompile Include="CBoundingCube.cpp" />
     <ClCompile Include="CBoundingSphere.cpp" />
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CCharacter.cpp" />
+    <ClCompile Include="CCollider.cpp" />
+    <ClCompile Include="CDebugBBox.cpp" />
+    <ClCompile Include="CDebugBSphere.cpp" />
+    <ClCompile Include="CDebugColliderRender.cpp" />
     <ClCompile Include="CDebugText.cpp" />
     <ClCompile Include="CDirectX11.cpp" />
     <ClCompile Include="CDirectX9.cpp" />
@@ -190,9 +195,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CAnimCharacter.h" />
+    <ClInclude Include="CBoundingCube.h" />
     <ClInclude Include="CBoundingSphere.h" />
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CCharacter.h" />
+    <ClInclude Include="CCollider.h" />
+    <ClInclude Include="CDebugBBox.h" />
+    <ClInclude Include="CDebugBSphere.h" />
+    <ClInclude Include="CDebugColliderRender.h" />
     <ClInclude Include="CDebugText.h" />
     <ClInclude Include="CDirectX11.h" />
     <ClInclude Include="CDirectX9.h" />
@@ -224,6 +234,11 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Data\Shader\DebugLine.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
