@@ -23,11 +23,6 @@ public:
 	void Update() override;
 	void Draw() override;
 
-
-	D3DXVECTOR3 CellToWorld(int cellIndex, float y = 0.0f, float cellSize = 4.0f) const;
-	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.0f, float cellSize = 4.0f) const;
-
-
 private:
 	void GenerateMaze(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
@@ -56,9 +51,10 @@ private:
 	bool m_ShowCollider = true;
 	bool m_bFog = false;
 
-	//
-	int grid[64][64] = { 0 };
-	const int m_MazeCellW	= 8;
-	const int m_MazeCellH	= 8;
-	const int m_MazeStride	= 64;
+	//–À˜H
+	CMaze* m_pMazeGen;
+	int m_pMazeData[64][64] = { 0 };
+	const int m_MazeCellW;
+	const int m_MazeCellH;
+	const int m_MazeStride;
 };

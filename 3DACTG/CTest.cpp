@@ -17,8 +17,10 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pGhostMesh			(nullptr)
 
 	// 迷路関連
-	, m_MazeCellH			(32)
-	, m_MazeCellW			(32)
+	, m_pMazeData			()
+	, m_pMazeGen			(nullptr)
+	, m_MazeCellH			(8)
+	, m_MazeCellW			(8)
 	, m_MazeStride			(64)
 	// 迷路の壁リスト
 	, m_pWalls				()
@@ -68,6 +70,11 @@ void CTest::Create()
 	// 地面オブジェクト作成
 	m_pGround = new CStaticMeshObject();		
 	
+	// 迷路作成
+	m_pMazeGen = new CMaze(*m_pMazeData, m_MazeStride, m_MazeCellW, m_MazeCellH);
+	// 壁メッシュ作成
+	m_pWallStaticMesh = new CStaticMesh();
+
 	m_pMiniMap = new CMiniMapTexture();
 	m_pMiniMapSprite = new CSprite2D();
 	m_pMiniMapUI = new CUIObject();
@@ -75,17 +82,14 @@ void CTest::Create()
 	// プレイヤー作成
 	m_pPlayer = new CPlayer();
 
-
+	// ゴーストメッシュ作成
 	m_pGhostMesh = new CStaticMesh();
 	// ゴースト作成
 	for (int i = 0; i < 4; ++i)
 	{
-		m_pGhostList[i] = new CGhost;
+		m_pGhostList[i] = new CGhost(*m_pMazeGen);
 	}
 	
-	// 壁メッシュ作成
-	m_pWallStaticMesh = new CStaticMesh();
-
 	m_pDbgCollider = new CDebugColliderRender();
 
 }
@@ -128,14 +132,14 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
-	m_pPlayer->SetPosition(0.f, 1.f, 0.f);
+	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0));
 
 	for(int i = 0; i < 4; ++i)
 	{
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
-		m_pGhostList[i]->SetPosition(CellToWorldRC((m_MazeCellH - 1) - i, i, 1.f));
+		m_pGhostList[i]->SetPosition(m_pMazeGen->CellToWorldRC((m_MazeCellH - 1) - i, i, 1.f));
 		m_pGhostList[i]->SetScale(0.09f);
-		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 
 	return S_OK;
@@ -225,6 +229,7 @@ void CTest::Draw()
 
 	for( int i = 0; i < 4; ++i)
 	{
+		m_pGhostList[i]->UpdateCollider();
 		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
@@ -245,7 +250,7 @@ void CTest::Draw()
 			if (auto* col = m_pGhostList[i]->GetCollider())
 			{
 				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
-					CCollider::COLLIDER_SHAPE_SPHERE, *col);
+					CCollider::COLLIDER_SHAPE_BOX, *col);
 			}
 		}
 
@@ -267,7 +272,7 @@ void CTest::Draw()
 void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 {
 
-	CMaze::GenerateMaze(&grid[0][0], stride, regionWidth, regionHeight); // 迷路生成
+	CMaze::GenerateMaze(&m_pMazeData[0][0], stride, regionWidth, regionHeight); // 迷路生成
 	const float wallSize = 4.0f;	// 壁のサイズ
 	const float wallHeight = 0.0f;	// 壁の高さ
 
@@ -281,14 +286,14 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			float z = (i - regionHeight / 2.0f) * wallSize + (wallSize / 2.0f); // Z座標
 
 			// 壁を追加
-			if (!(grid[i][j] & CMaze::North) )
+			if (!(m_pMazeData[i][j] & CMaze::North) )
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z - wallSize / 2.0f); // 北の壁
 				m_pWalls.push_back(wall);
 			}
-			if (!(grid[i][j] & CMaze::West))
+			if (!(m_pMazeData[i][j] & CMaze::West))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
@@ -298,14 +303,14 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			}
 
 			// 端の壁を追加
-			if (i == (regionHeight - 1) && !(grid[i][j] & CMaze::South))
+			if (i == (regionHeight - 1) && !(m_pMazeData[i][j] & CMaze::South))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z + wallSize / 2.0f); // 南の壁
 				m_pWalls.push_back(wall);
 			}
-			if (j == (regionWidth - 1) && !(grid[i][j] & CMaze::East))
+			if (j == (regionWidth - 1) && !(m_pMazeData[i][j] & CMaze::East))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
@@ -357,26 +362,26 @@ void CTest::DrawTextMinimap(int startX, int startY, int cell, int font, int wall
 			m_SDFText->Render(text, cx, cy, mmFont);
 
 			// 北壁 (セルの上に'_'を描画)
-			if (!(grid[i][j] & CMaze::North))
+			if (!(m_pMazeData[i][j] & CMaze::North))
 			{
 				_stprintf_s(text, _T("_"));
 				m_SDFText->Render(text, cx, cy - mmCell * 0.5f, mmFont);
 			}
 			// 西壁 (セルの左に'|'を描画)
-			if (!(grid[i][j] & CMaze::West))
+			if (!(m_pMazeData[i][j] & CMaze::West))
 			{
 				_stprintf_s(text, _T("|"));
 				m_SDFText->Render(text, cx - mmCell * 0.5f, cy, mmFont);
 			}
 
 			// 南壁を描画
-			if (i == (regionH - 1) && !(grid[i][j] & CMaze::South))
+			if (i == (regionH - 1) && !(m_pMazeData[i][j] & CMaze::South))
 			{
 				_stprintf_s(text, _T("_"));
 				m_SDFText->Render(text, cx, cy + mmCell * 0.5f, mmFont);
 			}
 			// 東壁 (セルの右に'|'を描画)
-			if (j == (regionW - 1) && !(grid[i][j] & CMaze::East))
+			if (j == (regionW - 1) && !(m_pMazeData[i][j] & CMaze::East))
 			{
 				_stprintf_s(text, _T("|"));
 				m_SDFText->Render(text, cx + mmCell * 0.5f, cy, mmFont);
@@ -406,26 +411,3 @@ void CTest::DrawTextMinimap(int startX, int startY, int cell, int font, int wall
 	}
 }
 
-D3DXVECTOR3 CTest::CellToWorld(int cellIndex, float y, float cellSize) const
-{
-	const int total = m_MazeCellW * m_MazeCellH;
-	if (cellIndex < 0) cellIndex = 0;
-	if (cellIndex >= total) cellIndex = total - 1;
-
-	const int row = cellIndex / m_MazeCellW;
-	const int col = cellIndex % m_MazeCellW;
-
-	return CellToWorldRC(row, col, y, cellSize);
-}
-
-D3DXVECTOR3 CTest::CellToWorldRC(int row, int col, float y, float cellSize) const
-{
-	if (row < 0) row = 0;
-	if (row >= m_MazeCellH) row = m_MazeCellH - 1;
-	if (col < 0) col = 0;
-	if (col >= m_MazeCellW) col = m_MazeCellW - 1;
-
-	const float x = (col - m_MazeCellW / 2.0f) * cellSize + (cellSize * 0.5f);
-	const float z = (row - m_MazeCellH / 2.0f) * cellSize + (cellSize * 0.5f);
-	return D3DXVECTOR3(x, y, z);
-}

@@ -13,13 +13,41 @@ CMaze::CMaze()
 {
 }
 
-CMaze::CMaze(int pMaze, int stride, int regionWidth, int regionHeight, int startX, int startY)
+CMaze::CMaze(int* pMaze, int stride, int regionWidth, int regionHeight, int startX, int startY)
+	: m_pMazeData(pMaze)
+	, m_RegionWidth(regionWidth)
+	, m_RegionHeight(regionHeight)
+	, m_Stride(stride)
 {
-	GenerateMaze(&pMaze, stride, regionWidth, regionHeight, startX, startY);
+	GenerateMaze(pMaze, stride, regionWidth, regionHeight, startX, startY);
 }
 
 CMaze::~CMaze()
 {
+}
+
+D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, float y, float cellSize) const
+{
+	const int total = m_RegionWidth * m_RegionHeight;
+	if (cellIndex < 0) cellIndex = 0;
+	if (cellIndex >= total) cellIndex = total - 1;
+
+	const int row = cellIndex / m_RegionWidth;
+	const int col = cellIndex % m_RegionHeight;
+
+	return CellToWorldRC(row, col, y, cellSize);
+}
+
+D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, float y, float cellSize) const
+{
+	if (row < 0) row = 0;
+	if (row >= m_RegionHeight) row = m_RegionHeight - 1;
+	if (col < 0) col = 0;
+	if (col >= m_RegionWidth) col = m_RegionWidth - 1;
+
+	const float x = (col - m_RegionWidth / 2.0f) * cellSize + (cellSize * 0.5f);
+	const float z = (row - m_RegionHeight / 2.0f) * cellSize + (cellSize * 0.5f);
+	return D3DXVECTOR3(x, y, z);
 }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "CCharacter.h"
+#include "CMaze.h"
 
 class CGhost :
 	public CCharacter
@@ -7,7 +8,9 @@ class CGhost :
 
 public:
 	CGhost();
+	CGhost(CMaze pMazeGen);
 	CGhost(int* pMaze, int stride, int regionWidth, int regionHeight);
+
 	~CGhost();
 
 	void Update();
@@ -20,6 +23,9 @@ private:
 	int m_Stride;
 	int m_RegionWidth;
 	int m_RegionHeight;
+	int m_CurrentCell;
+	int m_CurrentRow;
+	int m_CurrentCol;
 
 };
 

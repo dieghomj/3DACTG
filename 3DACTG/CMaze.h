@@ -24,13 +24,16 @@ public:
 public:
 
 	CMaze();
-	CMaze(int pMaze, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
+	CMaze(int* pMaze, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
 	~CMaze();
 
 	int* GetMazeData() const { return m_pMazeData; }
 	int GetRegionWidth() const { return m_RegionWidth; }
 	int GetRegionHeight() const { return m_RegionHeight; }
 	int GetStride() const { return m_Stride; }
+
+	D3DXVECTOR3 CellToWorld(int cellIndex, float y = 0.f, float cellSize = 4.0f) const;
+	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.f, float cellSize = 4.0f) const;
 
 	static void GenerateMaze(int* out, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
 
