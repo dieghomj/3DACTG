@@ -8,6 +8,7 @@
 #include "CUIObject.h"
 #include "CSprite2D.h"
 #include "CDebugBSphere.h"
+#include "CGhost.h"
 
 class CTest : public CScene
 {
@@ -22,6 +23,11 @@ public:
 	void Update() override;
 	void Draw() override;
 
+
+	D3DXVECTOR3 CellToWorld(int cellIndex, float y = 0.0f, float cellSize = 4.0f) const;
+	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.0f, float cellSize = 4.0f) const;
+
+
 private:
 	void GenerateMaze(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
@@ -33,16 +39,22 @@ private:
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
 	
+
 	CStaticMesh* m_pWallStaticMesh;
 	std::vector<CStaticMeshObject*> m_pWalls;
 	CMiniMapTexture* m_pMiniMap;
 	CSprite2D* m_pMiniMapSprite;
 	CUIObject* m_pMiniMapUI;
 
+
 	CPlayer* m_pPlayer;
 	
+	CStaticMesh* m_pGhostMesh;
+	CGhost* m_pGhostList[4];
+
 	CDebugColliderRender* m_pDbgCollider = nullptr;
 	bool m_ShowCollider = true;
+	bool m_bFog = false;
 
 	//
 	int grid[64][64] = { 0 };

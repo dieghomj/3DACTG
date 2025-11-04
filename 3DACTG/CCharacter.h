@@ -9,20 +9,6 @@ class CCharacter
 	: public CStaticMeshObject
 {
 public:
-	enum enShotNumber
-	{
-		Single = 0,
-		Double,
-		Triple,
-	};
-
-	enum enShotType
-	{
-		Simple = 0,		//一発発射
-		Charged,		//チャージショット
-		Homing,			//ホーミング
-		Laser,			//レーザー
-	};
 
 public:
 	CCharacter();

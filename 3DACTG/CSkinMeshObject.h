@@ -23,6 +23,17 @@ public:
 	void AttachMesh(CSkinMesh& pMesh);
 	//メッシュを切り離す.
 	void DetachMesh();
+	
+
+
+	//コライダー作成
+	CCollider* GetCollider() const {
+		return m_pCollider;
+	}
+
+	CBoundingCube* GetBCube() const {
+		return m_pCollider->GetBBox();
+	}
 
 	//バウンディングスフィア取得
 	CBoundingSphere* GetBSphere() const {

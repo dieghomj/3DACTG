@@ -167,6 +167,7 @@
     <ClCompile Include="CEffect.cpp" />
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGameObject.cpp" />
+    <ClCompile Include="CGhost.cpp" />
     <ClCompile Include="CMain.cpp" />
     <ClCompile Include="CMaze.cpp" />
     <ClCompile Include="CMinimap.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="CEffect.h" />
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGameObject.h" />
+    <ClInclude Include="CGhost.h" />
     <ClInclude Include="CMain.h" />
     <ClInclude Include="CMaze.h" />
     <ClInclude Include="CMinimap.h" />

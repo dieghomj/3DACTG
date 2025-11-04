@@ -6,10 +6,30 @@
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
-	, m_SDFText				(nullptr)
 	, m_pGroundStaticMesh	(nullptr)
 	, m_pGround				(nullptr)
+
+	// プレイヤー関連
 	, m_pPlayer				(nullptr)
+
+	// ゴースト関連
+	, m_pGhostList			()
+	, m_pGhostMesh			(nullptr)
+
+	// 迷路関連
+	, m_MazeCellH			(32)
+	, m_MazeCellW			(32)
+	, m_MazeStride			(64)
+	// 迷路の壁リスト
+	, m_pWalls				()
+	, m_pWallStaticMesh		(nullptr)
+	, m_pMiniMapUI			(nullptr)
+	, m_pMiniMapSprite		(nullptr)
+	, m_pMiniMap			(nullptr)
+
+	, m_SDFText				(nullptr)
+	, m_pDbgCollider		(nullptr)
+	, m_ShowCollider		(false)
 {
 	m_pDx11->SetDepth(true);
 }
@@ -54,6 +74,14 @@ void CTest::Create()
 
 	// プレイヤー作成
 	m_pPlayer = new CPlayer();
+
+
+	m_pGhostMesh = new CStaticMesh();
+	// ゴースト作成
+	for (int i = 0; i < 4; ++i)
+	{
+		m_pGhostList[i] = new CGhost;
+	}
 	
 	// 壁メッシュ作成
 	m_pWallStaticMesh = new CStaticMesh();
@@ -83,6 +111,13 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGhostMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Ghost\\GhostB\\Ghost.X"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pDbgCollider->Init(*m_pDx11)))
 	{
 		return E_FAIL;
@@ -94,6 +129,14 @@ HRESULT CTest::LoadData()
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
 	m_pPlayer->SetPosition(0.f, 1.f, 0.f);
+
+	for(int i = 0; i < 4; ++i)
+	{
+		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
+		m_pGhostList[i]->SetPosition(CellToWorldRC((m_MazeCellH - 1) - i, i, 1.f));
+		m_pGhostList[i]->SetScale(0.09f);
+		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	}
 
 	return S_OK;
 
@@ -110,8 +153,8 @@ void CTest::Start()
 	m_GlobalLight.fIntensity = 0.3f;
 
 	m_Fog.Color = D3DXVECTOR4(0.2f, 0.01f, 0.01f, 1.0f);
-	m_Fog.Enable = true;
-	m_Fog.Mode = D3DFOG_LINEAR;
+	m_Fog.Enable = m_bFog;
+	m_Fog.Mode = D3DFOG_EXP;
 	m_Fog.Start = 20.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
@@ -125,19 +168,34 @@ void CTest::Update()
 	
 	CScene::Update();
 
+	m_Fog.Enable = m_bFog;
+
 	if (GetAsyncKeyState('R') & 0x0001)
 	{
 		ClearMaze();
 		GenerateMaze(m_MazeCellH, m_MazeCellW, m_MazeStride);
 	}
-	if (GetAsyncKeyState('B') & 0x0001) // 表示切替
+	if (GetAsyncKeyState('1') & 0x0001) // 表示切替
 	{
 		m_ShowCollider = !m_ShowCollider;
+	}
+	if (GetAsyncKeyState('2') & 0x0001) // 表示切替
+	{
+		m_bFog = !m_bFog;
+	}
+	if (GetAsyncKeyState('V') & 0x0001)
+	{
+		m_pPlayer->SetPosition(m_pGhostList[0]->GetPosition());
 	}
 
 	m_pGround->Update();
 
 	m_pPlayer->Update();
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_pGhostList[i]->Update();
+	}
 
 	for (auto& wall : m_pWalls)
 	{
@@ -165,6 +223,11 @@ void CTest::Draw()
 		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
+	for( int i = 0; i < 4; ++i)
+	{
+		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	}
+
 	if (m_pDbgCollider && m_ShowCollider)
 	{
 		m_pDx11->SetDepth(false);
@@ -176,6 +239,16 @@ void CTest::Draw()
 					CCollider::COLLIDER_SHAPE_BOX, *col);
 			}
 		}
+
+		for( int i = 0; i < 4; ++i)
+		{
+			if (auto* col = m_pGhostList[i]->GetCollider())
+			{
+				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
+					CCollider::COLLIDER_SHAPE_SPHERE, *col);
+			}
+		}
+
 		m_pDx11->SetDepth(true);
 	}
 
@@ -331,4 +404,28 @@ void CTest::DrawTextMinimap(int startX, int startY, int cell, int font, int wall
 
 		m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
 	}
+}
+
+D3DXVECTOR3 CTest::CellToWorld(int cellIndex, float y, float cellSize) const
+{
+	const int total = m_MazeCellW * m_MazeCellH;
+	if (cellIndex < 0) cellIndex = 0;
+	if (cellIndex >= total) cellIndex = total - 1;
+
+	const int row = cellIndex / m_MazeCellW;
+	const int col = cellIndex % m_MazeCellW;
+
+	return CellToWorldRC(row, col, y, cellSize);
+}
+
+D3DXVECTOR3 CTest::CellToWorldRC(int row, int col, float y, float cellSize) const
+{
+	if (row < 0) row = 0;
+	if (row >= m_MazeCellH) row = m_MazeCellH - 1;
+	if (col < 0) col = 0;
+	if (col >= m_MazeCellW) col = m_MazeCellW - 1;
+
+	const float x = (col - m_MazeCellW / 2.0f) * cellSize + (cellSize * 0.5f);
+	const float z = (row - m_MazeCellH / 2.0f) * cellSize + (cellSize * 0.5f);
+	return D3DXVECTOR3(x, y, z);
 }

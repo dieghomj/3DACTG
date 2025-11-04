@@ -6,7 +6,16 @@
 
 
 CMaze::CMaze()
+	: m_pMazeData		(nullptr)
+	, m_RegionWidth		(0)
+	, m_RegionHeight	(0)
+	, m_Stride			(0)
 {
+}
+
+CMaze::CMaze(int pMaze, int stride, int regionWidth, int regionHeight, int startX, int startY)
+{
+	GenerateMaze(&pMaze, stride, regionWidth, regionHeight, startX, startY);
 }
 
 CMaze::~CMaze()
