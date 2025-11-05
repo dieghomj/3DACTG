@@ -47,7 +47,7 @@ private:
 	static void ShuffleDirections(Direction* directions, int size);
 	
 	static bool IsInBounds(int x, int y, int width, int height);
-	bool IsValidPathMove(int x, int y, Direction dir, bool* visited);
+	bool IsValidPathMove(int x, int y, Direction dir, const bool* visited);
 
 private: 
 

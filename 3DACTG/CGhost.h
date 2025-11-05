@@ -29,7 +29,7 @@ private:
 	std::vector<Pair> m_pPath;
 	int m_pathStep;
 
-	float moveSpeed = 500.0f;
+	float moveSpeed = 450.0f;
 	float moveTime = 0.f;
 
 };

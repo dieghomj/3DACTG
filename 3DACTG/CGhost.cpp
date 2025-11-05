@@ -9,9 +9,10 @@ CGhost::CGhost()
 
 CGhost::CGhost(std::vector<Pair> path)
 	: CCharacter()
-	, m_pPath (path)
-	, m_CurrentRow(path[0].x)
-	, m_CurrentCol(path[0].y)
+	, m_pathStep	(0)
+	, m_pPath		(path)
+	, m_CurrentCol	(path[0].x)
+	, m_CurrentRow	(path[0].y)
 {
 }
 
@@ -25,22 +26,22 @@ void CGhost::Update()
 {
 	CCharacter::Update();
 
-	Pair prevCell = { m_CurrentRow, m_CurrentCol};
+	Pair prevCell = { m_CurrentCol, m_CurrentRow};
 
-	if (m_pPath.empty())
+ 	if (m_pPath.empty())
 		return;
-
+	
 	if(moveTime >= moveSpeed)
 		m_pathStep++;
-
+	
 	if (m_pathStep >= m_pPath.size()) {
 		m_pathStep = 0;
 	}
 
-	m_CurrentRow = m_pPath[m_pathStep].x;
-	m_CurrentCol = m_pPath[m_pathStep].y;
+	m_CurrentCol = m_pPath[m_pathStep].x;
+	m_CurrentRow = m_pPath[m_pathStep].y;
 
-	moveTime += 1000 / FPS;
+	moveTime += 1000.0f / FPS;
 
 	if (prevCell.x != m_CurrentCol || prevCell.y != m_CurrentRow)
 		moveTime = 0.f;

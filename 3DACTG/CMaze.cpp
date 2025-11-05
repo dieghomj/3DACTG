@@ -31,7 +31,7 @@ D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, float y, float cellSize) const
 	if (cellIndex >= total) cellIndex = total - 1;
 
 	const int row = cellIndex / m_RegionWidth;
-	const int col = cellIndex % m_RegionHeight;
+	const int col = cellIndex % m_RegionWidth;
 
 	return CellToWorldRC(row, col, y, cellSize);
 }
@@ -52,29 +52,57 @@ std::vector<Pair> CMaze::GeneratePath(int x, int y)
 {
 	std::vector<Pair> fullPath;
 
-	bool visited[256][256];
+	if (!IsInBounds(x, y, m_RegionWidth, m_RegionHeight) || m_pMazeData == nullptr || m_Stride <= 0)
+		return fullPath;
 
-	visited[x][y] = !true;
-	fullPath.push_back(Pair(x,y));
+	const int w = m_RegionWidth;
+	const int h = m_RegionHeight;
 
-	Direction directions[4] = { North, South, East, West };
-	ShuffleDirections(directions, 4);
+	std::unique_ptr<bool[]> visited(new bool[w * h]());
+	auto toIndex = [w](int cx, int cy) { return cy * w + cx; };
+	std::vector<Pair> st;
 
-	for (int i = 0; i < 4; i++)
+	visited[toIndex(x, y)] = true;
+	st.emplace_back(x, y);
+	fullPath.emplace_back(x, y);
+
+	while (!st.empty())
 	{
+		const int cx = st.back().x;
+		const int cy = st.back().y;
 
-		int newX = x + GetMovementFromDirection(directions[i]).y;
-		int newY = y + GetMovementFromDirection(directions[i]).x;
-			
-		if (IsValidPathMove(x, y, directions[i], *visited))
+		bool moved = false;
+		Direction dirs[4] = { North, South, East, West };
+		ShuffleDirections(dirs, 4);
+
+		for (int i = 0; i < 4; ++i)
 		{
-			GeneratePath(newX, newY);
+			const Direction dir = dirs[i];
+			if (!IsValidPathMove(cx, cy, dir, visited.get()))
+				continue;
 
-			fullPath.push_back(Pair(newX, newY));
+			const Pair d = GetMovementFromDirection(dir);
+			const int nx = cx + d.x;
+			const int ny = cy + d.y;
+
+			visited[toIndex(nx, ny)] = true;
+			st.emplace_back(nx, ny);
+			fullPath.emplace_back(nx, ny);
+			moved = true;
+			break; // dive deeper (DFS)
 		}
 
+		if (!moved)
+		{
+			// Dead end -> backtrack
+			st.pop_back();
+			if (!st.empty())
+			{
+				// Add the previous cell to the path to trace back
+				fullPath.push_back(st.back());
+			}
+		}
 	}
-
 	return fullPath;
 }
 
@@ -209,25 +237,32 @@ bool CMaze::IsInBounds(int x, int y, int width, int height)
 	return (x >= 0 && x < (width) && y >= 0 && y < (height));
 }
 
-bool CMaze::IsValidPathMove(int x, int y, Direction dir, bool* visited)
+bool CMaze::IsValidPathMove(int x, int y, Direction dir, const bool* visited)
 {
-
-	bool canMove = false;
-	int idx = x * m_Stride + y;
-
-	canMove = (dir & m_pMazeData[idx]);
-
-	if (!canMove)
+	if (m_pMazeData == nullptr || visited == nullptr)
 		return false;
 
-	int newX = x + GetMovementFromDirection(dir).y;
-	int newY = y + GetMovementFromDirection(dir).x;
-	int newIdx = newX * 256 + newY;
-
-	if (!IsInBounds(newX, newY, m_RegionWidth, m_RegionWidth))
+	// 現在セルの通路
+	const int curIdx = y * m_Stride + x;
+	if ((m_pMazeData[curIdx] & dir) == 0)
 		return false;
 
-	if (!visited[newIdx])
+	// 移動先
+	const Pair d = GetMovementFromDirection(dir);
+	const int nx = x + d.x;
+	const int ny = y + d.y;
+	if (!IsInBounds(nx, ny, m_RegionWidth, m_RegionHeight))
+		return false;
+
+	// 移動先が未訪問か
+	const int nvi = ny * m_RegionWidth + nx;
+	if (visited[nvi])
+		return false;
+
+	// 移動先セルの反対方向の通路も開いているか（双方向チェック）
+	const int nextIdx = ny * m_Stride + nx;
+	const Direction back = GetOppositeDirection(dir);
+	if ((m_pMazeData[nextIdx] & back) == 0)
 		return false;
 
 	return true;

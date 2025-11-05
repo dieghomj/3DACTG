@@ -4,6 +4,8 @@
 #include "CDebugColliderRender.h"
 #include <stdio.h>
 
+#define ENEMY_COUNT 1
+
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
 	, m_pGroundStaticMesh	(nullptr)
@@ -85,9 +87,9 @@ void CTest::Create()
 	// ゴーストメッシュ作成
 	m_pGhostMesh = new CStaticMesh();
 	// ゴースト作成
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
-		m_pGhostList[i] = new CGhost(m_pMazeGen->GeneratePath((m_MazeCellH - 1) - i, i));
+		m_pGhostList[i] = new CGhost(m_pMazeGen->GeneratePath(i, (m_MazeCellH - 1) - i));
 	}
 	
 	m_pDbgCollider = new CDebugColliderRender();
@@ -132,9 +134,9 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
-	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0));
+	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0, 5.0f));
 
-	for(int i = 0; i < 4; ++i)
+	for(int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
 		m_pGhostList[i]->SetScale(0.09f);
@@ -195,7 +197,7 @@ void CTest::Update()
 
 	m_pPlayer->Update();
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		int r = m_pGhostList[i]->GetCurrentRow();
 		int c = m_pGhostList[i]->GetCurrentCol();
@@ -230,7 +232,7 @@ void CTest::Draw()
 		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
-	for( int i = 0; i < 4; ++i)
+	for( int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i]->UpdateCollider();
 		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
@@ -248,7 +250,7 @@ void CTest::Draw()
 			}
 		}
 
-		for( int i = 0; i < 4; ++i)
+		for( int i = 0; i < ENEMY_COUNT; ++i)
 		{
 			if (auto* col = m_pGhostList[i]->GetCollider())
 			{
