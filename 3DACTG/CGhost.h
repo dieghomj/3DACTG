@@ -1,6 +1,6 @@
 #pragma once
 #include "CCharacter.h"
-#include "CMaze.h"
+#include <vector>
 
 class CGhost :
 	public CCharacter
@@ -8,24 +8,29 @@ class CGhost :
 
 public:
 	CGhost();
-	CGhost(CMaze pMazeGen);
-	CGhost(int* pMaze, int stride, int regionWidth, int regionHeight);
+	CGhost(std::vector<Pair> path);
 
 	~CGhost();
 
 	void Update();
-	
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog);
+
+	int GetCurrentRow() const { return m_CurrentRow; }
+	int GetCurrentCol() const { return m_CurrentCol; }
 
 private:
 
-	int* m_pMaze;
-	int m_Stride;
-	int m_RegionWidth;
-	int m_RegionHeight;
-	int m_CurrentCell;
+
+private:
+
 	int m_CurrentRow;
 	int m_CurrentCol;
+	
+	std::vector<Pair> m_pPath;
+	int m_pathStep;
+
+	float moveSpeed = 500.0f;
+	float moveTime = 0.f;
 
 };
 

@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{bbb97747-eea6-431b-93af-2e07b399407e}</ProjectGuid>
     <RootNamespace>My3DACTG</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

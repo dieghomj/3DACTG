@@ -9,6 +9,7 @@
 #include "CSprite2D.h"
 #include "CDebugBSphere.h"
 #include "CGhost.h"
+#include "CMaze.h"
 
 class CTest : public CScene
 {

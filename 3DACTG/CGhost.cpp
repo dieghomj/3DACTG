@@ -1,35 +1,20 @@
 #include "CGhost.h"
 
-
-
 CGhost::CGhost()
-	: CCharacter()
-	, m_CurrentCell		(0)
+	: CCharacter() 
 	, m_CurrentRow		(0)
 	, m_CurrentCol		(0)
 {
 }
 
-CGhost::CGhost(CMaze pMazeGen)
+CGhost::CGhost(std::vector<Pair> path)
 	: CCharacter()
-	, m_pMaze			(pMazeGen.GetMazeData())
-	, m_Stride			(pMazeGen.GetStride())
-	, m_RegionWidth		(pMazeGen.GetRegionWidth())
-	, m_RegionHeight	(pMazeGen.GetRegionHeight())
-	, m_CurrentCell		(0)
-	, m_CurrentRow		(0)
-	, m_CurrentCol		(0)
+	, m_pPath (path)
+	, m_CurrentRow(path[0].x)
+	, m_CurrentCol(path[0].y)
 {
 }
 
-CGhost::CGhost(int* pMaze, int stride, int regionWidth, int regionHeight)
-	: CCharacter()
-	, m_pMaze			(pMaze)
-	, m_Stride			(stride)
-	, m_RegionWidth		(regionWidth)
-	, m_RegionHeight	(regionHeight)
-{
-}
 
 CGhost::~CGhost()
 {
@@ -40,49 +25,25 @@ void CGhost::Update()
 {
 	CCharacter::Update();
 
-	CMaze::Pair directions[4] = {
-		{0, -1},	// North
-		{0, 1},		// South
-		{1, 0},		// East
-		{-1, 0}		// West
-	};
+	Pair prevCell = { m_CurrentRow, m_CurrentCol};
 
-	for ( int i = 0; i < 4; ++i )
-	{
-		const int nextRow = m_CurrentRow + directions[i].y;
-		const int nextCol = m_CurrentCol + directions[i].x;
-		if ( nextRow < 0 || nextRow >= m_RegionHeight ||
-			 nextCol < 0 || nextCol >= m_RegionWidth )
-		{
-			continue;
-		}
-		const int curIdx = m_CurrentRow * m_Stride + m_CurrentCol;
-		const int nextIdx = nextRow * m_Stride + nextCol;
-		if ( directions[i].y == -1 && (m_pMaze[curIdx] & CMaze::North) ) // North
-		{
-			m_CurrentRow = nextRow;
-			m_CurrentCol = nextCol;
-			break;
-		}
-		else if ( directions[i].y == 1 && (m_pMaze[curIdx] & CMaze::South) ) // South
-		{
-			m_CurrentRow = nextRow;
-			m_CurrentCol = nextCol;
-			break;
-		}
-		else if ( directions[i].x == 1 && (m_pMaze[curIdx] & CMaze::East) ) // East
-		{
-			m_CurrentRow = nextRow;
-			m_CurrentCol = nextCol;
-			break;
-		}
-		else if ( directions[i].x == -1 && (m_pMaze[curIdx] & CMaze::West) ) // West
-		{
-			m_CurrentRow = nextRow;
-			m_CurrentCol = nextCol;
-			break;
-		}
+	if (m_pPath.empty())
+		return;
+
+	if(moveTime >= moveSpeed)
+		m_pathStep++;
+
+	if (m_pathStep >= m_pPath.size()) {
+		m_pathStep = 0;
 	}
+
+	m_CurrentRow = m_pPath[m_pathStep].x;
+	m_CurrentCol = m_pPath[m_pathStep].y;
+
+	moveTime += 1000 / FPS;
+
+	if (prevCell.x != m_CurrentCol || prevCell.y != m_CurrentRow)
+		moveTime = 0.f;
 
 }
 

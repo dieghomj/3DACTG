@@ -3,8 +3,6 @@
 #include <random>
 #include <vector>
 
-
-
 CMaze::CMaze()
 	: m_pMazeData		(nullptr)
 	, m_RegionWidth		(0)
@@ -48,6 +46,36 @@ D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, float y, float cellSize) cons
 	const float x = (col - m_RegionWidth / 2.0f) * cellSize + (cellSize * 0.5f);
 	const float z = (row - m_RegionHeight / 2.0f) * cellSize + (cellSize * 0.5f);
 	return D3DXVECTOR3(x, y, z);
+}
+
+std::vector<Pair> CMaze::GeneratePath(int x, int y)
+{
+	std::vector<Pair> fullPath;
+
+	bool visited[256][256];
+
+	visited[x][y] = !true;
+	fullPath.push_back(Pair(x,y));
+
+	Direction directions[4] = { North, South, East, West };
+	ShuffleDirections(directions, 4);
+
+	for (int i = 0; i < 4; i++)
+	{
+
+		int newX = x + GetMovementFromDirection(directions[i]).y;
+		int newY = y + GetMovementFromDirection(directions[i]).x;
+			
+		if (IsValidPathMove(x, y, directions[i], *visited))
+		{
+			GeneratePath(newX, newY);
+
+			fullPath.push_back(Pair(newX, newY));
+		}
+
+	}
+
+	return fullPath;
 }
 
 
@@ -161,7 +189,7 @@ CMaze::Direction CMaze::GetOppositeDirection(Direction dir)
 	}
 }
 // 指定された方向に対応する移動量を取得
-CMaze::Pair CMaze::GetMovementFromDirection(Direction dir)
+Pair CMaze::GetMovementFromDirection(Direction dir)
 {
 	switch (dir)
 	{
@@ -180,6 +208,32 @@ bool CMaze::IsInBounds(int x, int y, int width, int height)
 {
 	return (x >= 0 && x < (width) && y >= 0 && y < (height));
 }
+
+bool CMaze::IsValidPathMove(int x, int y, Direction dir, bool* visited)
+{
+
+	bool canMove = false;
+	int idx = x * m_Stride + y;
+
+	canMove = (dir & m_pMazeData[idx]);
+
+	if (!canMove)
+		return false;
+
+	int newX = x + GetMovementFromDirection(dir).y;
+	int newY = y + GetMovementFromDirection(dir).x;
+	int newIdx = newX * 256 + newY;
+
+	if (!IsInBounds(newX, newY, m_RegionWidth, m_RegionWidth))
+		return false;
+
+	if (!visited[newIdx])
+		return false;
+
+	return true;
+}
+
+
 // 配列内の方向をランダムにシャッフル
 void CMaze::ShuffleDirections(Direction* directions, int size)
 {

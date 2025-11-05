@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 class CMaze
 {
 
@@ -12,11 +14,6 @@ public:
 		West = 8
 	};
 
-	struct Pair
-	{
-		int x;
-		int y;
-	};
 
 
 	static void ClampStart(int& startX, int& startY, int regionWidth, int regionHeight);
@@ -35,18 +32,22 @@ public:
 	D3DXVECTOR3 CellToWorld(int cellIndex, float y = 0.f, float cellSize = 4.0f) const;
 	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.f, float cellSize = 4.0f) const;
 
+	std::vector<Pair> GeneratePath(int x, int y);
+
 	static void GenerateMaze(int* out, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
 
 private:
 
 	static void CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth, int regionHeight);
 	static void CarveEntrances(int* maze, int stride, int regionWidth, int regionHeight);
-	//static void FindTwoFurthestPoints(int* maze, int stride, int regionWidth, int regionHeight, Pair& outPointA, Pair& outPointB);
 	static void BuildMazeBorders(int* maze, int stride, int regionWidth, int regionHeight);
+	
 	static Direction GetOppositeDirection(Direction dir);
 	static Pair GetMovementFromDirection(Direction dir);
-	static bool IsInBounds(int x, int y, int width, int height);
 	static void ShuffleDirections(Direction* directions, int size);
+	
+	static bool IsInBounds(int x, int y, int width, int height);
+	bool IsValidPathMove(int x, int y, Direction dir, bool* visited);
 
 private: 
 

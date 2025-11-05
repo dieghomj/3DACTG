@@ -87,7 +87,7 @@ void CTest::Create()
 	// ÉSÅ[ÉXÉgçÏê¨
 	for (int i = 0; i < 4; ++i)
 	{
-		m_pGhostList[i] = new CGhost(*m_pMazeGen);
+		m_pGhostList[i] = new CGhost(m_pMazeGen->GeneratePath((m_MazeCellH - 1) - i, i));
 	}
 	
 	m_pDbgCollider = new CDebugColliderRender();
@@ -137,7 +137,6 @@ HRESULT CTest::LoadData()
 	for(int i = 0; i < 4; ++i)
 	{
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
-		m_pGhostList[i]->SetPosition(m_pMazeGen->CellToWorldRC((m_MazeCellH - 1) - i, i, 1.f));
 		m_pGhostList[i]->SetScale(0.09f);
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
@@ -198,7 +197,11 @@ void CTest::Update()
 
 	for (int i = 0; i < 4; ++i)
 	{
+		int r = m_pGhostList[i]->GetCurrentRow();
+		int c = m_pGhostList[i]->GetCurrentCol();
+
 		m_pGhostList[i]->Update();
+		m_pGhostList[i]->SetPosition(m_pMazeGen->CellToWorldRC(r, c));
 	}
 
 	for (auto& wall : m_pWalls)

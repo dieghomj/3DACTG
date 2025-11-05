@@ -65,3 +65,9 @@ struct FOG {
 	float		Density;	//フォグ密度(指数関数フォグ用).
 	int			Mode;		//フォグの種類(線形,指数関数,指数関数2乗).
 };
+
+struct Pair
+{
+	int x;
+	int y;
+};
