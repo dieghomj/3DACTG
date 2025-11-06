@@ -43,7 +43,19 @@ private:
 	
 
 	CStaticMesh* m_pWallStaticMesh;
-	std::vector<CStaticMeshObject*> m_pWalls;
+
+	CStaticMesh* m_pSewerLineMesh;
+	CStaticMesh* m_pSewerTurnMesh;
+	CStaticMesh* m_pSewerTJunctionMesh;
+	CStaticMesh* m_pSewerCrossMesh;
+	CStaticMesh* m_pSewerEndMesh;
+
+	std::vector<CStaticMeshObject*> m_pMazeMeshObjArray;
+
+
+	CMiniMapTexture* m_pMiniMap;
+	CSprite2D* m_pMiniMapSprite;
+	CUIObject* m_pMiniMapUI;
 
 	CPlayer* m_pPlayer;
 	

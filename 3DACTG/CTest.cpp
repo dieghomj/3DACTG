@@ -29,6 +29,17 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_MazeStride(64)
 	, m_wallSize(4.0f)
 	// –À˜H‚Ì•ÇƒŠƒXƒg
+
+	, m_pMazeMeshObjArray	()
+	, m_pSewerLineMesh		(nullptr)
+	, m_pSewerTJunctionMesh	(nullptr)
+	, m_pSewerCrossMesh		(nullptr)
+	, m_pSewerTurnMesh		(nullptr)
+	, m_pSewerEndMesh		(nullptr)
+	, m_pWallStaticMesh		(nullptr)
+	, m_pMiniMapUI			(nullptr)
+	, m_pMiniMapSprite		(nullptr)
+	, m_pMiniMap			(nullptr)
 	, m_pWalls()
 	, m_pWallStaticMesh(nullptr)
 	, m_pMiniMapUI(nullptr)
@@ -49,11 +60,11 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 CTest::~CTest()
 {
-	for (auto& wall : m_pWalls)
+	for (auto& wall : m_pMazeMeshObjArray)
 	{
 		delete wall;
 	}
-	m_pWalls.clear();
+	m_pMazeMeshObjArray.clear();
 
 	delete m_pWallStaticMesh;
 	m_pWallStaticMesh = nullptr;
@@ -87,6 +98,12 @@ void CTest::Create()
 	// •ÇƒƒbƒVƒ…ì¬
 	m_pWallStaticMesh = new CStaticMesh();
 
+	m_pSewerLineMesh = new CStaticMesh();
+	m_pSewerTJunctionMesh = new CStaticMesh();
+	m_pSewerCrossMesh = new CStaticMesh();
+	m_pSewerTurnMesh = new CStaticMesh();
+	m_pSewerEndMesh = new CStaticMesh();
+
 	m_pMiniMap = new CMiniMapTexture();
 	m_pMiniMapSprite = new CSprite2D();
 	m_pMiniMapUI = new CUIObject();
@@ -109,6 +126,9 @@ void CTest::Create()
 
 HRESULT CTest::LoadData()
 {
+	HRESULT hr = S_OK;
+
+
 	if (FAILED(m_SDFText->Init(*m_pDx11)))
 	{
 		return E_FAIL;
@@ -120,6 +140,23 @@ HRESULT CTest::LoadData()
 	{
 		return E_FAIL;
 	}
+
+	
+	m_pSewerLineMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Sewer\\sewer_01.x"));
+	m_pSewerTurnMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Sewer\\sewer_02.x"));
+	m_pSewerTJunctionMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Sewer\\sewer_03.x"));
+	m_pSewerCrossMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Sewer\\sewer_04.x"));
+	m_pSewerEndMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Static\\Sewer\\sewer_05.x"));
 
 	if (FAILED(m_pWallStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -154,6 +191,39 @@ HRESULT CTest::LoadData()
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 
+
+	CStaticMeshObject* pSewerLine = new CStaticMeshObject();
+	CStaticMeshObject* pSewerTurn = new CStaticMeshObject();
+	CStaticMeshObject* pSewerTJunc = new CStaticMeshObject();
+	CStaticMeshObject* pSewerCross = new CStaticMeshObject();
+	CStaticMeshObject* pSewerEnd = new CStaticMeshObject();
+
+	CStaticMeshObject* pNorthObj = new CStaticMeshObject();
+
+	//pNorthObj->AttachMesh(*m_pSewerLineMesh);
+	//pNorthObj->SetPosition(0, 0, 50);
+	//pNorthObj->SetRotation(D3DX_PI / 2.0f, 0, 0);
+	//pNorthObj->SetScale(5.0f);
+	//m_pMazeMeshObjArray.push_back(pNorthObj);
+
+	//pSewerLine->AttachMesh(*m_pSewerLineMesh);
+	//pSewerTurn->AttachMesh(*m_pSewerTurnMesh);
+	//pSewerTJunc->AttachMesh(*m_pSewerTJunctionMesh);
+	//pSewerCross->AttachMesh(*m_pSewerCrossMesh);
+	//pSewerEnd->AttachMesh(*m_pSewerEndMesh);
+
+	//pSewerLine->SetPosition		(0, 5, 0);
+	//pSewerTurn->SetPosition		(15, 5, 0);
+	//pSewerTJunc->SetPosition	(15*2, 5, 0);
+	//pSewerCross->SetPosition	(15*3, 5, 0);
+	//pSewerEnd->SetPosition		(15*4, 5, 0);
+
+	//m_pMazeMeshObjArray.push_back(pSewerLine);
+	//m_pMazeMeshObjArray.push_back(pSewerTurn);
+	//m_pMazeMeshObjArray.push_back(pSewerTJunc);
+	//m_pMazeMeshObjArray.push_back(pSewerCross);
+	//m_pMazeMeshObjArray.push_back(pSewerEnd);
+
 	return S_OK;
 
 }
@@ -166,11 +236,11 @@ void CTest::Release()
 void CTest::Start()
 {
 	// ŠÂ‹«Ý’è
-	m_GlobalLight.fIntensity = 0.3f;
+	m_GlobalLight.fIntensity = 1.0f;
 
-	m_Fog.Color = D3DXVECTOR4(0.2f, 0.01f, 0.01f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.036f, 0.043f, 0.035f, 1.0f);
 	m_Fog.Enable = m_bFog;
-	m_Fog.Mode = D3DFOG_EXP;
+	m_Fog.Mode = D3DFOG_EXP2;
 	m_Fog.Start = 20.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
@@ -230,7 +300,7 @@ void CTest::Update()
 		m_pGhostList[i]->SetPosition(m_pMazeGen->CellToWorldRC(r, c));
 	}
 
-	for (auto& wall : m_pWalls)
+	for (auto& wall : m_pMazeMeshObjArray)
 	{
 		wall->Update();
 	}
@@ -250,7 +320,7 @@ void CTest::Draw()
 
 	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
-	for (auto& wall : m_pWalls)
+	for (auto& wall : m_pMazeMeshObjArray)
 	{
 		wall->UpdateCollider();
 		wall->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
@@ -265,7 +335,7 @@ void CTest::Draw()
 	if (m_pDbgCollider && m_ShowCollider)
 	{
 		m_pDx11->SetDepth(false);
-		for (auto& wall : m_pWalls)
+		for (auto& wall : m_pMazeMeshObjArray)
 		{
 			if (auto* col = wall->GetCollider())
 			{
@@ -309,6 +379,165 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 		for (int j = 0; j < regionWidth; ++j)
 		{
 			// •Ç‚ÌˆÊ’uŒvŽZ
+			float x = j  * 12 ;	// XÀ•W
+			float z = i  * 12 ; // ZÀ•W
+
+			unsigned bitCount = __popcnt(m_pMazeData[i][j]);
+			int mazeData = m_pMazeData[i][j];
+
+ 			switch (bitCount)
+			{
+			case 1: //ƒGƒ“ƒh˜H
+			{
+				if ((mazeData & CMaze::North))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerEndMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, 0, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if ((mazeData & CMaze::East))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerEndMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, -D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if ((mazeData & CMaze::South))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerEndMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if ((mazeData & CMaze::West))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerEndMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+
+				break;
+			}
+
+			case 2:
+			{
+				//’¼Ú˜H
+				if (!(mazeData & (CMaze::North | CMaze::South)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerLineMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				else if (!(mazeData & (CMaze::East | CMaze::West)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerLineMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, 0, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				//‹È‚ª‚è˜H
+				else if (!(mazeData & (CMaze::North | CMaze::East)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTurnMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				else if (!(mazeData & (CMaze::East | CMaze::South)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTurnMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, 0, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				else if (!(mazeData & (CMaze::South | CMaze::West)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTurnMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, -D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				else if (!(mazeData & (CMaze::West | CMaze::North)))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTurnMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+				}
+				break;
+			}
+			case 3:
+			{
+				// TŽš˜H
+				if (!(mazeData & CMaze::North))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTJunctionMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if (!(mazeData & CMaze::East))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTJunctionMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, 0, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if (!(mazeData & CMaze::South))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTJunctionMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, -D3DX_PI / 2.0f, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				if (!(mazeData & CMaze::West))
+				{
+					CStaticMeshObject* sewer = new CStaticMeshObject();
+					sewer->AttachMesh(*m_pSewerTJunctionMesh);
+					sewer->SetPosition(x, wallHeight, z);
+					sewer->SetRotation(0, D3DX_PI, 0);
+					m_pMazeMeshObjArray.push_back(sewer);
+					break;
+				}
+				break;
+			}
+			case 4:
+			{
+				// \Žš˜H
+				CStaticMeshObject* sewer = new CStaticMeshObject();
+				sewer->AttachMesh(*m_pSewerCrossMesh);
+				sewer->SetPosition(x, wallHeight, z);
+				m_pMazeMeshObjArray.push_back(sewer);
+				break;
+			}
+
+			default:
+				break;
+			}
+
 			float x = (j - regionWidth / 2.0f) * m_wallSize + (m_wallSize / 2.0f);	// XÀ•W
 			float z = -(i - regionHeight / 2.0f) * m_wallSize - (m_wallSize / 2.0f); // ZÀ•W
 
@@ -327,7 +556,7 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x - m_wallSize / 2.0f, wallHeight, z);// ¼‚Ì•Ç
 				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
-				m_pWalls.push_back(wall);
+				m_pMazeMeshObjArray.push_back(wall);
 			}
 
 			// “ì‚Ì•Ç‚ð’Ç‰Á
@@ -345,24 +574,25 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x + m_wallSize / 2.0f, wallHeight, z); // “Œ‚Ì•Ç
 				wall->SetRotation(0, D3DX_PI / 2.0f, 0);
-				m_pWalls.push_back(wall);
+				m_pMazeMeshObjArray.push_back(wall);
 			}
+#endif
 		}
 	}
-
-	for (int i = 0; i < m_pWalls.size(); ++i)
+	
+	for(int i = 0; i < m_pMazeMeshObjArray.size(); ++i)
 	{
-		m_pWalls[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		m_pMazeMeshObjArray[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 }
 
 void CTest::ClearMaze()
 {
-	for (auto& wall : m_pWalls)
+	for (auto& wall : m_pMazeMeshObjArray)
 	{
 		delete wall;
 	}
-	m_pWalls.clear();
+	m_pMazeMeshObjArray.clear();
 }
 
 void CTest::DrawTextMinimap()
