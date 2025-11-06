@@ -11,6 +11,9 @@
 #include "CGhost.h"
 #include "CMaze.h"
 
+#define MAZE_H 64
+#define MAZE_W 64
+
 class CTest : public CScene
 {
 public:
@@ -25,9 +28,12 @@ public:
 	void Draw() override;
 
 private:
-	void GenerateMaze(int regionHeight, int regionWidth, int stride);
+
+	void GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
-	void DrawTextMinimap(int startX, int startY, int cell, int font, int wallSize);
+	Pair NextMazePosition();
+	Pair WorldToMazeCoords(const D3DXVECTOR3& worldPos);
+	void DrawTextMinimap();
 
 private:
 
@@ -38,10 +44,6 @@ private:
 
 	CStaticMesh* m_pWallStaticMesh;
 	std::vector<CStaticMeshObject*> m_pWalls;
-	CMiniMapTexture* m_pMiniMap;
-	CSprite2D* m_pMiniMapSprite;
-	CUIObject* m_pMiniMapUI;
-
 
 	CPlayer* m_pPlayer;
 	
@@ -53,9 +55,18 @@ private:
 	bool m_bFog = false;
 
 	//–À˜H
+	int					m_pMazeData[MAZE_H][MAZE_W];
 	CMaze* m_pMazeGen;
-	int m_pMazeData[64][64] = { 0 };
-	const int m_MazeCellW;
-	const int m_MazeCellH;
-	const int m_MazeStride;
+	int					m_MazeCellH;
+	int					m_MazeCellW;
+	int					m_MazeStride;
+	float				m_wallSize;
+
+	CUIObject*			m_pMiniMapUI;
+	CSprite2D*			m_pMiniMapSprite;
+	CMiniMapTexture*	m_pMiniMap;
+	int					m_miniMapStartX;
+	int					m_miniMapStartY;
+	int					m_miniMapCellSize;
+	int					m_miniMapFontSize;
 };

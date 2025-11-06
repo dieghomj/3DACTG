@@ -8,9 +8,9 @@ CGhost::CGhost()
 }
 
 CGhost::CGhost(std::vector<Pair> path)
-	: CCharacter()
+	: CCharacter	()
 	, m_pathStep	(0)
-	, m_pPath		(path)
+	, m_StepList	(path)
 	, m_CurrentCol	(path[0].x)
 	, m_CurrentRow	(path[0].y)
 {
@@ -19,7 +19,7 @@ CGhost::CGhost(std::vector<Pair> path)
 
 CGhost::~CGhost()
 {
-
+	m_StepList.clear();
 }
 
 void CGhost::Update()
@@ -28,18 +28,18 @@ void CGhost::Update()
 
 	Pair prevCell = { m_CurrentCol, m_CurrentRow};
 
- 	if (m_pPath.empty())
+ 	if (m_StepList.empty())
 		return;
 	
 	if(moveTime >= moveSpeed)
 		m_pathStep++;
 	
-	if (m_pathStep >= m_pPath.size()) {
+	if (m_pathStep >= m_StepList.size()) {
 		m_pathStep = 0;
 	}
 
-	m_CurrentCol = m_pPath[m_pathStep].x;
-	m_CurrentRow = m_pPath[m_pathStep].y;
+	m_CurrentCol = m_StepList[m_pathStep].x;
+	m_CurrentRow = m_StepList[m_pathStep].y;
 
 	moveTime += 1000.0f / FPS;
 
@@ -51,5 +51,11 @@ void CGhost::Update()
 void CGhost::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
 	CCharacter::Draw(View, Proj, Light, Camera, Fog);
+}
+
+void CGhost::SetPath(std::vector<Pair> path)
+{
+	m_StepList = path;
+	m_pathStep = 0;
 }
 

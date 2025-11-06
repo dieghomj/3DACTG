@@ -33,6 +33,7 @@ public:
 	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.f, float cellSize = 4.0f) const;
 
 	std::vector<Pair> GeneratePath(int x, int y);
+	void GenerateMaze(int startX, int startY);
 
 	static void GenerateMaze(int* out, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
 

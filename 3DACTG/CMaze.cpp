@@ -22,6 +22,15 @@ CMaze::CMaze(int* pMaze, int stride, int regionWidth, int regionHeight, int star
 
 CMaze::~CMaze()
 {
+
+	if (m_pMazeData != nullptr)
+	{
+		delete m_pMazeData;
+		m_pMazeData = nullptr;
+	}
+
+
+
 }
 
 D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, float y, float cellSize) const
@@ -44,7 +53,7 @@ D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, float y, float cellSize) cons
 	if (col >= m_RegionWidth) col = m_RegionWidth - 1;
 
 	const float x = (col - m_RegionWidth / 2.0f) * cellSize + (cellSize * 0.5f);
-	const float z = (row - m_RegionHeight / 2.0f) * cellSize + (cellSize * 0.5f);
+	const float z = -(row - m_RegionHeight / 2.0f) * cellSize - (cellSize * 0.5f);
 	return D3DXVECTOR3(x, y, z);
 }
 
@@ -58,6 +67,7 @@ std::vector<Pair> CMaze::GeneratePath(int x, int y)
 	const int w = m_RegionWidth;
 	const int h = m_RegionHeight;
 
+	//using smart pointer
 	std::unique_ptr<bool[]> visited(new bool[w * h]());
 	auto toIndex = [w](int cx, int cy) { return cy * w + cx; };
 	std::vector<Pair> st;
@@ -103,7 +113,13 @@ std::vector<Pair> CMaze::GeneratePath(int x, int y)
 			}
 		}
 	}
+
 	return fullPath;
+}
+
+void CMaze::GenerateMaze(int startX, int startY)
+{
+	GenerateMaze(m_pMazeData, m_Stride, m_RegionWidth, m_RegionHeight, startX, startY);
 }
 
 
@@ -119,10 +135,6 @@ void CMaze::GenerateMaze(int* out, int stride, int regionWidth, int regionHeight
 	ClampStart(startX, startY, regionWidth, regionHeight);
 	// 通路を掘る
 	CarvePassages(startX, startY, out, stride, regionWidth, regionHeight);
-
-	BuildMazeBorders(out, stride, regionWidth, regionHeight);
-
-	CarveEntrances(out,stride,regionWidth,regionHeight);
 
 }
 
@@ -193,8 +205,8 @@ void CMaze::CarvePassages(int cx, int cy, int* maze, int stride, int regionWidth
 			continue;
 
 		// 現在のセルと隣接セルの間の壁を取り除く
-		maze[curIdx] |= dir;
-		maze[nextIdx] |= GetOppositeDirection(dir);
+		maze[curIdx]	|= dir;
+		maze[nextIdx]	|= GetOppositeDirection(dir);
 
 		CarvePassages(nx, ny, maze, stride, regionWidth, regionHeight);
 	}
@@ -251,18 +263,13 @@ bool CMaze::IsValidPathMove(int x, int y, Direction dir, const bool* visited)
 	const Pair d = GetMovementFromDirection(dir);
 	const int nx = x + d.x;
 	const int ny = y + d.y;
+
 	if (!IsInBounds(nx, ny, m_RegionWidth, m_RegionHeight))
 		return false;
 
 	// 移動先が未訪問か
 	const int nvi = ny * m_RegionWidth + nx;
 	if (visited[nvi])
-		return false;
-
-	// 移動先セルの反対方向の通路も開いているか（双方向チェック）
-	const int nextIdx = ny * m_Stride + nx;
-	const Direction back = GetOppositeDirection(dir);
-	if ((m_pMazeData[nextIdx] & back) == 0)
 		return false;
 
 	return true;

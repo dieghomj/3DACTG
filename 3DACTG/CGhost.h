@@ -15,6 +15,7 @@ public:
 	void Update();
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog);
 
+	void SetPath(std::vector<Pair> path);
 	int GetCurrentRow() const { return m_CurrentRow; }
 	int GetCurrentCol() const { return m_CurrentCol; }
 
@@ -26,7 +27,7 @@ private:
 	int m_CurrentRow;
 	int m_CurrentCol;
 	
-	std::vector<Pair> m_pPath;
+	std::vector<Pair> m_StepList;
 	int m_pathStep;
 
 	float moveSpeed = 450.0f;
