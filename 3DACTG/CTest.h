@@ -52,11 +52,6 @@ private:
 
 	std::vector<CStaticMeshObject*> m_pMazeMeshObjArray;
 
-
-	CMiniMapTexture* m_pMiniMap;
-	CSprite2D* m_pMiniMapSprite;
-	CUIObject* m_pMiniMapUI;
-
 	CPlayer* m_pPlayer;
 	
 	CStaticMesh* m_pGhostMesh;
