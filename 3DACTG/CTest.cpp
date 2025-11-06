@@ -352,12 +352,13 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			float z = i  * 12 ; // Z座標
 
 			unsigned bitCount = __popcnt(m_pMazeData[i][j]);
+			int mazeData = m_pMazeData[i][j];
 
  			switch (bitCount)
 			{
-			case 1:
+			case 1: //エンド路
 			{
-				if ((m_pMazeData[i][j] & CMaze::North))
+				if ((mazeData & CMaze::North))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerEndMesh);
@@ -366,7 +367,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if ((m_pMazeData[i][j] & CMaze::East))
+				if ((mazeData & CMaze::East))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerEndMesh);
@@ -375,7 +376,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if ((m_pMazeData[i][j] & CMaze::South))
+				if ((mazeData & CMaze::South))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerEndMesh);
@@ -384,7 +385,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if ((m_pMazeData[i][j] & CMaze::West))
+				if ((mazeData & CMaze::West))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerEndMesh);
@@ -399,7 +400,8 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 
 			case 2:
 			{
-				if (!(m_pMazeData[i][j] & (CMaze::North | CMaze::South)))
+				//直接路
+				if (!(mazeData & (CMaze::North | CMaze::South)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerLineMesh);
@@ -407,7 +409,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
 					m_pMazeMeshObjArray.push_back(sewer);
 				}
-				else if (!(m_pMazeData[i][j] & (CMaze::East | CMaze::West)))
+				else if (!(mazeData & (CMaze::East | CMaze::West)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerLineMesh);
@@ -415,7 +417,8 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					sewer->SetRotation(0, 0, 0);
 					m_pMazeMeshObjArray.push_back(sewer);
 				}
-				else if (!(m_pMazeData[i][j] & (CMaze::North | CMaze::East)))
+				//曲がり路
+				else if (!(mazeData & (CMaze::North | CMaze::East)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTurnMesh);
@@ -423,7 +426,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					sewer->SetRotation(0, D3DX_PI / 2.0f, 0);
 					m_pMazeMeshObjArray.push_back(sewer);
 				}
-				else if (!(m_pMazeData[i][j] & (CMaze::East | CMaze::South)))
+				else if (!(mazeData & (CMaze::East | CMaze::South)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTurnMesh);
@@ -431,7 +434,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					sewer->SetRotation(0, 0, 0);
 					m_pMazeMeshObjArray.push_back(sewer);
 				}
-				else if (!(m_pMazeData[i][j] & (CMaze::South | CMaze::West)))
+				else if (!(mazeData & (CMaze::South | CMaze::West)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTurnMesh);
@@ -439,7 +442,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					sewer->SetRotation(0, -D3DX_PI / 2.0f, 0);
 					m_pMazeMeshObjArray.push_back(sewer);
 				}
-				else if (!(m_pMazeData[i][j] & (CMaze::West | CMaze::North)))
+				else if (!(mazeData & (CMaze::West | CMaze::North)))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTurnMesh);
@@ -452,7 +455,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			case 3:
 			{
 				// T字路
-				if (!(m_pMazeData[i][j] & CMaze::North))
+				if (!(mazeData & CMaze::North))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTJunctionMesh);
@@ -461,7 +464,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if (!(m_pMazeData[i][j] & CMaze::East))
+				if (!(mazeData & CMaze::East))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTJunctionMesh);
@@ -470,7 +473,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if (!(m_pMazeData[i][j] & CMaze::South))
+				if (!(mazeData & CMaze::South))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTJunctionMesh);
@@ -479,7 +482,7 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 					m_pMazeMeshObjArray.push_back(sewer);
 					break;
 				}
-				if (!(m_pMazeData[i][j] & CMaze::West))
+				if (!(mazeData & CMaze::West))
 				{
 					CStaticMeshObject* sewer = new CStaticMeshObject();
 					sewer->AttachMesh(*m_pSewerTJunctionMesh);
@@ -507,14 +510,14 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 
 #if 0
 			// 壁を追加
-			if (!(m_pMazeData[i][j] & CMaze::North) )
+			if (!(mazeData & CMaze::North) )
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z - wallSize / 2.0f); // 北の壁
 				m_pMazeMeshObjArray.push_back(wall);
 			}
-			if (!(m_pMazeData[i][j] & CMaze::West))
+			if (!(mazeData & CMaze::West))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
@@ -524,14 +527,14 @@ void CTest::GenerateMaze(int regionHeight, int regionWidth, int stride)
 			}
 
 			// 端の壁を追加
-			if (i == (regionHeight - 1) && !(m_pMazeData[i][j] & CMaze::South))
+			if (i == (regionHeight - 1) && !(mazeData & CMaze::South))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
 				wall->SetPosition(x, wallHeight, z + wallSize / 2.0f); // 南の壁
 				m_pMazeMeshObjArray.push_back(wall);
 			}
-			if (j == (regionWidth - 1) && !(m_pMazeData[i][j] & CMaze::East))
+			if (j == (regionWidth - 1) && !(mazeData & CMaze::East))
 			{
 				CStaticMeshObject* wall = new CStaticMeshObject();
 				wall->AttachMesh(*m_pWallStaticMesh);
@@ -615,8 +618,8 @@ void CTest::DrawTextMinimap(int startX, int startY, int cell, int font, int wall
 	{
 		D3DXVECTOR3 ppos = m_pPlayer->GetPosition();
 		// ワールド座標 -> グリッド座標変換
-		int px = static_cast<int>((ppos.x) / regionW);
-		int pz = static_cast<int>((ppos.z) / regionH );
+		int px = static_cast<int>((ppos.x) / (regionW));
+		int pz = static_cast<int>((ppos.z) / (regionH));
 		px = max(0, min(regionW - 1, px));
 		pz = max(0, min(regionH - 1, pz));
 
