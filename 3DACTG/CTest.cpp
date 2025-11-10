@@ -17,6 +17,7 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 	// プレイヤー関連
 	, m_pPlayer				(nullptr)
+	, m_pWomanMesh			(nullptr)
 
 	// ゴースト関連
 	, m_pGhostList			()
@@ -111,6 +112,7 @@ void CTest::Create()
 
 	// プレイヤー作成
 	m_pPlayer = new CPlayer();
+	m_pWomanMesh = new CStaticMesh();
 
 	// ゴーストメッシュ作成
 	m_pGhostMesh = new CStaticMesh();
@@ -133,6 +135,10 @@ HRESULT CTest::LoadData()
 	{
 		return E_FAIL;
 	}
+
+	m_pWomanMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Skin\\Woman\\PSXVillageWoman.x"));
 
 	if (FAILED(m_pGroundStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -181,6 +187,7 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
+	//m_pPlayer->AttachMesh(*m_pWomanMesh);
 	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0, 5.0f));
 
 	for(int i = 0; i < ENEMY_COUNT; ++i)
@@ -189,7 +196,6 @@ HRESULT CTest::LoadData()
 		m_pGhostList[i]->SetScale(0.09f);
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
-
 
 	CStaticMeshObject* pSewerLine = new CStaticMeshObject();
 	CStaticMeshObject* pSewerTurn = new CStaticMeshObject();
@@ -220,7 +226,7 @@ void CTest::Start()
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 
-	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
 
 void CTest::Update()
@@ -286,6 +292,8 @@ void CTest::Draw()
 {
 
 	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+
+	m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
 
 	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 

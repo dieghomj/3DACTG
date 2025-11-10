@@ -53,6 +53,7 @@ private:
 	std::vector<CStaticMeshObject*> m_pMazeMeshObjArray;
 
 	CPlayer* m_pPlayer;
+	CStaticMesh* m_pWomanMesh;
 	
 	CStaticMesh* m_pGhostMesh;
 	CBaseEnemy* m_pGhostList[16];

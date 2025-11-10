@@ -74,11 +74,11 @@ void CPlayer::RadioControl()
 		break;
 	}
 	//ã‹L‚ÌˆÚ“®ˆ—‚ªI‚í‚ê‚Î’â~ó‘Ô‚É‚µ‚Ä‚¨‚­
-	m_MoveState = MoveState::Stop;
+	m_MoveState = MoveState::Stop; 
 }
 
 void CPlayer::HandleInput()
-{
+{ 
 	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
 		m_MoveState = MoveState::Forward;
 	}
