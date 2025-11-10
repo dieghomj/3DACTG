@@ -185,6 +185,7 @@
     <ClCompile Include="CStaticMesh.cpp" />
     <ClCompile Include="CStaticMeshObject.cpp" />
     <ClCompile Include="CTest.cpp" />
+    <ClCompile Include="CMenu.cpp" />
     <ClCompile Include="CTime.cpp" />
     <ClCompile Include="CUIObject.cpp" />
     <ClCompile Include="CPlayer.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="CStaticMesh.h" />
     <ClInclude Include="CStaticMeshObject.h" />
     <ClInclude Include="CTest.h" />
+    <ClInclude Include="CMenu.h" />
     <ClInclude Include="CTime.h" />
     <ClInclude Include="CUIObject.h" />
     <ClInclude Include="Global.h" />

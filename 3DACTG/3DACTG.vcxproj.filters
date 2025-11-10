@@ -84,6 +84,9 @@
     <ClCompile Include="CTest.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="CMenu.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="WinMain.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -194,6 +197,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CMenu.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="CFont.h">
