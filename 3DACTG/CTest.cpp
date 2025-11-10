@@ -135,7 +135,6 @@ HRESULT CTest::LoadData()
 	{
 		return E_FAIL;
 	}
-
 	
 	m_pSewerLineMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -241,7 +240,6 @@ void CTest::Start()
 	m_Fog.Density = 0.08f;
 
 	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
-
 }
 
 void CTest::Update()
@@ -278,7 +276,7 @@ void CTest::Update()
 	if (GetAsyncKeyState('C') & 0x0001)
 	{
 		Pair np = NextMazePosition();
-		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, 15.0f));
+		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, m_wallSize * m_MazeCellW));
 	}
 
 
@@ -396,17 +394,17 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 					CStaticMeshObject* wall = new CStaticMeshObject();
 					wall->AttachMesh(*m_pSewerTJunctionMesh);
 					wall->SetPosition(x, wallHeight, z);
-					if (mazeData & CMaze::North)
-					{
-						wall->SetRotation(0, D3DX_PI, 0);
-					}
-					else if (mazeData & CMaze::West)
+					if (!(mazeData & CMaze::North))
 					{
 						wall->SetRotation(0, -D3DX_PI / 2.0f, 0);
 					}
-					else if (mazeData & CMaze::East)
+					else if (!(mazeData & CMaze::South))
 					{
 						wall->SetRotation(0, D3DX_PI / 2.0f, 0);
+					}
+					else if (!(mazeData & CMaze::West))
+					{
+						wall->SetRotation(0, D3DX_PI, 0);
 					}
 					m_pMazeMeshObjArray.push_back(wall);
 					break;
@@ -436,15 +434,15 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 						wall->SetPosition(x, wallHeight, z);
 						if (mazeData & CMaze::North && mazeData & CMaze::East)
 						{
-							wall->SetRotation(0, D3DX_PI / 2.0f, 0);
+							wall->SetRotation(0, D3DX_PI, 0);
 						}
 						else if (mazeData & CMaze::East && mazeData & CMaze::South)
 						{
-							wall->SetRotation(0, D3DX_PI, 0);
-						}
-						else if (mazeData & CMaze::South && mazeData & CMaze::West)
-						{
 							wall->SetRotation(0, -D3DX_PI / 2.0f, 0);
+						}
+						else if (mazeData & CMaze::North && mazeData & CMaze::West)
+						{
+							wall->SetRotation(0, D3DX_PI / 2.0f, 0);
 						}
 						m_pMazeMeshObjArray.push_back(wall);
 					}
@@ -458,19 +456,19 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 					wall->SetPosition(x, wallHeight, z);
 					if (mazeData & CMaze::North)
 					{
-						wall->SetRotation(0, 0, 0);
+						wall->SetRotation(0, D3DX_PI, 0);
 					}
 					else if (mazeData & CMaze::West)
 					{
-						wall->SetRotation(0, -D3DX_PI / 2.0f, 0);
+						wall->SetRotation(0, D3DX_PI / 2.0f, 0);
 					}
 					else if (mazeData & CMaze::South)
 					{
-						wall->SetRotation(0, D3DX_PI, 0);
+						wall->SetRotation(0, 0, 0);
 					}
 					else if (mazeData & CMaze::East)
 					{
-						wall->SetRotation(0, D3DX_PI / 2.0f, 0);
+						wall->SetRotation(0, -D3DX_PI / 2.0f, 0);
 					}
 					m_pMazeMeshObjArray.push_back(wall);
 					break;
