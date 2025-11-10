@@ -3,28 +3,28 @@
 #include "CScene.h"
 #include "CSceneManager.h"
 
-//ï¿½Nï¿½ï¿½ï¿½Xï¿½Ì‘Oï¿½ï¿½ï¿½éŒ¾.
+//ƒNƒ‰ƒX‚Ì‘O•ûéŒ¾.
 class CDirectX9;
 class CDirectX11;
 class CTest;
 class CMenu;
 
 /**************************************************
-*	ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X.
+*	ƒƒCƒ“ƒNƒ‰ƒX.
 **/
 class CMain
 {
 public:
-	CMain();	//ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^.
-	~CMain();	//ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^.
+	CMain();	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+	~CMain();	//ƒfƒXƒgƒ‰ƒNƒ^.
 
-	void Update();		//ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½.
-	HRESULT Create();	//ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½.
-	HRESULT LoadData();	//ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½.
-	void Release();		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
-	void Loop();		//ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½v.
+	void Update();		//XVˆ—.
+	HRESULT Create();	//\’zˆ—.
+	HRESULT LoadData();	//ƒf[ƒ^ƒ[ƒhˆ—.
+	void Release();		//‰ğ•úˆ—.
+	void Loop();		//ƒƒCƒ“ƒ‹[ƒv.
 
-	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½.
+	//ƒEƒBƒ“ƒhƒE‰Šú‰»ŠÖ”.
 	HRESULT InitWindow(
 		HINSTANCE hInstance,
 		INT x, INT y,
@@ -33,20 +33,20 @@ public:
 private:
 	static void LockCursorToWindow(HWND hwnd);
 	static void UnlockCursor();
-	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Öï¿½ï¿½iï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½j.
+	//ƒEƒBƒ“ƒhƒEŠÖ”iƒƒbƒZ[ƒW–ˆ‚Ìˆ—j.
 	static LRESULT CALLBACK MsgProc(
 		HWND hWnd, UINT uMsg,
 		WPARAM wParam, LPARAM lParam );
 
 private:
-	HWND			m_hWnd;	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½.
-	CDirectX9*		m_pDx9;	//DirectX9ï¿½Zï¿½bï¿½gï¿½Aï¿½bï¿½vï¿½Nï¿½ï¿½ï¿½X
-	CDirectX11*		m_pDx11;//DirectX11ï¿½Zï¿½bï¿½gï¿½Aï¿½bï¿½vï¿½Nï¿½ï¿½ï¿½X.
+	HWND			m_hWnd;	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹.
+	CDirectX9*		m_pDx9;	//DirectX9ƒZƒbƒgƒAƒbƒvƒNƒ‰ƒX
+	CDirectX11*		m_pDx11;//DirectX11ƒZƒbƒgƒAƒbƒvƒNƒ‰ƒX.
 
-	//ï¿½Vï¿½[ï¿½ï¿½ï¿½Ç—ï¿½ï¿½Nï¿½ï¿½ï¿½X.
+	//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX.
 	CSceneManager*	m_pSceneManager;
 	
-	//ï¿½Vï¿½[ï¿½ï¿½
+	//ƒV[ƒ“
 	CScene*			m_pGame;
 	CScene*			m_pTitle;
 	CScene*			m_pTest;
