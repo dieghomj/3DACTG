@@ -2,15 +2,15 @@
 #include "CCharacter.h"
 #include <vector>
 
-class CGhost :
+class CBaseEnemy :
 	public CCharacter
 {
 
 public:
-	CGhost();
-	CGhost(std::vector<Pair> path);
+	CBaseEnemy();
+	CBaseEnemy(std::vector<Pair> path, int width, int height);
 
-	~CGhost();
+	~CBaseEnemy();
 
 	void Update();
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog);
@@ -20,18 +20,20 @@ public:
 	int GetCurrentCol() const { return m_CurrentCol; }
 
 private:
-
+	void GetNextStep();
 
 private:
 
+	int m_MazeWidth;
+	int m_MazeHeight;
 	int m_CurrentRow;
 	int m_CurrentCol;
 	
 	std::vector<Pair> m_StepList;
 	int m_pathStep;
 
-	float moveSpeed = 450.0f;
-	float moveTime = 0.f;
+	float moveSpeed;
+	float moveTime;
 
 };
 

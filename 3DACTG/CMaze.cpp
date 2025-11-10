@@ -52,8 +52,26 @@ D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, float y, float cellSize) cons
 	if (col < 0) col = 0;
 	if (col >= m_RegionWidth) col = m_RegionWidth - 1;
 
-	const float x = (col - m_RegionWidth / 2.0f) * cellSize + (cellSize * 0.5f);
-	const float z = -(row - m_RegionHeight / 2.0f) * cellSize - (cellSize * 0.5f);
+	const float x = (col - m_RegionWidth ) * cellSize;
+	const float z = -(row - m_RegionHeight ) * cellSize ;
+	return D3DXVECTOR3(x, y, z);
+}
+
+D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, int height, int width, float y, float cellSize)
+{
+
+	return D3DXVECTOR3();
+}
+
+D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, int height, int width, float y, float cellSize)
+{
+	if (row < 0) row = 0;
+	if (row >= height) row = height - 1;
+	if (col < 0) col = 0;
+	if (col >= width) col = width - 1;
+
+	const float x = (col - width) * cellSize;
+	const float z = -(row - height) * cellSize;
 	return D3DXVECTOR3(x, y, z);
 }
 

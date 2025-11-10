@@ -4,7 +4,8 @@
 #include "CDebugColliderRender.h"
 #include <stdio.h>
 
-#define ENEMY_COUNT 4
+#define ENEMY_COUNT 7
+#define SEWER_MESHWIDTH 10.5f 
 
 int currX = 0;
 int currY = 0;
@@ -24,10 +25,10 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	// 迷路関連
 	, m_pMazeData			()
 	, m_pMazeGen			(nullptr)
-	, m_MazeCellH			(4)
-	, m_MazeCellW			(4)
+	, m_MazeCellH			(7)
+	, m_MazeCellW			(7)
 	, m_MazeStride			(64)
-	, m_wallSize			(15.f)
+	, m_MazeCellSize		(1 + SEWER_MESHWIDTH)
 	// 迷路の壁リスト
 
 	, m_pMazeMeshObjArray	()
@@ -60,6 +61,11 @@ CTest::~CTest()
 		delete wall;
 	}
 	m_pMazeMeshObjArray.clear();
+
+	for (auto& ghost : m_pGhostList)
+	{
+		SAFE_DELETE(ghost);
+	}
 
 	delete m_pWallStaticMesh;
 	m_pWallStaticMesh = nullptr;
@@ -111,11 +117,10 @@ void CTest::Create()
 	// ゴースト作成
 	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
-		m_pGhostList[i] = new CGhost(m_pMazeGen->GeneratePath(i, (m_MazeCellH - 1) - i));
+		m_pGhostList[i] = new CBaseEnemy(m_pMazeGen->GeneratePath(i, (m_MazeCellH - 1) - i), m_MazeCellW, m_MazeCellH);
 	}
 	
 	m_pDbgCollider = new CDebugColliderRender();
-
 
 }
 
@@ -192,7 +197,7 @@ HRESULT CTest::LoadData()
 	CStaticMeshObject* pSewerCross = new CStaticMeshObject();
 	CStaticMeshObject* pSewerEnd = new CStaticMeshObject();
 
-	CStaticMeshObject* pNorthObj = new CStaticMeshObject();
+	//CStaticMeshObject* pNorthObj = new CStaticMeshObject();
 
 	//pNorthObj->AttachMesh(*m_pSewerLineMesh);
 	//pNorthObj->SetPosition(0, 0, 50);
@@ -200,23 +205,29 @@ HRESULT CTest::LoadData()
 	//pNorthObj->SetScale(5.0f);
 	//m_pMazeMeshObjArray.push_back(pNorthObj);
 
-	//pSewerLine->AttachMesh(*m_pSewerLineMesh);
-	//pSewerTurn->AttachMesh(*m_pSewerTurnMesh);
-	//pSewerTJunc->AttachMesh(*m_pSewerTJunctionMesh);
-	//pSewerCross->AttachMesh(*m_pSewerCrossMesh);
-	//pSewerEnd->AttachMesh(*m_pSewerEndMesh);
+	pSewerLine->AttachMesh(*m_pSewerLineMesh);
+	pSewerTurn->AttachMesh(*m_pSewerTurnMesh);
+	pSewerTJunc->AttachMesh(*m_pSewerTJunctionMesh);
+	pSewerCross->AttachMesh(*m_pSewerCrossMesh);
+	pSewerEnd->AttachMesh(*m_pSewerEndMesh);
 
-	//pSewerLine->SetPosition		(0, 5, 0);
-	//pSewerTurn->SetPosition		(15, 5, 0);
-	//pSewerTJunc->SetPosition	(15*2, 5, 0);
-	//pSewerCross->SetPosition	(15*3, 5, 0);
-	//pSewerEnd->SetPosition		(15*4, 5, 0);
+	pSewerLine->SetPosition		(0, 5, 0);
+	pSewerTurn->SetPosition		(10.5, 5, 0);
+	pSewerTJunc->SetPosition	(10.5*2, 5, 0);
+	pSewerCross->SetPosition	(10.5*3, 4, 0);
+	pSewerEnd->SetPosition		(10.5*4, 5, 0);
 
-	//m_pMazeMeshObjArray.push_back(pSewerLine);
-	//m_pMazeMeshObjArray.push_back(pSewerTurn);
-	//m_pMazeMeshObjArray.push_back(pSewerTJunc);
-	//m_pMazeMeshObjArray.push_back(pSewerCross);
-	//m_pMazeMeshObjArray.push_back(pSewerEnd);
+	pSewerLine->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	pSewerTurn->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	pSewerTJunc->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	pSewerCross->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	pSewerEnd->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+
+	m_pMazeMeshObjArray.push_back(pSewerLine);
+	m_pMazeMeshObjArray.push_back(pSewerTurn);
+	m_pMazeMeshObjArray.push_back(pSewerTJunc);
+	m_pMazeMeshObjArray.push_back(pSewerCross);
+	m_pMazeMeshObjArray.push_back(pSewerEnd);
 
 	return S_OK;
 
@@ -224,13 +235,15 @@ HRESULT CTest::LoadData()
 
 void CTest::Release()
 {
+
+
 	
 }
 
 void CTest::Start()
 {
 	// 環境設定
-	m_GlobalLight.fIntensity = 1.0f;
+	m_GlobalLight.fIntensity = 0.000001f;
 
 	m_Fog.Color = D3DXVECTOR4(0.036f, 0.043f, 0.035f, 1.0f);
 	m_Fog.Enable = m_bFog;
@@ -239,7 +252,7 @@ void CTest::Start()
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 
-	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
 
 void CTest::Update()
@@ -259,7 +272,6 @@ void CTest::Update()
 			auto ghost = m_pGhostList[i];
 			ghost->SetPath(m_pMazeGen->GeneratePath(ghost->GetCurrentCol(), ghost->GetCurrentRow()));
 		}
-
 	}
 	if (GetAsyncKeyState('1') & 0x0001) // 表示切替
 	{
@@ -276,7 +288,7 @@ void CTest::Update()
 	if (GetAsyncKeyState('C') & 0x0001)
 	{
 		Pair np = NextMazePosition();
-		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, m_wallSize * m_MazeCellW));
+		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, 2.f, m_MazeCellSize));
 	}
 
 
@@ -286,11 +298,7 @@ void CTest::Update()
 
 	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
-		int r = m_pGhostList[i]->GetCurrentRow();
-		int c = m_pGhostList[i]->GetCurrentCol();
-
 		m_pGhostList[i]->Update();
-		m_pGhostList[i]->SetPosition(m_pMazeGen->CellToWorldRC(r, c));
 	}
 
 	for (auto& wall : m_pMazeMeshObjArray)
@@ -371,9 +379,10 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 	{
 		for (int j = 0; j < regionWidth; ++j)
 		{
+			D3DXVECTOR3 pos = m_pMazeGen->CellToWorldRC(i, j, 0.f, m_MazeCellSize);
 			// 壁の位置計算
-			float x = (j - regionWidth / 2.0f) * m_wallSize + (m_wallSize / 2.0f);	// X座標
-			float z = -(i - regionHeight / 2.0f) * m_wallSize - (m_wallSize / 2.0f); // Z座標
+			float x = pos.x;	// X座標
+			float z = pos.z; // Z座標
 
 			unsigned bitCount = 4 - __popcnt(m_pMazeData[i][j]);
 			int mazeData = m_pMazeData[i][j];
@@ -582,10 +591,10 @@ Pair CTest::NextMazePosition()
 Pair CTest::WorldToMazeCoords(const D3DXVECTOR3& worldPos)
 {
 	// Reverses the calculation in GenerateMazeMeshObj to convert world coordinates back to maze grid coordinates.
-	float worldOffsetX = (static_cast<float>(m_MazeCellW) / 2.0f) * m_wallSize;
+	float worldOffsetX = (static_cast<float>(m_MazeCellW)) * (SEWER_MESHWIDTH);
 
-	int mazeX = static_cast<int>((worldPos.x + worldOffsetX - m_wallSize / 2.0f) / m_wallSize);
-	int mazeY = static_cast<int>(((-worldPos.z / m_wallSize) + (static_cast<float>(m_MazeCellH) / 2.0f)) - 0.5f);
+	int mazeX = static_cast<int>((worldPos.x + worldOffsetX) / SEWER_MESHWIDTH);
+	int mazeY = static_cast<int>(((-worldPos.z / SEWER_MESHWIDTH) + (static_cast<float>(SEWER_MESHWIDTH))));
 
 	// Clamp values to be within maze bounds
 	mazeX = max(0, min(m_MazeCellW - 1, mazeX));

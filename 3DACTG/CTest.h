@@ -8,7 +8,7 @@
 #include "CUIObject.h"
 #include "CSprite2D.h"
 #include "CDebugBSphere.h"
-#include "CGhost.h"
+#include "CBaseEnemy.h"
 #include "CMaze.h"
 
 #define MAZE_H 64
@@ -55,7 +55,7 @@ private:
 	CPlayer* m_pPlayer;
 	
 	CStaticMesh* m_pGhostMesh;
-	CGhost* m_pGhostList[4];
+	CBaseEnemy* m_pGhostList[16];
 
 	CDebugColliderRender* m_pDbgCollider = nullptr;
 	bool m_ShowCollider = true;
@@ -67,7 +67,7 @@ private:
 	int					m_MazeCellH;
 	int					m_MazeCellW;
 	int					m_MazeStride;
-	float				m_wallSize;
+	float				m_MazeCellSize;
 
 	CUIObject*			m_pMiniMapUI;
 	CSprite2D*			m_pMiniMapSprite;
