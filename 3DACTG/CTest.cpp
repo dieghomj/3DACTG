@@ -211,12 +211,12 @@ void CTest::Release()
 void CTest::Start()
 {
 	// ä¬ã´ê›íË
-	m_GlobalLight.fIntensity = 0.000001f;
+	m_GlobalLight.fIntensity = 1.f;
 
-	m_Fog.Color = D3DXVECTOR4(0.036f, 0.043f, 0.035f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.066f, 0.078f, 0.065f, 1.0f);
 	m_Fog.Enable = m_bFog;
-	m_Fog.Mode = D3DFOG_EXP2;
-	m_Fog.Start = 20.0f;
+	m_Fog.Mode = D3DFOG_LINEAR;
+	m_Fog.Start = 10.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 

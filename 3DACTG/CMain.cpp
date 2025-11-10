@@ -104,7 +104,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(m_pTest, "TEST");
 
 	//ƒV[ƒ“•ÏX.
-	m_pSceneManager->ChangeScene("MENU");
+	m_pSceneManager->ChangeScene("TEST");
 
 	return S_OK;
 }

@@ -42,10 +42,16 @@ public:
 	// カメラ,ライト情報はここに入れる.
 	struct CBUFFER_PER_FRAME
 	{
-		D3DXVECTOR4	CameraPos;		//カメラ位置(視点位置).
-		D3DXVECTOR4	vLightDir;		//ライト方向.
-		D3DXVECTOR4 FogColor;		//フォグの色.
-		D3DXVECTOR4 FogParams;		//フォグのパラメータ(x=開始距離,y=終了距離,z=未使用,w=未使用).
+		D3DXVECTOR4	CameraPos;			// カメラ位置.
+
+		D3DXVECTOR4	LightColor;			// ライトの色.
+		D3DXVECTOR4	LightDir;			// ライト方向.
+		D3DXVECTOR4	AmbientColor;		// 環境光の色.
+		D3DXVECTOR4 FogColor;			//フォグの色.
+		D3DXVECTOR4 FogParams;			//フォグのパラメータ(x=開始距離,y=終了距離,z=未使用,w=未使用).
+		float		AffineIntensity;	// アフィンマッピングの強度.
+		float		VertexSnapping;		// 頂点スナッピングの強度.
+		float		pad1, pad2;			// パディング.
 	};
 
 	//頂点の構造体.
