@@ -2,6 +2,7 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CTest.h"
+#include "CMenu.h"
 
 
 //ウィンドウを画面中央で起動を有効にする.
@@ -30,6 +31,7 @@ CMain::CMain()
 	, m_pTest	( nullptr )
 	, m_pTime	( nullptr )
 	, m_pResult	( nullptr )
+	, m_pMenu	( nullptr )
 	, m_pSceneManager (nullptr)
 {
 	m_pDx9	= new CDirectX9();
@@ -91,14 +93,18 @@ HRESULT CMain::Create()
 	//シーン管理クラスのインスタンス生成
 	m_pSceneManager = new CSceneManager();
 
+	//メニューシーンのインスタンス化.
+	m_pMenu = new CMenu(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+
 	//テストシーンのインスタンス生成.
 	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 	//ゲームシーンクラスのインスタンス生成.
+	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pTest, "TEST");
 
 	//シーン変更.
-	m_pSceneManager->ChangeScene("TEST");
+	m_pSceneManager->ChangeScene("MENU");
 
 	return S_OK;
 }

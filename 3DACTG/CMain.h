@@ -7,6 +7,7 @@
 class CDirectX9;
 class CDirectX11;
 class CTest;
+class CMenu;
 
 /**************************************************
 *	ƒƒCƒ“ƒNƒ‰ƒX.
@@ -50,6 +51,7 @@ private:
 	CScene*			m_pTitle;
 	CScene*			m_pTest;
 	CScene*			m_pResult;
+	CScene*			m_pMenu;
 	
 	CTime*			m_pTime;
 };
