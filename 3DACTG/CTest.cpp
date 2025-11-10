@@ -197,38 +197,6 @@ HRESULT CTest::LoadData()
 	CStaticMeshObject* pSewerCross = new CStaticMeshObject();
 	CStaticMeshObject* pSewerEnd = new CStaticMeshObject();
 
-	//CStaticMeshObject* pNorthObj = new CStaticMeshObject();
-
-	//pNorthObj->AttachMesh(*m_pSewerLineMesh);
-	//pNorthObj->SetPosition(0, 0, 50);
-	//pNorthObj->SetRotation(D3DX_PI / 2.0f, 0, 0);
-	//pNorthObj->SetScale(5.0f);
-	//m_pMazeMeshObjArray.push_back(pNorthObj);
-
-	pSewerLine->AttachMesh(*m_pSewerLineMesh);
-	pSewerTurn->AttachMesh(*m_pSewerTurnMesh);
-	pSewerTJunc->AttachMesh(*m_pSewerTJunctionMesh);
-	pSewerCross->AttachMesh(*m_pSewerCrossMesh);
-	pSewerEnd->AttachMesh(*m_pSewerEndMesh);
-
-	pSewerLine->SetPosition		(0, 5, 0);
-	pSewerTurn->SetPosition		(10.5, 5, 0);
-	pSewerTJunc->SetPosition	(10.5*2, 5, 0);
-	pSewerCross->SetPosition	(10.5*3, 4, 0);
-	pSewerEnd->SetPosition		(10.5*4, 5, 0);
-
-	pSewerLine->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-	pSewerTurn->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-	pSewerTJunc->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-	pSewerCross->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-	pSewerEnd->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-
-	m_pMazeMeshObjArray.push_back(pSewerLine);
-	m_pMazeMeshObjArray.push_back(pSewerTurn);
-	m_pMazeMeshObjArray.push_back(pSewerTJunc);
-	m_pMazeMeshObjArray.push_back(pSewerCross);
-	m_pMazeMeshObjArray.push_back(pSewerEnd);
-
 	return S_OK;
 
 }
@@ -252,7 +220,7 @@ void CTest::Start()
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 
-	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
 
 void CTest::Update()
