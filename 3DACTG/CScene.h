@@ -3,9 +3,9 @@
 #include "CDirectX11.h"
 #include "CTime.h"
 #include "CSceneManager.h"
-#include "CSprite2D.h"
 #include "CCommon.h"
 #include "CCamera.h"
+#include "CCameraController.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -48,6 +48,7 @@ protected:
 	FOG				m_Fog;
 	CAMERA			m_Camera;
 	CCamera*		m_pCamera;
+	CCameraController* m_pCameraController;
 
 	bool			m_IsPause = false;
 

@@ -15,6 +15,7 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_Fog				()
 	, m_Camera			()
 	, m_pCamera			(nullptr)
+	, m_pCameraController(nullptr)
 
 	, m_mousePos		({ 0, 0 })
 	, m_mouseSeudoPos	({ WND_W / 2,WND_H / 2 })

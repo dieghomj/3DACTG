@@ -156,6 +156,7 @@
     <ClCompile Include="CBoundingCube.cpp" />
     <ClCompile Include="CBoundingSphere.cpp" />
     <ClCompile Include="CCamera.cpp" />
+    <ClCompile Include="CCameraController.cpp" />
     <ClCompile Include="CCharacter.cpp" />
     <ClCompile Include="CCollider.cpp" />
     <ClCompile Include="CDebugBBox.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="CBoundingCube.h" />
     <ClInclude Include="CBoundingSphere.h" />
     <ClInclude Include="CCamera.h" />
+    <ClInclude Include="CCameraController.h" />
     <ClInclude Include="CCharacter.h" />
     <ClInclude Include="CCollider.h" />
     <ClInclude Include="CDebugBBox.h" />

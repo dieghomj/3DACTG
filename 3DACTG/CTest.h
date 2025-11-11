@@ -1,7 +1,6 @@
 #pragma once
 #include "CScene.h"
 #include "CFont.h"
-#include "CCamera.h"
 #include "CStaticMeshObject.h"
 #include "CPlayer.h"
 #include "CMinimap.h"

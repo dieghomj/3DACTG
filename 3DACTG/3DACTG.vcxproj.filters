@@ -79,6 +79,9 @@
     <Filter Include="Source\Common">
       <UniqueIdentifier>{1941b590-46a5-44f9-a55f-0e96abf1a92a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character\Enemy">
+      <UniqueIdentifier>{698b8dc0-9bfa-4f93-a1d6-edb7a80402f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -193,7 +196,12 @@
     <ClCompile Include="CDebugBBox.cpp">
       <Filter>Source\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CGhost.cpp" />
+    <ClCompile Include="CBaseEnemy.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="CCameraController.cpp">
+      <Filter>Source\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
@@ -311,7 +319,12 @@
     <ClInclude Include="CDebugBBox.h">
       <Filter>Source\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="CGhost.h" />
+    <ClInclude Include="CBaseEnemy.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="CCameraController.h">
+      <Filter>Source\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

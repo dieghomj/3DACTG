@@ -88,6 +88,7 @@ void CTest::Create()
 		static_cast<float>(WND_W) / static_cast<float>(WND_H),
 		0.1f, 1000.0f);
 	m_pCamera->SetPosition(0.f, 5.f, -15.f);
+	m_pCameraController = new CCameraController(m_pCamera);
 
 	// 地面メッシュ作成
 	m_pGroundStaticMesh = new CStaticMesh();
@@ -129,7 +130,6 @@ void CTest::Create()
 HRESULT CTest::LoadData()
 {
 	HRESULT hr = S_OK;
-
 
 	if (FAILED(m_SDFText->Init(*m_pDx11)))
 	{
@@ -231,7 +231,9 @@ void CTest::Start()
 
 void CTest::Update()
 {
-	
+	m_pCamera->Update();
+	m_pCameraController->Update(0);
+
 	CScene::Update();
 
 	m_Fog.Enable = m_bFog;
@@ -280,11 +282,10 @@ void CTest::Update()
 		wall->Update();
 	}
 
-	m_pCamera->FirstPersonCamera(
+	m_pCameraController->FirstPersonCamera(
 		m_pPlayer->GetPosition(),
-		m_mouseDelta, m_mouseSense);
-	float rotY = m_pCamera->GetYaw();
-	m_pPlayer->SetRotation(0, rotY, 0);
+		m_mouseDelta,
+		m_mouseSense);
 
 }
 
@@ -292,9 +293,7 @@ void CTest::Draw()
 {
 
 	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-
 	m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
-
 	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 
 	for (auto& wall : m_pMazeMeshObjArray)
@@ -527,19 +526,19 @@ void CTest::DrawTextMinimap()
 	}
 
 
-	// プレイヤー位置描画
-	{
-		Pair playerMazePos = WorldToMazeCoords(m_pPlayer->GetPosition());
+	//// プレイヤー位置描画
+	//{
+	//	Pair playerMazePos = WorldToMazeCoords(m_pPlayer->GetPosition());
 
-		float pcx = m_miniMapStartX + playerMazePos.x * m_miniMapCellSize;
-		float pcy = m_miniMapStartY + playerMazePos.y * m_miniMapCellSize;
-		_stprintf_s(text, _T("*"));
+	//	float pcx = m_miniMapStartX + playerMazePos.x * m_miniMapCellSize;
+	//	float pcy = m_miniMapStartY + playerMazePos.y * m_miniMapCellSize;
+	//	_stprintf_s(text, _T("*"));
 
-		m_SDFText->SetColor(1.0f, 0.0f, 0.0f);
-		m_SDFText->Render(text, pcx, pcy, m_miniMapFontSize);
+	//	m_SDFText->SetColor(1.0f, 0.0f, 0.0f);
+	//	m_SDFText->Render(text, pcx, pcy, m_miniMapFontSize);
 
-		m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
-	}
+	//	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
+	//}
 }
 
 

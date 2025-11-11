@@ -13,17 +13,15 @@ public:
 
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
 
-	void ThirdPersonCamera(
-		const D3DXVECTOR3& TargetPos, float TargetRotY);
-
-	void FirstPersonCamera(
-		const D3DXVECTOR3& TargetPos, POINT delta, float sense);
+	void UpdateForward(D3DXVECTOR3 vFwd);
 
 	// レンズ設定（FOV/アスペクト/ニア/ファー）
 	void SetPerspective(float fovY, float aspect, float zn, float zf);
 	// リサイズ時などにアスペクトだけ更新
 	void SetAspect(float aspect) { m_Aspect = aspect; }
 
+
+	D3DXVECTOR3 GetForward() const { return m_vLook; }
 	float GetYaw()    const { return m_Yaw; }
 	float GetPitch()  const { return m_Pitch; }
 	float GetFovY()   const { return m_FovY; }
