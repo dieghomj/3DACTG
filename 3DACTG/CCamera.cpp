@@ -53,6 +53,18 @@ void CCamera::SetLens(float fovY, float aspect, float zn, float zf)
 
 }
 
+void CCamera::LookAt(const D3DXVECTOR3& target)
+{
+	D3DXMATRIX mView;
+	m_vLook = target - m_vPosition;
+	D3DXVec3Normalize(&m_vLook, &m_vLook);
+
+	D3DXVec3Cross(&m_vRight, &m_vUp, &m_vLook);
+	D3DXVec3Normalize(&m_vRight, &m_vRight);
+
+	D3DXVec3Cross(&m_vUp, &m_vLook, &m_vRight);
+}
+
 void CCamera::Walk(float distance)
 {
 	m_vPosition += distance * m_vLook ;
@@ -70,6 +82,7 @@ void CCamera::Pitch(float pitch)
 	D3DXMatrixRotationAxis(&mRot, &m_vRight, pitch);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
+
 }
 
 void CCamera::Yaw(float yaw)
@@ -105,13 +118,6 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	float z = -D3DXVec3Dot(&vLookVec, &cam_pos);
 	
 	D3DXVECTOR3 vAt = cam_pos + vLookVec;
-
-	//// ビュー計算（D3DX関数利用版）
-	//D3DXMatrixLookAtLH(
-	//	&mView,
-	//	&cam_pos,					//(in)視点の位置.
-	//	&(vAt),			//(in)注視点の位置.
-	//	&vUpVec);					//(in)上方向ベクトル.
 
 	// ビュー計算
 	mView(0, 0) = vRightVec.x;

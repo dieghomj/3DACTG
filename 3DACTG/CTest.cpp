@@ -187,8 +187,8 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
-	//m_pPlayer->AttachMesh(*m_pWomanMesh);
-	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0, 5.0f));
+	m_pPlayer->AttachMesh(*m_pWomanMesh);
+	m_pPlayer->SetPosition(0.f,0.f,0.f);
 
 	for(int i = 0; i < ENEMY_COUNT; ++i)
 	{
@@ -231,8 +231,10 @@ void CTest::Start()
 
 void CTest::Update()
 {
+
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
+
 
 	CScene::Update();
 
@@ -282,10 +284,14 @@ void CTest::Update()
 		wall->Update();
 	}
 
-	m_pCameraController->FirstPersonCamera(
-		m_pPlayer->GetPosition(),
+	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	m_pCameraController->ThirdPersonCamera(
+		playerPos,
 		m_mouseDelta,
 		m_mouseSense);
+	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	//m_pPlayer->SetRotation(playerRot);
 
 }
 
@@ -293,8 +299,10 @@ void CTest::Draw()
 {
 
 	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-	m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
+	//m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
+	m_pPlayer->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+
 
 	for (auto& wall : m_pMazeMeshObjArray)
 	{

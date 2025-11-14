@@ -1,8 +1,8 @@
 #pragma once
-#include "CSkinMeshObject.h"
+#include "CStaticMeshObject.h"
 
 class CPlayer 
-	: public CSkinMeshObject
+	: public CStaticMeshObject
 {
 
 public:

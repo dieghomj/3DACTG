@@ -17,12 +17,12 @@ CPlayer::~CPlayer()
 void CPlayer::Update()
 {
 	HandleInput();
-	CSkinMeshObject::Update();
+	CStaticMeshObject::Update();
 }
 
 void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
-	CSkinMeshObject::Draw(View, Proj, Light, Camera, Fog); 
+	CStaticMeshObject::Draw(View, Proj, Light, Camera, Fog);
 }
 
 void CPlayer::RadioControl()

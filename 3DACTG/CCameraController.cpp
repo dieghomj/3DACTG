@@ -12,6 +12,12 @@ CCameraController::CCameraController(CCamera* camera)
 	: m_pCamera		(camera)
 	, m_vPosition	(0.f, 0.f, 0.f)
 	, m_vRotation	(0.f, 0.f, 0.f)
+	, m_FP_offset	(0.f, 0.f, 0.f)
+	, m_TP_offset	(0.f, 3.f, -6.f)
+	, m_distance	(6.f)
+	, m_minDistance	(0.5f)
+	, m_maxLookUp	(D3DX_PI / 4.f)
+	, m_maxLookDown	(-D3DX_PI / 4.f)
 {
 }
 
@@ -21,53 +27,55 @@ CCameraController::~CCameraController()
 
 void CCameraController::Update(float deltaTime)
 {
-
+	m_vPosition = m_pCamera->GetPosition();
+	m_vRotation.x = m_pCamera->GetPitch();
+	m_vRotation.y = m_pCamera->GetYaw();
 }
 
 //三人称カメラ
 void CCameraController::ThirdPersonCamera(
-	const D3DXVECTOR3& TargetPos, float TargetRotY)
+	const D3DXVECTOR3& TargetPos, POINT delta, float sense)
 {
-	//Z軸ベクトル（Z+方向の単位ベクトル）
-	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
+	float yaw = D3DXToRadian((float)delta.x * sense);
+	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	//Y方向の回転行列
-	D3DXMATRIX mRotationY;
-	//Y軸回転行列を作成
-	D3DXMatrixRotationY(
-		&mRotationY,	//(out)行列
-		TargetRotY);	//対象のY方向の回転値
+	//if (pitch > m_maxLookUp) pitch = m_maxLookUp;
+	//if (pitch < m_maxLookDown) pitch = m_maxLookDown;
 
-	//Y軸回転行列を使ってZ軸ベクトルを座標変換する
-	D3DXVec3TransformCoord(
-		&vecAxisZ,		//(out)Z軸ベクトル
-		&vecAxisZ,		//(in)Z軸ベクトル
-		&mRotationY);	//Y軸回転行列
+	//if (yaw > D3DX_PI) yaw -= D3DX_PI * 2.f;
+	//if (yaw < -D3DX_PI) yaw += D3DX_PI * 2.f;
 
-	//カメラの位置、注視位置を対象にそろえる
-	m_vPosition = TargetPos;
+	m_pCamera->LookAt(TargetPos);
+	m_pCamera->SetPosition(
+		TargetPos + m_TP_offset - m_pCamera->GetForward());
+	m_pCamera->Pitch(pitch);
+	m_pCamera->Yaw(yaw);
 
-	//カメラの位置、注視位置をZ軸ベクトルを用いて調整
-	m_vPosition -= vecAxisZ * 6.f;	//対象の背中側
-
-	//カメラの位置、注視位置の高さをそれぞれ微調整
-	m_vPosition.y += 4.f;
 }
 
 void CCameraController::FirstPersonCamera(
-	const D3DXVECTOR3& TargetPos, POINT delta, float sense)
+	D3DXVECTOR3* TargetPos, POINT delta, float sense)
 {
-	float yaw = m_vRotation.y + (float)delta.x * sense;
-	float pitch	= m_vRotation.x + (float)delta.y * sense;
+	float yaw = D3DXToRadian((float)delta.x * sense);
+	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	const float pitchLimit = D3DX_PI * 0.49f;
-	if (pitch > pitchLimit) pitch = pitchLimit;
-	if (pitch < -pitchLimit) pitch = -pitchLimit;
+	if (pitch > m_maxLookUp) pitch = m_maxLookUp;
+	if (pitch < m_maxLookDown) pitch = m_maxLookDown;
 
 	m_pCamera->Pitch(pitch);
 	m_pCamera->Yaw(yaw);
 
+	m_pCamera->SetRotation(pitch, yaw, 0);
 	HandleInput();
+}
+
+void CCameraController::UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot)
+{
+	TargetRot->y += m_pCamera->GetRotation().y;
+}
+
+void CCameraController::UpdateOffSet(D3DXVECTOR3* offset)
+{
 
 }
 
@@ -93,6 +101,5 @@ void CCameraController::HandleInput()
 	if (GetAsyncKeyState(VK_CONTROL) & 0x8000) {
 		m_pCamera->SetPosition(m_pCamera->GetPosition() + D3DXVECTOR3(0, -0.3f, 0));
 	}
-
 
 }

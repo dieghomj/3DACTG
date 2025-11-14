@@ -20,6 +20,7 @@ public:
 
 	void SetLens(float fovY, float aspect, float zn, float zf);
 
+	void LookAt(const D3DXVECTOR3& target);
 
 	void Strafe(float distance);
 	void Walk(float distance);

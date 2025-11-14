@@ -13,10 +13,13 @@ class CCameraController
 	void Update(float deltaTime);
 
 	void ThirdPersonCamera(
-		const D3DXVECTOR3& TargetPos, float TargetRotY);
+		const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
 	void FirstPersonCamera(
-		const D3DXVECTOR3& TargetPos, POINT delta, float sense);
+		D3DXVECTOR3* TargetPos, POINT delta, float sense);
+
+	void UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot);
+	void UpdateOffSet(D3DXVECTOR3* offset);
 
 	void HandleInput();
 
@@ -30,5 +33,14 @@ private:
 	CCamera* m_pCamera;
 	D3DXVECTOR3 m_vPosition;
 	D3DXVECTOR3 m_vRotation;
+	
+	D3DXVECTOR3 m_FP_offset;
+	D3DXVECTOR3 m_TP_offset;
+
+	float m_distance;
+	float m_minDistance;
+	float m_maxLookUp;
+	float m_maxLookDown;
+
 };
 
