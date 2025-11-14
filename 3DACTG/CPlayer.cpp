@@ -68,6 +68,7 @@ void CPlayer::RadioControl()
 		m_vPosition.y += m_MoveSpeed;
 		break;
 	case MoveState::Down:	//â∫ç~
+		m_vPosition.y -= m_MoveSpeed;
  		break;
 	default:
 		break;

@@ -13,13 +13,21 @@ public:
 
 	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
 
-	void UpdateForward(D3DXVECTOR3 vFwd);
-
 	// レンズ設定（FOV/アスペクト/ニア/ファー）
 	void SetPerspective(float fovY, float aspect, float zn, float zf);
 	// リサイズ時などにアスペクトだけ更新
 	void SetAspect(float aspect) { m_Aspect = aspect; }
 
+	void SetLens(float fovY, float aspect, float zn, float zf);
+
+
+	void Strafe(float distance);
+	void Walk(float distance);
+
+	void Pitch(float pitch);
+	void Yaw(float yaw);
+
+	void UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 
 	D3DXVECTOR3 GetForward() const { return m_vLook; }
 	float GetYaw()    const { return m_Yaw; }
@@ -30,11 +38,17 @@ public:
 	float GetFarZ()   const { return m_FarZ; }
 
 private:
+
 	D3DXVECTOR3 m_vLook;
+	D3DXVECTOR3 m_vUp;
+	D3DXVECTOR3	m_vRight;
+
 	float m_Yaw;
 	float m_Pitch;
 	float m_FovY;
 	float m_Aspect;
 	float m_NearZ;
 	float m_FarZ;
+	float m_NearWindowHeight;
+	float m_FarWindowHeight;
 };

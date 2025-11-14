@@ -21,13 +21,7 @@ CCameraController::~CCameraController()
 
 void CCameraController::Update(float deltaTime)
 {
-	m_pCamera->SetPosition(m_vPosition.x, m_vPosition.y, m_vPosition.z);
-	m_pCamera->SetRotation(m_vRotation.y, m_vRotation.x, m_vRotation.z);
-}
 
-D3DXVECTOR3 CCameraController::GetForwardVector() const
-{
-	return D3DXVECTOR3();
 }
 
 //三人称カメラ
@@ -63,27 +57,42 @@ void CCameraController::ThirdPersonCamera(
 void CCameraController::FirstPersonCamera(
 	const D3DXVECTOR3& TargetPos, POINT delta, float sense)
 {
-	float yaw = m_vRotation.x + (float)delta.x * sense;
-	float pitch	= m_vRotation.y + (float)delta.y * sense;
+	float yaw = m_vRotation.y + (float)delta.x * sense;
+	float pitch	= m_vRotation.x + (float)delta.y * sense;
 
 	const float pitchLimit = D3DX_PI * 0.49f;
 	if (pitch > pitchLimit) pitch = pitchLimit;
 	if (pitch < -pitchLimit) pitch = -pitchLimit;
 
-	D3DXMATRIX mRotation;
-	D3DXMatrixRotationYawPitchRoll(
-		&mRotation,
-		yaw,
-		pitch,
-		0.f);
+	m_pCamera->Pitch(pitch);
+	m_pCamera->Yaw(yaw);
 
-	D3DXVECTOR3 vFwd = m_pCamera->GetForward();;
-	D3DXVec3TransformCoord( &vFwd,
-		&vFwd,
-		&mRotation);
+	HandleInput();
 
-	//カメラの位置、注視位置を対象にそろえる
-	m_vPosition = TargetPos;
-	m_pCamera->UpdateForward(m_vPosition + vFwd);
+}
+
+void CCameraController::HandleInput()
+{
+
+	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
+		m_pCamera->Walk(0.3f);
+	}
+	//後退
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
+		m_pCamera->Walk(-0.3f);
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000 || GetAsyncKeyState('A') & 0x8000) {
+		m_pCamera->Strafe(-0.3f);
+	}
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState('D') & 0x8000) {
+		m_pCamera->Strafe(0.3f);
+	}
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+		m_pCamera->SetPosition(m_pCamera->GetPosition() + D3DXVECTOR3(0, 0.3f, 0));
+	}
+	if (GetAsyncKeyState(VK_CONTROL) & 0x8000) {
+		m_pCamera->SetPosition(m_pCamera->GetPosition() + D3DXVECTOR3(0, -0.3f, 0));
+	}
+
 
 }
