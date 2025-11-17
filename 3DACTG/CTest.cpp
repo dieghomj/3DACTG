@@ -215,6 +215,7 @@ void CTest::Release()
 
 void CTest::Start()
 {
+	m_pDx11->SetDepth(true);
 	// ŠÂ‹«İ’è
 	m_GlobalLight.fIntensity = 1.f;
 
@@ -224,6 +225,7 @@ void CTest::Start()
 	m_Fog.Start = 10.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
+
 
 	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }

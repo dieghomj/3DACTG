@@ -2,7 +2,9 @@
 
 CMenu::CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, pManager)
-	, m_pMenuFont(nullptr)
+	, m_pMenuFont	(nullptr)
+	, m_pMenuBG		(nullptr)
+	, m_pMenuBGSprite(nullptr)
 	, m_SelectedOption(MENU_OPTION_START)
 {
 	m_pDx11->SetDepth(false); // Disable depth for 2D menu
@@ -10,6 +12,7 @@ CMenu::CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 CMenu::~CMenu()
 {
+	SAFE_DELETE(m_pMenuBG);
 	SAFE_DELETE(m_pMenuFont);
 }
 
@@ -17,6 +20,8 @@ void CMenu::Create()
 {
 	// Create font for menu text
 	m_pMenuFont = new CFont();
+	m_pMenuBG = new CUIObject();
+	m_pMenuBGSprite = new CSprite2D;
 }
 
 HRESULT CMenu::LoadData()
@@ -27,7 +32,21 @@ HRESULT CMenu::LoadData()
 		return E_FAIL;
 	}
 
-	return S_OK;
+	
+	CSprite2D::SPRITE_STATE ss = {
+		{WND_W + 50, WND_H + 50},
+		{357,291},
+		{357,291},
+	};
+	
+	if (FAILED(m_pMenuBGSprite->Init(*m_pDx11,
+		_T("Data\\Texture\\MenuBG.png"), ss)))
+	{
+		return E_FAIL;
+	}
+
+	m_pMenuBG->AttachSprite(*m_pMenuBGSprite);
+
 }
 
 void CMenu::Release()
@@ -45,6 +64,7 @@ void CMenu::Update()
 {
 	CScene::Update();
 
+	m_pMenuBG->Update();
 	// Handle keyboard input for menu navigation
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
@@ -73,6 +93,9 @@ void CMenu::Update()
 
 void CMenu::Draw()
 {
+	m_pDx11->SetDepth(false);
+	m_pMenuBG->Draw();
+
 	// Draw text labels for the menu
 	if (m_pMenuFont)
 	{

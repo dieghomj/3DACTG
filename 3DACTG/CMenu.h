@@ -1,6 +1,7 @@
 #pragma once
 #include "CScene.h"
 #include "CFont.h"
+#include "CUIObject.h"
 
 /********************************************************************************
 *	Menu Scene Class.
@@ -21,6 +22,8 @@ public:
 private:
 	// Font for menu text
 	CFont* m_pMenuFont;
+	CUIObject* m_pMenuBG;
+	CSprite2D* m_pMenuBGSprite;
 	
 	// Menu state
 	int m_SelectedOption;
