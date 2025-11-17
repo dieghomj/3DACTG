@@ -13,7 +13,7 @@ CCameraController::CCameraController(CCamera* camera)
 	, m_vPosition	(0.f, 0.f, 0.f)
 	, m_vRotation	(0.f, 0.f, 0.f)
 	, m_FP_offset	(0.f, 0.f, 0.f)
-	, m_TP_offset	(0.f, 3.f, -6.f)
+	, m_TP_offset	(0.f, 2.f, -4.f)
 	, m_distance	(6.f)
 	, m_minDistance	(0.5f)
 	, m_maxLookUp	(D3DX_PI / 4.f)
@@ -47,6 +47,14 @@ void CCameraController::ThirdPersonCamera(
 
 	m_pCamera->OffsetRotX(TargetPos, pitch);
 	m_pCamera->OffsetRotY(TargetPos, yaw);
+	
+	D3DXVECTOR3 offsetZ = m_pCamera->GetForward() * m_TP_offset.z;
+	D3DXVECTOR3 offsetY = m_pCamera->GetUp() * m_TP_offset.y;
+	D3DXVECTOR3 offsetX = m_pCamera->GetRight() * m_TP_offset.x;
+
+	m_pCamera->SetPosition(TargetPos + offsetX + offsetY + offsetZ);
+
+	m_pCamera->SetRotation(pitch, yaw, 0);
 
 }
 
@@ -73,7 +81,6 @@ void CCameraController::UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot)
 
 void CCameraController::UpdateOffSet(D3DXVECTOR3* offset)
 {
-
 }
 
 void CCameraController::HandleInput()

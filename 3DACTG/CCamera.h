@@ -34,6 +34,8 @@ public:
 	void UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 
 	D3DXVECTOR3 GetForward() const { return m_vLook; }
+	D3DXVECTOR3 GetUp()      const { return m_vUp; }
+	D3DXVECTOR3 GetRight()   const { return m_vRight; }
 	float GetYaw()    const { return m_Yaw; }
 	float GetPitch()  const { return m_Pitch; }
 	float GetFovY()   const { return m_FovY; }

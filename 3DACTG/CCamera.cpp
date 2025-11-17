@@ -58,11 +58,11 @@ void CCamera::LookAt(const D3DXVECTOR3& target)
 	D3DXMATRIX mView;
 	m_vLook = target - m_vPosition;
 	D3DXVec3Normalize(&m_vLook, &m_vLook);
-
+	
 	D3DXVec3Cross(&m_vRight, &m_vUp, &m_vLook);
 	D3DXVec3Normalize(&m_vRight, &m_vRight);
-
 	D3DXVec3Cross(&m_vUp, &m_vLook, &m_vRight);
+
 }
 
 void CCamera::Walk(float distance)

@@ -188,6 +188,7 @@ HRESULT CTest::LoadData()
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
 	m_pPlayer->AttachMesh(*m_pWomanMesh);
+	m_pPlayer->SetScale(0.8f);
 	m_pPlayer->SetPosition(0.f,0.f,0.f);
 
 	for(int i = 0; i < ENEMY_COUNT; ++i)
@@ -209,8 +210,6 @@ HRESULT CTest::LoadData()
 
 void CTest::Release()
 {
-
-
 	
 }
 
@@ -269,7 +268,6 @@ void CTest::Update()
 		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, 2.f, m_MazeCellSize));
 	}
 
-
 	m_pGround->Update();
 
 	m_pPlayer->Update();
@@ -285,14 +283,14 @@ void CTest::Update()
 	}
 
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	m_pCameraController->ThirdPersonCamera(
 		playerPos,
 		5.f,
 		m_mouseDelta,
 		m_mouseSense);
-	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-	//m_pPlayer->SetRotation(playerRot);
+	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	m_pPlayer->SetRotation(playerRot);
 
 }
 
