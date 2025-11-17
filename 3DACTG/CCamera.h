@@ -25,6 +25,9 @@ public:
 	void Strafe(float distance);
 	void Walk(float distance);
 
+	void OffsetRotX(D3DXVECTOR3 pivot, float angle);
+	void OffsetRotY(D3DXVECTOR3 pivot, float angle);
+
 	void Pitch(float pitch);
 	void Yaw(float yaw);
 

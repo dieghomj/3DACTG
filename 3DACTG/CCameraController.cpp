@@ -34,22 +34,19 @@ void CCameraController::Update(float deltaTime)
 
 //ŽOlÌƒJƒƒ‰
 void CCameraController::ThirdPersonCamera(
-	const D3DXVECTOR3& TargetPos, POINT delta, float sense)
+	const D3DXVECTOR3& TargetPos, float distance, POINT delta, float sense)
 {
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	//if (pitch > m_maxLookUp) pitch = m_maxLookUp;
-	//if (pitch < m_maxLookDown) pitch = m_maxLookDown;
+	if (pitch > m_maxLookUp) pitch = m_maxLookUp;
+	if (pitch < m_maxLookDown) pitch = m_maxLookDown;
 
-	//if (yaw > D3DX_PI) yaw -= D3DX_PI * 2.f;
-	//if (yaw < -D3DX_PI) yaw += D3DX_PI * 2.f;
+	if (yaw > D3DX_PI) yaw -= D3DX_PI * 2.f;
+	if (yaw < -D3DX_PI) yaw += D3DX_PI * 2.f;
 
-	m_pCamera->LookAt(TargetPos);
-	m_pCamera->SetPosition(
-		TargetPos + m_TP_offset - m_pCamera->GetForward());
-	m_pCamera->Pitch(pitch);
-	m_pCamera->Yaw(yaw);
+	m_pCamera->OffsetRotX(TargetPos, pitch);
+	m_pCamera->OffsetRotY(TargetPos, yaw);
 
 }
 

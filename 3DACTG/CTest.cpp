@@ -287,6 +287,7 @@ void CTest::Update()
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 	m_pCameraController->ThirdPersonCamera(
 		playerPos,
+		5.f,
 		m_mouseDelta,
 		m_mouseSense);
 	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
