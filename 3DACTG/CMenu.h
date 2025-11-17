@@ -23,6 +23,7 @@ private:
 	// Font for menu text
 	CFont* m_pMenuFont;
 	CUIObject* m_pMenuBG;
+	CUIObject* m_pMenuOption;
 	CSprite2D* m_pMenuBGSprite;
 	
 	// Menu state

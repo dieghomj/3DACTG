@@ -188,7 +188,7 @@ HRESULT CTest::LoadData()
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
 	m_pPlayer->AttachMesh(*m_pWomanMesh);
-	m_pPlayer->SetScale(0.8f);
+	m_pPlayer->SetScale(0.6f);
 	m_pPlayer->SetPosition(0.f,0.f,0.f);
 
 	for(int i = 0; i < ENEMY_COUNT; ++i)
