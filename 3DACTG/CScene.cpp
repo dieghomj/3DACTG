@@ -21,7 +21,7 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_mouseSeudoPos	({ WND_W / 2,WND_H / 2 })
 	, m_mouseBeforePos	({ 0, 0 })
 	, m_mouseDelta		({ 0, 0 })
-	, m_mouseSense		( 0.01f )
+	, m_mouseSense		( 0.1f )
 
 {
 	//サウンドデータの読み込み

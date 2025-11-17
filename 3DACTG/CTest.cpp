@@ -9,6 +9,7 @@
 
 int currX = 0;
 int currY = 0;
+bool ghostCamera = false;
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
@@ -26,8 +27,8 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	// –À˜HŠÖ˜A
 	, m_pMazeData			()
 	, m_pMazeGen			(nullptr)
-	, m_MazeCellH			(7)
-	, m_MazeCellW			(7)
+	, m_MazeCellH			(16)
+	, m_MazeCellW			(16)
 	, m_MazeStride			(64)
 	, m_MazeCellSize		(1 + SEWER_MESHWIDTH)
 	// –À˜H‚Ì•ÇƒŠƒXƒg
@@ -219,15 +220,15 @@ void CTest::Start()
 	// ŠÂ‹«Ý’è
 	m_GlobalLight.fIntensity = 1.f;
 
-	m_Fog.Color = D3DXVECTOR4(0.066f, 0.078f, 0.065f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.076, 0.0803f, 0.0709f, 1.0f);
 	m_Fog.Enable = m_bFog;
-	m_Fog.Mode = D3DFOG_LINEAR;
-	m_Fog.Start = 10.0f;
-	m_Fog.End = 150.0f;
+	m_Fog.Mode = D3DFOG_EXP2;
+	m_Fog.Start = 1.0f;
+	m_Fog.End = 50.0f;
 	m_Fog.Density = 0.08f;
 
 
-	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
 
 void CTest::Update()
@@ -262,7 +263,8 @@ void CTest::Update()
 	}
 	if (GetAsyncKeyState('V') & 0x0001)
 	{
-		m_pPlayer->SetPosition(m_pGhostList[0]->GetPosition());
+		ghostCamera = !ghostCamera;
+	
 	}
 	if (GetAsyncKeyState('C') & 0x0001)
 	{
@@ -284,13 +286,29 @@ void CTest::Update()
 		wall->Update();
 	}
 
+
+
+	if (ghostCamera)
+	{
+		m_pCameraController->ThirdPersonCamera(
+			m_pGhostList[0]->GetPosition(),
+			5.f,
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
+
+		return;
+	}
+
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	m_pCameraController->ThirdPersonCamera(
 		playerPos,
 		5.f,
 		m_mouseDelta,
 		m_mouseSense);
+	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 	m_pPlayer->SetRotation(playerRot);
 

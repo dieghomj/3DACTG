@@ -59,7 +59,7 @@ private:
 
 	CDebugColliderRender* m_pDbgCollider = nullptr;
 	bool m_ShowCollider = true;
-	bool m_bFog = false;
+	bool m_bFog = true;
 
 	//–À˜H
 	int					m_pMazeData[MAZE_H][MAZE_W];
