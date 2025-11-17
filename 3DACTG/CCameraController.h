@@ -13,7 +13,7 @@ class CCameraController
 	void Update(float deltaTime);
 
 	void ThirdPersonCamera(
-		const D3DXVECTOR3& TargetPos, POINT delta, float sense);
+		const D3DXVECTOR3& TargetPos, float distance, POINT delta, float sense);
 
 	void FirstPersonCamera(
 		D3DXVECTOR3* TargetPos, POINT delta, float sense);

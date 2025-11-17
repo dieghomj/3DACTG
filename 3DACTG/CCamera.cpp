@@ -75,10 +75,42 @@ void CCamera::Strafe(float distance)
 	m_vPosition += distance * m_vRight ;
 }
 
-void CCamera::Pitch(float pitch)
+
+void CCamera::OffsetRotY(D3DXVECTOR3 pivot, float angle)
 {
+	D3DXVECTOR3 dir = m_vPosition - pivot;
 	D3DXMATRIX mRot;
 
+	D3DXMatrixRotationY(&mRot, angle);
+	D3DXVec3TransformCoord(&dir, &dir, &mRot);
+	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
+	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
+	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
+
+	m_vPosition = pivot + dir;
+}
+
+void CCamera::OffsetRotX(D3DXVECTOR3 pivot, float angle)
+{
+
+	D3DXVECTOR3 dir = m_vPosition - pivot;
+	D3DXMATRIX mRot;
+
+	D3DXMatrixRotationAxis(&mRot, &m_vRight, angle);
+	D3DXVec3TransformCoord(&dir, &dir, &mRot);
+	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
+	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
+	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
+	
+	m_vPosition = pivot + dir;
+
+}
+
+void CCamera::Pitch(float pitch)
+{
+	
+	//Xé≤âÒì]çsóÒÇçÏê¨.
+	D3DXMATRIX mRot;
 	D3DXMatrixRotationAxis(&mRot, &m_vRight, pitch);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
@@ -87,6 +119,7 @@ void CCamera::Pitch(float pitch)
 
 void CCamera::Yaw(float yaw)
 {
+	//Yé≤âÒì]çsóÒÇçÏê¨.
 	D3DXMATRIX mRot;
 	D3DXMatrixRotationY(&mRot, yaw);
 	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
