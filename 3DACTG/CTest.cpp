@@ -664,12 +664,16 @@ Pair CTest::WorldToMazeCoords(const D3DXVECTOR3& worldPos)
 {
 	D3DXVECTOR3 origin = m_pMazeGen->CellToWorldRC(0, 0, 0.f, m_MazeCellSize);
 	// Convert world position to maze coordinates
-	int mazeX = ((-worldPos.x - origin.x) * m_MazeCellSize)/ m_MazeCellSize;
-	int mazeY = ((worldPos.z - origin.z) * m_MazeCellSize)/ m_MazeCellSize;
+	D3DXVECTOR3 diff = (worldPos - origin) / m_MazeCellSize;
+	D3DXVECTOR3 up = D3DXVECTOR3(-m_MazeCellSize, 0.f, 0);
+	D3DXVECTOR3 right = D3DXVECTOR3(0.f, 0.f, m_MazeCellSize);
+
+	float mazeX = D3DXVec3Dot(&diff,&right);
+	float mazeY = D3DXVec3Dot(&diff, &up);
 
 	// Clamp values to be within maze bounds
 	mazeX = max(0, min(m_MazeCellW - 1, mazeX));
 	mazeY = max(0, min(m_MazeCellH - 1, mazeY));
 
-	return { mazeX, mazeY };
+	return { static_cast<int>(mazeX), static_cast<int>(mazeY) };
 }
