@@ -9,6 +9,9 @@
 
 int currX = 0;
 int currY = 0;
+bool ghostCamera = false;
+bool playerCamera = true;
+bool staticCamera = false;
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
@@ -115,6 +118,8 @@ void CTest::Create()
 	m_pPlayer = new CPlayer();
 	m_pWomanMesh = new CStaticMesh();
 
+	m_TMPItemMesh = new CStaticMesh();
+
 	// ゴーストメッシュ作成
 	m_pGhostMesh = new CStaticMesh();
 	// ゴースト作成
@@ -139,6 +144,10 @@ HRESULT CTest::LoadData()
 	m_pWomanMesh->Init(
 		*m_pDx9, *m_pDx11,
 		_T("Data\\Mesh\\Skin\\Woman\\PSXVillageWoman.x"));
+
+	m_TMPItemMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\DebugSphere.x"));
 
 	if (FAILED(m_pGroundStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -226,6 +235,19 @@ void CTest::Start()
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.08f;
 
+	for (int i = 0; i < m_MazeCellH; ++i)
+	{
+		for (int j = 0; j < m_MazeCellW; ++j)
+		{
+			D3DXVECTOR3 pos = m_pMazeGen->CellToWorldRC(i, j, 3.f, m_MazeCellSize);
+			CStaticMeshObject* itemMeshObj = new CStaticMeshObject;
+			itemMeshObj->AttachMesh(*m_TMPItemMesh);
+			itemMeshObj->SetPosition(pos);
+			itemMeshObj->SetScale(0.2f);
+			itemMeshObj->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+			m_ItemMeshArray.push_back(itemMeshObj);
+		}
+	}
 
 	//GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
@@ -260,19 +282,22 @@ void CTest::Update()
 	{
 		m_bFog = !m_bFog;
 	}
+	if (GetAsyncKeyState('B') & 0x0001)
+	{
+		playerCamera = !playerCamera;
+	
+	}
 	if (GetAsyncKeyState('V') & 0x0001)
 	{
 		m_pPlayer->SetPosition(m_pGhostList[0]->GetPosition());
 	}
 	if (GetAsyncKeyState('C') & 0x0001)
 	{
-		Pair np = NextMazePosition();
-		m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(np.y, np.x, 2.f, m_MazeCellSize));
+		staticCamera = !staticCamera;
 	}
 
 	m_pGround->Update();
 
-	m_pPlayer->Update();
 
 	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
@@ -284,13 +309,56 @@ void CTest::Update()
 		wall->Update();
 	}
 
-	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	m_pCameraController->ThirdPersonCamera(
-		playerPos,
-		5.f,
+	if (ghostCamera)
+	{
+		m_pCameraController->ThirdPersonCamera(
+			m_pGhostList[0]->GetPosition(),
+			5.f,
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
+
+		return;
+	}
+
+	if (playerCamera)
+	{
+		m_pPlayer->Update();
+		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+		m_pCameraController->ThirdPersonCamera(
+			playerPos,
+			5.f,
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
+
+		return; 
+	}
+	if( staticCamera )
+	{
+		m_pPlayer->Update();
+		m_pCamera->SetPerspective(D3DXToRadian(70),
+			static_cast<float>(WND_W) / static_cast<float>(WND_H),
+			0.1f, 1000.0f);
+		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
+		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 15.f, m_MazeCellSize);
+		m_pCamera->SetPosition(staticCamPos);
+		m_pCameraController->FirstPersonCamera(
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
+		return;
+	}
+	m_pCameraController->FirstPersonCamera(
 		m_mouseDelta,
 		m_mouseSense);
+	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 	m_pPlayer->SetRotation(playerRot);
 
@@ -317,6 +385,13 @@ void CTest::Draw()
 		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
 
+	for (auto& item : m_ItemMeshArray)
+	{
+		item->UpdateCollider();
+		item->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	}
+
+#pragma region COLLIDER_DEBUG_DRAW
 	if (m_pDbgCollider && m_ShowCollider)
 	{
 		m_pDx11->SetDepth(false);
@@ -338,7 +413,18 @@ void CTest::Draw()
 			}
 		}
 
+		for (auto& item : m_ItemMeshArray)
+		{
+			if (auto* col = item->GetCollider())
+			{
+				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
+					CCollider::COLLIDER_SHAPE_SPHERE, *col);
+			}
+		}
+
 		m_pDx11->SetDepth(true);
+#pragma endregion
+
 	}
 
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -346,16 +432,20 @@ void CTest::Draw()
 
 	TCHAR text[64];
 	
-	DrawTextMinimap();
+	//DrawTextMinimap();
+	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
+	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 6.f, m_MazeCellSize);
+	Pair cameraRC = WorldToMazeCoords(staticCamPos);
+	_stprintf_s(text, _T("PLAYER MAZE COORDS:%d,%d"), playerRC.x, playerRC.y);
+	m_SDFText->Render(text, 50, 50, 30.f);
+	_stprintf_s(text, _T("CAMERA MAZE COORDS:%d,%d"), cameraRC.x, cameraRC.y);
+	m_SDFText->Render(text, 50, 80, 30.f);
 
-	// --- マウス移動量表示 ---
-	//_stprintf_s(text, _T(" DELTA: (%d,%d)"), m_mouseDelta.x, m_mouseDelta.y);
-	//m_SDFText->Render(text, 50, 50, 30.f);
+
 }	
 
 void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 {
-
 	const float wallHeight = 5.0f;	// 壁の高さ
 
 	// 迷路の壁を配置
@@ -377,7 +467,7 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 				{
 					CStaticMeshObject* wall = new CStaticMeshObject();
 					wall->AttachMesh(*m_pSewerCrossMesh);
-					wall->SetPosition(x, wallHeight, z);
+					wall->SetPosition(x, wallHeight-1, z);
 					m_pMazeMeshObjArray.push_back(wall);
 					break;
 				}
@@ -476,7 +566,6 @@ void CTest::GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride)
 	}
 }
 
-
 void CTest::ClearMaze()
 {
 	for (auto& wall : m_pMazeMeshObjArray)
@@ -571,14 +660,12 @@ Pair CTest::NextMazePosition()
 
 }
 
-
 Pair CTest::WorldToMazeCoords(const D3DXVECTOR3& worldPos)
 {
-	// Reverses the calculation in GenerateMazeMeshObj to convert world coordinates back to maze grid coordinates.
-	float worldOffsetX = (static_cast<float>(m_MazeCellW)) * (SEWER_MESHWIDTH);
-
-	int mazeX = static_cast<int>((worldPos.x + worldOffsetX) / SEWER_MESHWIDTH);
-	int mazeY = static_cast<int>(((-worldPos.z / SEWER_MESHWIDTH) + (static_cast<float>(SEWER_MESHWIDTH))));
+	D3DXVECTOR3 origin = m_pMazeGen->CellToWorldRC(0, 0, 0.f, m_MazeCellSize);
+	// Convert world position to maze coordinates
+	int mazeX = ((-worldPos.x - origin.x) * m_MazeCellSize)/ m_MazeCellSize;
+	int mazeY = ((worldPos.z - origin.z) * m_MazeCellSize)/ m_MazeCellSize;
 
 	// Clamp values to be within maze bounds
 	mazeX = max(0, min(m_MazeCellW - 1, mazeX));

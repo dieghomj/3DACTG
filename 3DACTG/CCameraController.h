@@ -15,8 +15,7 @@ class CCameraController
 	void ThirdPersonCamera(
 		const D3DXVECTOR3& TargetPos, float distance, POINT delta, float sense);
 
-	void FirstPersonCamera(
-		D3DXVECTOR3* TargetPos, POINT delta, float sense);
+	void FirstPersonCamera(POINT delta, float sense);
 
 	void UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot);
 	void UpdateOffSet(D3DXVECTOR3* offset);

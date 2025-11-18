@@ -90,7 +90,7 @@ void CMenu::Update()
 		if (m_SelectedOption == MENU_OPTION_START)
 		{
 			// Change to game scene
-			m_pManager->ChangeScene("TEST");
+			m_pManager->ChangeScene("GAME");
 		}
 		else if (m_SelectedOption == MENU_OPTION_EXIT)
 		{

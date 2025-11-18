@@ -58,8 +58,7 @@ void CCameraController::ThirdPersonCamera(
 
 }
 
-void CCameraController::FirstPersonCamera(
-	D3DXVECTOR3* TargetPos, POINT delta, float sense)
+void CCameraController::FirstPersonCamera(POINT delta, float sense)
 {
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);

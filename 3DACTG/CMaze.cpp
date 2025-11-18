@@ -59,7 +59,6 @@ D3DXVECTOR3 CMaze::CellToWorldRC(int row, int col, float y, float cellSize) cons
 
 D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, int height, int width, float y, float cellSize)
 {
-
 	return D3DXVECTOR3();
 }
 

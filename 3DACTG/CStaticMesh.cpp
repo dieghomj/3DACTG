@@ -667,8 +667,8 @@ void CStaticMesh::Render(
 		cb.FogParams = D3DXVECTOR4(Fog.Start, Fog.End, Fog.Density * Fog.Enable, Fog.Mode); // start, end, density, mode
 
 		// --- PSX Effects ---
-		cb.AffineIntensity = 1.5f;
-		cb.VertexSnapping = 620.f;
+		cb.AffineIntensity = AFFINE_INTENSITY;
+		cb.VertexSnapping = VERTEX_SNAPPING;
 
 		memcpy_s(
 			pData.pData,	//コピー先のバッファ.

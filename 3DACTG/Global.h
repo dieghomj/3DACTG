@@ -34,6 +34,8 @@
 const int WND_W = 800;	//ウィンドウの幅.
 const int WND_H = 600;	//ウィンドウの高さ.
 const int FPS = 60;		//フレームレート.
+const int AFFINE_INTENSITY = 1;	//アフィン変換の強度.
+const int VERTEX_SNAPPING = 16;		//頂点スナッピングの強度.
 const double PI = 3.14159265358979323846;
 
 

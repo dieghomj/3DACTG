@@ -11,8 +11,8 @@
 //=================================================
 //	定数.
 //=================================================
-const TCHAR WND_TITLE[] = _T( "初めての3Dシューティング" );
-const TCHAR APP_NAME[]	= _T( "3DSTG" );
+const TCHAR WND_TITLE[] = _T( "MAZE MYSTERY" );
+const TCHAR APP_NAME[]	= _T( "MAZE MYSTERY" );
 
 
 /********************************************************************************
@@ -101,7 +101,7 @@ HRESULT CMain::Create()
 
 	//ゲームシーンクラスのインスタンス生成.
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
-	m_pSceneManager->AddScene(m_pTest, "TEST");
+	m_pSceneManager->AddScene(m_pTest, "GAME");
 
 	//シーン変更.
 	m_pSceneManager->ChangeScene("MENU");

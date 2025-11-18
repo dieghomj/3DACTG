@@ -35,11 +35,16 @@ private:
 	void DrawTextMinimap();
 
 private:
+	
 
 	CFont* m_SDFText;
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
 	
+	CPlayer* m_pPlayer;
+	CStaticMesh* m_pWomanMesh;
+	CStaticMesh* m_TMPItemMesh;
+	std::vector<CStaticMeshObject*> m_ItemMeshArray;
 
 	CStaticMesh* m_pWallStaticMesh;
 
@@ -51,13 +56,11 @@ private:
 
 	std::vector<CStaticMeshObject*> m_pMazeMeshObjArray;
 
-	CPlayer* m_pPlayer;
-	CStaticMesh* m_pWomanMesh;
-	
 	CStaticMesh* m_pGhostMesh;
 	CBaseEnemy* m_pGhostList[16];
 
 	CDebugColliderRender* m_pDbgCollider = nullptr;
+
 	bool m_ShowCollider = true;
 	bool m_bFog = false;
 
