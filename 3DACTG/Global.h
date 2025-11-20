@@ -4,6 +4,7 @@
 #pragma warning(disable:4005)
 #include <Windows.h>
 #include <crtdbg.h>
+#include <vector>
 
 //DirectX9
 #include <d3dx9.h>
@@ -31,15 +32,14 @@
 //	定数.
 //=================================================
 //#define WND_W 1280	//←定数宣言で#defineは使わない.
-const int WND_W = 800;	//ウィンドウの幅.
-const int WND_H = 600;	//ウィンドウの高さ.
+const int WND_W = 1280;	//ウィンドウの幅.
+const int WND_H = 720;	//ウィンドウの高さ.
 const int FPS = 60;		//フレームレート.
 const int AFFINE_INTENSITY = 1;	//アフィン変換の強度.
-const int VERTEX_SNAPPING = 16;		//頂点スナッピングの強度.
+const int VERTEX_SNAPPING = 100;		//頂点スナッピングの強度.
 const double PI = 3.14159265358979323846;
 
-
-//=================================================
+//=================================	================
 //	構造体
 //=================================================
 //カメラ情報構造体.
@@ -73,3 +73,4 @@ struct Pair
 	int x;
 	int y;
 };
+
