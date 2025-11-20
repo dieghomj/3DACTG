@@ -175,6 +175,7 @@
     <ClCompile Include="CRay.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
+    <ClCompile Include="CSewerPath.cpp" />
     <ClCompile Include="CSkinMesh.cpp" />
     <ClCompile Include="CSkinMeshObject.cpp" />
     <ClCompile Include="CSkinMeshParser.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="CTime.cpp" />
     <ClCompile Include="CUIObject.cpp" />
     <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="Global.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -220,6 +222,7 @@
     <ClInclude Include="CRay.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="CSewerPath.h" />
     <ClInclude Include="CSkinMesh.h" />
     <ClInclude Include="CSkinMeshObject.h" />
     <ClInclude Include="CSkinMeshParser.h" />
