@@ -198,7 +198,7 @@ HRESULT CTest::LoadData()
 
 	m_pPlayer->AttachMesh(*m_pWomanMesh);
 	m_pPlayer->SetScale(0.6f);
-	m_pPlayer->SetPosition(0.f,0.f,0.f);
+	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0,0,2.f,m_MazeCellSize));
 
 	for(int i = 0; i < ENEMY_COUNT; ++i)
 	{
@@ -284,15 +284,19 @@ void CTest::Update()
 	}
 	if (GetAsyncKeyState('B') & 0x0001)
 	{
+		m_pPlayer->SetRotation(0.f, 0.f, 0.f);
+		m_pCamera->ResetCameraRot();
 		playerCamera = !playerCamera;
 	
 	}
 	if (GetAsyncKeyState('V') & 0x0001)
 	{
+		m_pCamera->ResetCameraRot();
 		m_pPlayer->SetPosition(m_pGhostList[0]->GetPosition());
 	}
 	if (GetAsyncKeyState('C') & 0x0001)
 	{
+		m_pCamera->ResetCameraRot();
 		staticCamera = !staticCamera;
 	}
 
@@ -323,44 +327,46 @@ void CTest::Update()
 		return;
 	}
 
-	if (playerCamera)
-	{
-		m_pPlayer->Update();
-		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-		m_pCameraController->ThirdPersonCamera(
-			playerPos,
-			5.f,
-			m_mouseDelta,
-			m_mouseSense);
-		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-		m_pPlayer->SetRotation(playerRot);
+	//if (playerCamera)
+	//{
+	//	m_pPlayer->Update();
+	//	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	//	m_pCameraController->ThirdPersonCamera(
+	//		playerPos,
+	//		5.f,
+	//		m_mouseDelta,
+	//		m_mouseSense);
+	//	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	//	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	//	m_pPlayer->SetRotation(playerRot);
 
-		return; 
-	}
-	if( staticCamera )
-	{
+	//	return; 
+	//}
+	//if( staticCamera )
+	//{
 		m_pPlayer->Update();
 		m_pCamera->SetPerspective(D3DXToRadian(70),
 			static_cast<float>(WND_W) / static_cast<float>(WND_H),
 			0.1f, 1000.0f);
+		
 		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 15.f, m_MazeCellSize);
+		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 7.f, m_MazeCellSize);
 		m_pCamera->SetPosition(staticCamPos);
-		m_pCameraController->FirstPersonCamera(
+		
+		m_pCameraController->StaticCamera(
+			m_pPlayer->GetPosition(),
 			m_mouseDelta,
-			m_mouseSense);
-		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-		m_pPlayer->SetRotation(playerRot);
+			m_mouseSense
+		);
+
 		return;
-	}
-	m_pCameraController->FirstPersonCamera(
-		m_mouseDelta,
-		m_mouseSense);
-	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-	m_pPlayer->SetRotation(playerRot);
+	//}
+	//m_pCameraController->FirstPersonCamera(
+	//	m_mouseDelta,
+	//	m_mouseSense);
+	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	//m_pPlayer->SetRotation(playerRot);
 
 }
 
@@ -434,8 +440,7 @@ void CTest::Draw()
 	
 	//DrawTextMinimap();
 	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 6.f, m_MazeCellSize);
-	Pair cameraRC = WorldToMazeCoords(staticCamPos);
+	Pair cameraRC = WorldToMazeCoords(m_pCamera->GetPosition());
 	_stprintf_s(text, _T("PLAYER MAZE COORDS:%d,%d"), playerRC.x, playerRC.y);
 	m_SDFText->Render(text, 50, 50, 30.f);
 	_stprintf_s(text, _T("CAMERA MAZE COORDS:%d,%d"), cameraRC.x, cameraRC.y);
@@ -662,18 +667,21 @@ Pair CTest::NextMazePosition()
 
 Pair CTest::WorldToMazeCoords(const D3DXVECTOR3& worldPos)
 {
+	// 迷路の原点を取得 (0,0セルのワールド座標)
 	D3DXVECTOR3 origin = m_pMazeGen->CellToWorldRC(0, 0, 0.f, m_MazeCellSize);
-	// Convert world position to maze coordinates
-	D3DXVECTOR3 diff = (worldPos - origin) / m_MazeCellSize;
-	D3DXVECTOR3 up = D3DXVECTOR3(-m_MazeCellSize, 0.f, 0);
-	D3DXVECTOR3 right = D3DXVECTOR3(0.f, 0.f, m_MazeCellSize);
 
-	float mazeX = D3DXVec3Dot(&diff,&right);
-	float mazeY = D3DXVec3Dot(&diff, &up);
+	// ワールド座標を迷路のローカル座標に変換
+	D3DXVECTOR3 offset = D3DXVECTOR3(-m_MazeCellSize / 2.0f, 0.f, m_MazeCellSize / 2.0f);
+	D3DXVECTOR3 localPos = worldPos - (origin + offset);
+	
+	// ローカル座標をグリッド座標に変換
+	float col = localPos.x / m_MazeCellSize;
+	float row = -localPos.z / m_MazeCellSize;
 
-	// Clamp values to be within maze bounds
-	mazeX = max(0, min(m_MazeCellW - 1, mazeX));
-	mazeY = max(0, min(m_MazeCellH - 1, mazeY));
+	// 迷路の範囲内にクランプ
+	col = max(0.0f, min(static_cast<float>(m_MazeCellW - 1), col));
+	row = max(0.0f, min(static_cast<float>(m_MazeCellH - 1), row));
 
-	return { static_cast<int>(mazeX), static_cast<int>(mazeY) };
+	// 整数のグリッド座標として返す
+	return { static_cast<int>(row), static_cast<int>(col) };
 }

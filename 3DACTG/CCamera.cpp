@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "CCamera.h"
 
+D3DXVECTOR3 m_Target = D3DXVECTOR3(0.f,0.f,0.f);
+
 CCamera::CCamera()
 	: m_vLook		(D3DXVECTOR3(0.0f, 0.0f, 10.0f))
 	, m_vUp			(D3DXVECTOR3(0.0f, 1.0f, 0.0f))
 	, m_vRight		(D3DXVECTOR3(1.0f, 0.0f, 0.0f))
+	, m_Pitch		(0.f)
+	, m_Yaw			(0.f)
 	, m_NearWindowHeight(0.0f)
 	, m_FarWindowHeight(0.0f)
 	, m_FovY		(D3DX_PI / 4.0f)	// 45°
@@ -55,13 +59,9 @@ void CCamera::SetLens(float fovY, float aspect, float zn, float zf)
 
 void CCamera::LookAt(const D3DXVECTOR3& target)
 {
-	D3DXMATRIX mView;
-	m_vLook = target - m_vPosition;
-	D3DXVec3Normalize(&m_vLook, &m_vLook);
-	
-	D3DXVec3Cross(&m_vRight, &m_vUp, &m_vLook);
-	D3DXVec3Normalize(&m_vRight, &m_vRight);
-	D3DXVec3Cross(&m_vUp, &m_vLook, &m_vRight);
+	D3DXMATRIX mLook;
+	D3DXVECTOR3 dir = target - m_vPosition;
+	m_Target = target;
 
 }
 
@@ -90,6 +90,14 @@ void CCamera::OffsetRotY(D3DXVECTOR3 pivot, float angle)
 	m_vPosition = pivot + dir;
 }
 
+void CCamera::ResetCameraRot()
+{
+	m_vRight = D3DXVECTOR3(1.f, 0.f, 0.f);
+	m_vUp    = D3DXVECTOR3(0.f, 1.f, 0.f);
+	m_vLook  = D3DXVECTOR3(0.f, 0.f, 1.f);
+	m_vRotation = D3DXVECTOR3(0.f, 0.f, 0.f);
+}
+
 void CCamera::OffsetRotX(D3DXVECTOR3 pivot, float angle)
 {
 
@@ -108,13 +116,11 @@ void CCamera::OffsetRotX(D3DXVECTOR3 pivot, float angle)
 
 void CCamera::Pitch(float pitch)
 {
-	
 	//X軸回転行列を作成.
 	D3DXMATRIX mRot;
 	D3DXMatrixRotationAxis(&mRot, &m_vRight, pitch);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
-
 }
 
 void CCamera::Yaw(float yaw)
@@ -125,7 +131,6 @@ void CCamera::Yaw(float yaw)
 	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
-
 }
 
 void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
@@ -135,45 +140,52 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	D3DXVECTOR3	vUpVec = m_vUp;	//上方（ベクトル）.
 	D3DXVECTOR3	vRightVec = m_vRight; //右方（ベクトル）.
 
-	D3DXVec3Normalize(&vLookVec, &vLookVec);
+	D3DXMatrixLookAtLH(
+		&mView,				//(out)ビュー計算結果.
+		&cam_pos,			//(in)カメラの位置ベクトル.
+		&m_Target,//(in)注視点の位置ベクトル.
+		&vUpVec);			//(in)上方ベクトル.
 
-	D3DXVec3Cross(&vUpVec, &vLookVec, &vRightVec);
-	D3DXVec3Normalize(&vUpVec, &vUpVec);
 
-	D3DXVec3Cross(&vRightVec, &vUpVec, &vLookVec);
+	//D3DXVec3Normalize(&vLookVec, &vLookVec);
 
-	m_vLook		= vLookVec;
-	m_vUp		= vUpVec;
-	m_vRight	= vRightVec;
+	//D3DXVec3Cross(&vUpVec, &vLookVec, &vRightVec);
+	//D3DXVec3Normalize(&vUpVec, &vUpVec);
 
-	float x = -D3DXVec3Dot(&vRightVec, &cam_pos);
-	float y = -D3DXVec3Dot(&vUpVec, &cam_pos);
-	float z = -D3DXVec3Dot(&vLookVec, &cam_pos);
-	
-	D3DXVECTOR3 vAt = cam_pos + vLookVec;
+	//D3DXVec3Cross(&vRightVec, &vUpVec, &vLookVec);
 
-	// ビュー計算
-	mView(0, 0) = vRightVec.x;
-	mView(1, 0) = vRightVec.y;
-	mView(2, 0) = vRightVec.z;
-	mView(3, 0) = x;
+	//m_vLook		= vLookVec;
+	//m_vUp		= vUpVec;
+	//m_vRight	= vRightVec;
 
-	mView(0, 1) = vUpVec.x;
-	mView(1, 1) = vUpVec.y;
-	mView(2, 1) = vUpVec.z;
-	mView(3, 1) = y;
+	//float x = -D3DXVec3Dot(&vRightVec, &cam_pos);
+	//float y = -D3DXVec3Dot(&vUpVec, &cam_pos);
+	//float z = -D3DXVec3Dot(&vLookVec, &cam_pos);
+	//
+	//D3DXVECTOR3 vAt = cam_pos + vLookVec;
 
-	mView(0, 2) = vLookVec.x;
-	mView(1, 2) = vLookVec.y;
-	mView(2, 2) = vLookVec.z;
-	mView(3, 2) = z;
+	//// ビュー計算
+	//mView(0, 0) = vRightVec.x;
+	//mView(1, 0) = vRightVec.y;
+	//mView(2, 0) = vRightVec.z;
+	//mView(3, 0) = x;
 
-	mView(0, 3) = 0.0f;
-	mView(1, 3) = 0.0f;
-	mView(2, 3) = 0.0f;
-	mView(3, 3) = 1.0f;
+	//mView(0, 1) = vUpVec.x;
+	//mView(1, 1) = vUpVec.y;
+	//mView(2, 1) = vUpVec.z;
+	//mView(3, 1) = y;
 
-	//mView = mNewView;
+	//mView(0, 2) = vLookVec.x;
+	//mView(1, 2) = vLookVec.y;
+	//mView(2, 2) = vLookVec.z;
+	//mView(3, 2) = z;
+
+	//mView(0, 3) = 0.0f;
+	//mView(1, 3) = 0.0f;
+	//mView(2, 3) = 0.0f;
+	//mView(3, 3) = 1.0f;
+
+	////mView = mNewView;
 
 	// プロジェクション計算（レンズパラメータに基づく）
 	D3DXMatrixPerspectiveFovLH(

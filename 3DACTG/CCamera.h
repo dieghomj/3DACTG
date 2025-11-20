@@ -27,6 +27,7 @@ public:
 
 	void OffsetRotX(D3DXVECTOR3 pivot, float angle);
 	void OffsetRotY(D3DXVECTOR3 pivot, float angle);
+	void ResetCameraRot();
 
 	void Pitch(float pitch);
 	void Yaw(float yaw);
