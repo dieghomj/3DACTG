@@ -175,7 +175,7 @@ bool CStaticMeshObject::IsHitForRay(
 void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 {
 #if 1
-	static constexpr float WSPACE = 0.8f;	//•Ç‚Æ‚ÌŒÀŠE‹——£
+	static constexpr float WSPACE = 0.15f;	//•Ç‚Æ‚ÌŒÀŠE‹——£
 
 	FLOAT Distance;			//ƒŒƒC‚Ì‹——£
 	D3DXVECTOR3 Intersect;	//ƒŒƒC‚ÌŒğ·“_

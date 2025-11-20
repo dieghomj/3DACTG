@@ -1,8 +1,9 @@
 #pragma once
 #include "CStaticMeshObject.h"
+#include "CCharacter.h"
 
 class CPlayer 
-	: public CStaticMeshObject
+	: public CCharacter
 {
 
 public:
