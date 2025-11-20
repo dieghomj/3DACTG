@@ -15,8 +15,9 @@ CCamera::CCamera()
 	, m_Aspect		(16.0f / 9.0f)		// 初期既定。リサイズ時に更新推奨
 	, m_NearZ		(0.1f)
 	, m_FarZ		(1000.0f)
+	, m_bStaticCamera(false)
+	, m_vStaticCamTarget(D3DXVECTOR3(0.f, 0.f, 0.f))
 {
-
 }
 
 CCamera::~CCamera()
@@ -25,6 +26,7 @@ CCamera::~CCamera()
 
 void CCamera::Update()
 {
+	m_bStaticCamera = false;
 }
 
 void CCamera::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
@@ -59,10 +61,8 @@ void CCamera::SetLens(float fovY, float aspect, float zn, float zf)
 
 void CCamera::LookAt(const D3DXVECTOR3& target)
 {
-	D3DXMATRIX mLook;
-	D3DXVECTOR3 dir = target - m_vPosition;
-	m_Target = target;
-
+	m_vStaticCamTarget = target;
+	m_bStaticCamera = true;
 }
 
 void CCamera::Walk(float distance)
@@ -140,50 +140,51 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	D3DXVECTOR3	vUpVec = m_vUp;	//上方（ベクトル）.
 	D3DXVECTOR3	vRightVec = m_vRight; //右方（ベクトル）.
 
-	D3DXMatrixLookAtLH(
-		&mView,				//(out)ビュー計算結果.
-		&cam_pos,			//(in)カメラの位置ベクトル.
-		&m_Target,//(in)注視点の位置ベクトル.
-		&vUpVec);			//(in)上方ベクトル.
+	if (m_bStaticCamera)
+	{
+		D3DXMatrixLookAtLH(
+			&mView,				//(out)ビュー計算結果.
+			&cam_pos,			//(in)カメラの位置ベクトル.
+			&m_vStaticCamTarget,			//(in)注視点の位置ベクトル.
+			&vUpVec);			//(in)上方ベクトル.
 
+		return;
+	}
 
-	//D3DXVec3Normalize(&vLookVec, &vLookVec);
+	D3DXVec3Normalize(&vLookVec, &vLookVec);
+	D3DXVec3Cross(&vUpVec, &vLookVec, &vRightVec);
+	D3DXVec3Normalize(&vUpVec, &vUpVec);
+	D3DXVec3Cross(&vRightVec, &vUpVec, &vLookVec);
+	m_vLook	= vLookVec;
+	m_vUp		= vUpVec;
+	m_vRight	= vRightVec;
 
-	//D3DXVec3Cross(&vUpVec, &vLookVec, &vRightVec);
-	//D3DXVec3Normalize(&vUpVec, &vUpVec);
+	float x = -D3DXVec3Dot(&vRightVec, &cam_pos);
+	float y = -D3DXVec3Dot(&vUpVec, &cam_pos);
+	float z = -D3DXVec3Dot(&vLookVec, &cam_pos);
+	
+	D3DXVECTOR3 vAt = cam_pos + vLookVec;
 
-	//D3DXVec3Cross(&vRightVec, &vUpVec, &vLookVec);
+	// ビュー計算
+	mView(0, 0) = vRightVec.x;
+	mView(1, 0) = vRightVec.y;
+	mView(2, 0) = vRightVec.z;
+	mView(3, 0) = x;
 
-	//m_vLook		= vLookVec;
-	//m_vUp		= vUpVec;
-	//m_vRight	= vRightVec;
+	mView(0, 1) = vUpVec.x;
+	mView(1, 1) = vUpVec.y;
+	mView(2, 1) = vUpVec.z;
+	mView(3, 1) = y;
 
-	//float x = -D3DXVec3Dot(&vRightVec, &cam_pos);
-	//float y = -D3DXVec3Dot(&vUpVec, &cam_pos);
-	//float z = -D3DXVec3Dot(&vLookVec, &cam_pos);
-	//
-	//D3DXVECTOR3 vAt = cam_pos + vLookVec;
+	mView(0, 2) = vLookVec.x;
+	mView(1, 2) = vLookVec.y;
+	mView(2, 2) = vLookVec.z;
+	mView(3, 2) = z;
 
-	//// ビュー計算
-	//mView(0, 0) = vRightVec.x;
-	//mView(1, 0) = vRightVec.y;
-	//mView(2, 0) = vRightVec.z;
-	//mView(3, 0) = x;
-
-	//mView(0, 1) = vUpVec.x;
-	//mView(1, 1) = vUpVec.y;
-	//mView(2, 1) = vUpVec.z;
-	//mView(3, 1) = y;
-
-	//mView(0, 2) = vLookVec.x;
-	//mView(1, 2) = vLookVec.y;
-	//mView(2, 2) = vLookVec.z;
-	//mView(3, 2) = z;
-
-	//mView(0, 3) = 0.0f;
-	//mView(1, 3) = 0.0f;
-	//mView(2, 3) = 0.0f;
-	//mView(3, 3) = 1.0f;
+	mView(0, 3) = 0.0f;
+	mView(1, 3) = 0.0f;
+	mView(2, 3) = 0.0f;
+	mView(3, 3) = 1.0f;
 
 	////mView = mNewView;
 

@@ -50,6 +50,10 @@ private:
 	D3DXVECTOR3 m_vUp;
 	D3DXVECTOR3	m_vRight;
 
+	D3DXVECTOR3 m_vStaticCamTarget;
+	bool m_bStaticCamera;
+
+
 	float m_Yaw;
 	float m_Pitch;
 	float m_FovY;

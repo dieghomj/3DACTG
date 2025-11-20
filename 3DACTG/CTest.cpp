@@ -11,7 +11,7 @@ int currX = 0;
 int currY = 0;
 bool ghostCamera = false;
 bool playerCamera = false;
-bool staticCamera = true;
+bool staticCamera = false;
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
@@ -250,9 +250,9 @@ void CTest::Start()
 	m_Fog.Color = D3DXVECTOR4(0.066f, 0.078f, 0.065f, 1.0f);
 	m_Fog.Enable = m_bFog;
 	m_Fog.Mode = D3DFOG_LINEAR;
-	m_Fog.Start = 10.0f;
+	m_Fog.Start = 5.0f;
 	m_Fog.End = 150.0f;
-	m_Fog.Density = 0.08f;
+	m_Fog.Density = 0.1f;
 
 	for (int i = 0; i < m_MazeCellH; ++i)
 	{
@@ -332,54 +332,49 @@ void CTest::Update()
 		m_pGhostList[i]->Update();
 	}
 
-
 	// ゴーストカメラ
-	//if (ghostCamera)
-	//{
-	//	m_pCameraController->ThirdPersonCamera(
-	//		m_pGhostList[0]->GetPosition(),
-	//		5.f,
-	//		m_mouseDelta,
-	//		m_mouseSense);
-	//	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	//	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-	//	m_pPlayer->SetRotation(playerRot);
+	if (ghostCamera)
+	{
+		m_pCameraController->ThirdPersonCamera(
+			m_pGhostList[0]->GetPosition(),
+			5.f,
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
 
-	//	return;
-	//}
+		return;
+	}
 
-	//// プレイヤーカメラ
-	//if (playerCamera)
-	//{
-	//	m_pPlayer->Update();
-	//	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-	//	m_pCameraController->ThirdPersonCamera(
-	//		playerPos,
-	//		5.f,
-	//		m_mouseDelta,
-	//		m_mouseSense);
-	//	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	//	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-	//	m_pPlayer->SetRotation(playerRot);
-	//	for (auto& path : m_pSewerPathArray)
-	//	{
-	//		Pair pathCoords = path->GetMazeCoords();
-	//		Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
-	//		if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
-	//			path->Update();
-	//	}
-	//	return; 
-	//}
+	// プレイヤーカメラ
+	if (playerCamera)
+	{
+		m_pPlayer->Update();
+		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+		m_pCameraController->ThirdPersonCamera(
+			playerPos,
+			5.f,
+			m_mouseDelta,
+			m_mouseSense);
+		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+		m_pPlayer->SetRotation(playerRot);
+		for (auto& path : m_pSewerPathArray)
+		{
+			Pair pathCoords = path->GetMazeCoords();
+			Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
+			if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
+				path->Update();
+		}
+		return; 
+	}
 	// スタティックカメラ
 	if( staticCamera )
 	{
 		m_pPlayer->Update();
-		m_pCamera->SetPerspective(D3DXToRadian(70),
-			static_cast<float>(WND_W) / static_cast<float>(WND_H),
-			0.1f, 1000.0f);
-		
 		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 7.f, m_MazeCellSize);
+		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
 		m_pCamera->SetPosition(staticCamPos);
 		
 		m_pCameraController->StaticCamera(
@@ -395,10 +390,10 @@ void CTest::Update()
 		}
 		return;
 	}
-	//// 通常カメラ
-	//m_pCameraController->FirstPersonCamera(
-	//	m_mouseDelta,
-	//	m_mouseSense);
+	// 通常カメラ
+	m_pCameraController->FirstPersonCamera(
+		m_mouseDelta,
+		m_mouseSense);
 	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 	//m_pPlayer->SetRotation(playerRot);
@@ -491,6 +486,16 @@ void CTest::Draw()
 	_stprintf_s(text, _T("CAMERA MAZE COORDS:%d,%d"), cameraRC.x, cameraRC.y);
 	m_SDFText->Render(text, 50, 80, 30.f);
 	m_SDFText->Render(_T("PRESS R TO REGENERATE MAZE"), 50, 700, 25.f);
+	
+	if(ghostCamera)
+		m_SDFText->Render(_T("GHOST CAMERA"), 800, 50, 30.f);
+	else if (playerCamera)
+		m_SDFText->Render(_T("PLAYER CAMERA"), 800, 80, 30.f);
+	else if (staticCamera)
+		m_SDFText->Render(_T("STATIC CAMERA"), 800, 110, 30.f);
+	else
+		m_SDFText->Render(_T("FIRST PERSON CAMERA"), 800, 140, 30.f);
+
 	//for (int i = 0; i < CGlobal::debugText.size(); i++)
 	//{
 	//	auto text = CGlobal::debugText[i];

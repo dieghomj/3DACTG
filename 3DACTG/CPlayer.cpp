@@ -77,10 +77,10 @@ void CPlayer::RadioControl()
 		m_vPosition -= vecAxisZ * m_MoveSpeed;
 		break;
 	case MoveState::Left:	//ç∂à⁄ìÆ
-		m_vPosition += vecAxisX * m_MoveSpeed;
+		m_vRotation.y += m_TurnSpeed;
 		break;
 	case MoveState::Right:	//âEà⁄ìÆ
-		m_vPosition -= vecAxisX * m_MoveSpeed;
+		m_vRotation.y -= m_TurnSpeed;
 		break;
 	case MoveState::Up:	//è„è∏
 		m_vPosition.y += m_MoveSpeed;
