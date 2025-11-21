@@ -2,9 +2,10 @@
 #include "CSoundManager.h"
 #include "CMaze.h"
 #include "CDebugColliderRender.h"
+#include "CEffect.h"
 #include <stdio.h>
 
-#define ENEMY_COUNT 7
+#define ENEMY_COUNT 1
 #define SEWER_MESHWIDTH 10.5f 
 
 int currX = 0;
@@ -34,8 +35,8 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	// 迷路関連
 	, m_pMazeData			()
 	, m_pMazeGen			(nullptr)
-	, m_MazeCellH			(16)
-	, m_MazeCellW			(16)
+	, m_MazeCellH			(3)
+	, m_MazeCellW			(3)
 	, m_MazeStride			(64)
 	, m_MazeCellSize		(1.5 + SEWER_MESHWIDTH)
 	
@@ -140,11 +141,18 @@ void CTest::Create()
 	
 	m_pDbgCollider = new CDebugColliderRender();
 
+	CEffect::GetInstance()->Create(
+		m_pDx11->GetDevice(),
+		m_pDx11->GetContext());
+
 }
 
 HRESULT CTest::LoadData()
 {
-	HRESULT hr = S_OK;
+	//Effectクラス
+	if (FAILED(CEffect::GetInstance()->LoadData())) {
+		return E_FAIL;
+	}
 
 	if (FAILED(m_SDFText->Init(*m_pDx11)))
 	{
@@ -233,6 +241,8 @@ HRESULT CTest::LoadData()
 	CStaticMeshObject* pSewerCross = new CStaticMeshObject();
 	CStaticMeshObject* pSewerEnd = new CStaticMeshObject();
 
+
+
 	return S_OK;
 
 }
@@ -261,14 +271,20 @@ void CTest::Start()
 		{
 			D3DXVECTOR3 pos = m_pMazeGen->CellToWorldRC(i, j, 3.f, m_MazeCellSize);
 			CStaticMeshObject* itemMeshObj = new CStaticMeshObject;
-			itemMeshObj->AttachMesh(*m_TMPItemMesh);
+			//itemMeshObj->AttachMesh(*m_TMPItemMesh);
 			itemMeshObj->SetPosition(pos);
 			itemMeshObj->SetScale(0.2f);
 			itemMeshObj->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 			m_ItemMeshArray.push_back(itemMeshObj);
 		}
 	}
-
+	static ::EsHandle hEffect = -1;
+	for (auto& item : m_ItemMeshArray)
+	{
+		D3DXVECTOR3 pos = item->GetPosition();
+		hEffect = CEffect::Play(CEffect::enList::MagmaEffect, pos);
+		CEffect::SetScale(hEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+	}
 	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 }
 
@@ -347,6 +363,9 @@ void CTest::Update()
 
 		return;
 	}
+	
+	
+
 
 	// プレイヤーカメラ
 	if (playerCamera)
@@ -373,6 +392,7 @@ void CTest::Update()
 	// スタティックカメラ
 	if( staticCamera )
 	{
+		m_pPlayer->SetTankControlMode(true);
 		m_pPlayer->Update();
 		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
 		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
@@ -430,12 +450,14 @@ void CTest::Draw()
 		m_pGhostList[i]->UpdateCollider();
 		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
+	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+
 	// アイテム描画
 	for (auto& item : m_ItemMeshArray)
 	{
-		item->UpdateCollider();
 		item->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
+
 
 #pragma region COLLIDER_DEBUG_DRAW
 	// コライダーのデバッグ描画
@@ -458,15 +480,6 @@ void CTest::Draw()
 			{
 				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
 					CCollider::COLLIDER_SHAPE_BOX, *col);
-			}
-		}
-
-		for (auto& item : m_ItemMeshArray)
-		{
-			if (auto* col = item->GetCollider())
-			{
-				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
-					CCollider::COLLIDER_SHAPE_SPHERE, *col);
 			}
 		}
 

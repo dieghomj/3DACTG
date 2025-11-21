@@ -42,9 +42,9 @@ public:
 	//エフェクト種類列挙型
 	enum enList
 	{
-		Test0 = 0,	//仮で設定
-		Test1,		//仮で設定
-		Test2,		//仮で設定
+		MagmaEffect = 0,	//仮で設定
+		CircleEffect,		//仮で設定
+		SpriteEffect,		//仮で設定
 		Max			//最大数
 	};
 
@@ -84,6 +84,10 @@ public:
 		CEffect* pE = CEffect::GetInstance();
 		return pE->m_pManager->Play(pE->m_pEffect[listNo], pos.x, pos.y, pos.z);
 	}
+	// Is it playing?
+	static bool IsPlaying(::EsHandle handle) {
+		return CEffect::GetInstance()->m_pManager->Exists(handle);
+	}
 	//停止
 	static void Stop(::EsHandle handle) {
 		CEffect::GetInstance()->m_pManager->StopEffect(handle);
@@ -120,7 +124,7 @@ public:
 		CEffect::GetInstance()->m_pManager->
 			SetScale(handle, scale.x, scale.y, scale.z);
 	}
-
+	
 private:
 	//生成やコピーを禁止する
 	CEffect();

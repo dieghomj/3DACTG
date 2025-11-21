@@ -191,6 +191,8 @@
     <ClCompile Include="CTime.cpp" />
     <ClCompile Include="CUIObject.cpp" />
     <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CXInput.cpp" />
+    <ClCompile Include="CInput.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -237,6 +239,8 @@
     <ClInclude Include="CTime.h" />
     <ClInclude Include="CUIObject.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="CXInput.h" />
+    <ClInclude Include="CInput.h" />
     <ClInclude Include="MyMacro.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="stdafx.h" />
