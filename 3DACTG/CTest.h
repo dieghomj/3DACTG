@@ -9,6 +9,7 @@
 #include "CDebugBSphere.h"
 #include "CBaseEnemy.h"
 #include "CMaze.h"
+#include "CSewerPath.h"
 
 #define MAZE_H 64
 #define MAZE_W 64
@@ -16,6 +17,7 @@
 class CTest : public CScene
 {
 public:
+
 	CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager);
 	~CTest();
 
@@ -35,11 +37,19 @@ private:
 	void DrawTextMinimap();
 
 private:
+	
 
 	CFont* m_SDFText;
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
 	
+	CPlayer* m_pPlayer;
+	CRay* m_pPlayerRayY;
+	CRay* m_pCrossRay[4];
+
+	CStaticMesh* m_pWomanMesh;
+	CStaticMesh* m_TMPItemMesh;
+	std::vector<CStaticMeshObject*> m_ItemMeshArray;
 
 	CStaticMesh* m_pWallStaticMesh;
 
@@ -49,15 +59,13 @@ private:
 	CStaticMesh* m_pSewerCrossMesh;
 	CStaticMesh* m_pSewerEndMesh;
 
-	std::vector<CStaticMeshObject*> m_pMazeMeshObjArray;
+	std::vector<CSewerPath*> m_pSewerPathArray;
 
-	CPlayer* m_pPlayer;
-	CStaticMesh* m_pWomanMesh;
-	
 	CStaticMesh* m_pGhostMesh;
-	CBaseEnemy* m_pGhostList[16];
+	CBaseEnemy* m_pGhostList[128];
 
 	CDebugColliderRender* m_pDbgCollider = nullptr;
+
 	bool m_ShowCollider = true;
 	bool m_bFog = true;
 

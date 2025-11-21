@@ -1,6 +1,6 @@
 cbuffer CBUFFER_VP : register(b0)
 {
-    float4x4 g_mVP; // View * Proj (transposed)
+    float4x4 g_mWVP; // View * Proj (transposed)
 };
 
 struct VS_IN
@@ -18,7 +18,7 @@ struct VS_OUT
 VS_OUT VS_Main(VS_IN vin)
 {
     VS_OUT vout;
-    vout.PosH = mul(float4(vin.Pos, 1.0f), g_mVP);
+    vout.PosH = mul(float4(vin.Pos, 1.0f), g_mWVP);
     vout.Color = vin.Color;
     return vout;
 }

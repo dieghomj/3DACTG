@@ -27,6 +27,7 @@ public:
 
 	void OffsetRotX(D3DXVECTOR3 pivot, float angle);
 	void OffsetRotY(D3DXVECTOR3 pivot, float angle);
+	void ResetCameraRot();
 
 	void Pitch(float pitch);
 	void Yaw(float yaw);
@@ -48,6 +49,10 @@ private:
 	D3DXVECTOR3 m_vLook;
 	D3DXVECTOR3 m_vUp;
 	D3DXVECTOR3	m_vRight;
+
+	D3DXVECTOR3 m_vStaticCamTarget;
+	bool m_bStaticCamera;
+
 
 	float m_Yaw;
 	float m_Pitch;

@@ -118,7 +118,7 @@ void CDebugBBox::ApplyVP(ID3D11DeviceContext* ctx, const D3DXMATRIX& mVP)
 		CBUFFER_VP* cb = reinterpret_cast<CBUFFER_VP*>(mapped.pData);
 		D3DXMATRIX t = mVP;
 		D3DXMatrixTranspose(&t, &t);
-		cb->mVP = t;
+		cb->mWVP = t;
 		ctx->Unmap(m_pCBuffer, 0);
 	}
 	ctx->VSSetConstantBuffers(0, 1, &m_pCBuffer);

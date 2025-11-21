@@ -39,8 +39,8 @@ void CCameraController::ThirdPersonCamera(
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	if (pitch > m_maxLookUp) pitch = m_maxLookUp;
-	if (pitch < m_maxLookDown) pitch = m_maxLookDown;
+	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
+	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
 
 	if (yaw > D3DX_PI) yaw -= D3DX_PI * 2.f;
 	if (yaw < -D3DX_PI) yaw += D3DX_PI * 2.f;
@@ -53,25 +53,28 @@ void CCameraController::ThirdPersonCamera(
 	D3DXVECTOR3 offsetX = m_pCamera->GetRight() * m_TP_offset.x;
 
 	m_pCamera->SetPosition(TargetPos + offsetX + offsetY + offsetZ);
-
 	m_pCamera->SetRotation(pitch, yaw, 0);
 
 }
 
-void CCameraController::FirstPersonCamera(
-	D3DXVECTOR3* TargetPos, POINT delta, float sense)
+void CCameraController::FirstPersonCamera(POINT delta, float sense)
 {
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	if (pitch > m_maxLookUp) pitch = m_maxLookUp;
-	if (pitch < m_maxLookDown) pitch = m_maxLookDown;
+	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
+	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
 
 	m_pCamera->Pitch(pitch);
 	m_pCamera->Yaw(yaw);
-
 	m_pCamera->SetRotation(pitch, yaw, 0);
+	
 	HandleInput();
+}
+
+void CCameraController::StaticCamera(const D3DXVECTOR3& TargetPos, POINT delta, float sense)
+{
+	m_pCamera->LookAt(TargetPos);
 }
 
 void CCameraController::UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot)

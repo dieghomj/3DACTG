@@ -8,6 +8,7 @@ CPlayer::CPlayer()
 	, m_MoveState	(Stop)
 	, m_PlayerState (Idle)
 {
+
 }
 
 CPlayer::~CPlayer()
@@ -17,12 +18,29 @@ CPlayer::~CPlayer()
 void CPlayer::Update()
 {
 	HandleInput();
-	CStaticMeshObject::Update();
+
+
+
+	//レイの位置をプレイヤーの座標にそろえる
+	m_pRayY->Position = m_vPosition;
+	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
+	m_pRayY->Position.y += 0.2f;
+	m_pRayY->RotationY = m_vRotation.y;
+
+	//十字（前後左右に伸ばした）レイの設定	
+	for (int dir = 0; dir < CROSSRAY::max; dir++)
+	{
+		m_pCrossRay->Ray[dir].Position = m_vPosition;
+		m_pCrossRay->Ray[dir].Position.y += 0.1f;
+		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
+	}
+	CCharacter::Update();
+	
 }
 
 void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
-	CStaticMeshObject::Draw(View, Proj, Light, Camera, Fog);
+	CCharacter::Draw(View, Proj, Light, Camera, Fog);
 }
 
 void CPlayer::RadioControl()
@@ -59,10 +77,10 @@ void CPlayer::RadioControl()
 		m_vPosition -= vecAxisZ * m_MoveSpeed;
 		break;
 	case MoveState::Left:	//左移動
-		m_vPosition += vecAxisX * m_MoveSpeed;
+		m_vRotation.y += m_TurnSpeed;
 		break;
 	case MoveState::Right:	//右移動
-		m_vPosition -= vecAxisX * m_MoveSpeed;
+		m_vRotation.y -= m_TurnSpeed;
 		break;
 	case MoveState::Up:	//上昇
 		m_vPosition.y += m_MoveSpeed;

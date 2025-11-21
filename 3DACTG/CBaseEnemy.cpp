@@ -44,7 +44,7 @@ void CBaseEnemy::Update()
 	m_CurrentCol = m_StepList[m_pathStep].x;
 	m_CurrentRow = m_StepList[m_pathStep].y;
 
-	D3DXVECTOR3 vNextStep = CMaze::CellToWorldRC(m_CurrentRow, m_CurrentCol, m_MazeHeight, m_MazeWidth, 2.f, 11.5) ;
+	D3DXVECTOR3 vNextStep = CMaze::CellToWorldRC(m_CurrentRow, m_CurrentCol, m_MazeHeight, m_MazeWidth, 2.f, 12) ;
 	
 	if (m_pathStep == 0)
 	{
