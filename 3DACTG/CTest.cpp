@@ -11,7 +11,7 @@ int currX = 0;
 int currY = 0;
 bool ghostCamera = false;
 bool playerCamera = false;
-bool staticCamera = false;
+bool staticCamera = true;
 
 CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene				(pDx9, pDx11, hWnd, pTime, pManager)
