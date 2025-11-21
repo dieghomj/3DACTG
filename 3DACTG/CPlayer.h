@@ -1,6 +1,7 @@
 #pragma once
 #include "CStaticMeshObject.h"
 #include "CCharacter.h"
+#include "CInput.h"
 
 class CPlayer 
 	: public CCharacter
@@ -30,6 +31,9 @@ public:
 	virtual ~CPlayer() override;
 	virtual void Update() override;
 	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	void SetTankControlMode(bool mode) {
+		m_bTankControlMode = mode;
+	}
 
 private:
 	void RadioControl();
@@ -43,6 +47,7 @@ protected:
 	float			m_MoveSpeed;				//移動速度
 	MoveState		m_MoveState;				//移動状態
 	PlayerState		m_PlayerState;				//プレイヤー状態
-
+	CInput*			m_pInput;					//入力管理クラス
+	bool			m_bTankControlMode = false;	//タンク操作モードかどうか
 };
 

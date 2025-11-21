@@ -7,20 +7,21 @@ CPlayer::CPlayer()
 	, m_MoveSpeed	(0.1f)
 	, m_MoveState	(Stop)
 	, m_PlayerState (Idle)
+	, m_pInput		(nullptr)
+	, m_bTankControlMode(false)
 {
-
+	m_pInput = new CInput();
 }
 
 CPlayer::~CPlayer()
 {
+	SAFE_DELETE(m_pInput);
 }
 
 void CPlayer::Update()
 {
 	HandleInput();
-
-
-
+	m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
@@ -77,10 +78,10 @@ void CPlayer::RadioControl()
 		m_vPosition -= vecAxisZ * m_MoveSpeed;
 		break;
 	case MoveState::Left:	//左移動
-		m_vRotation.y += m_TurnSpeed;
+		m_vPosition -= vecAxisX * m_MoveSpeed;
 		break;
 	case MoveState::Right:	//右移動
-		m_vRotation.y -= m_TurnSpeed;
+		m_vPosition += vecAxisX * m_MoveSpeed;
 		break;
 	case MoveState::Up:	//上昇
 		m_vPosition.y += m_MoveSpeed;
@@ -97,23 +98,30 @@ void CPlayer::RadioControl()
 
 void CPlayer::HandleInput()
 { 
-	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
+	m_pInput->Update();
+	if (m_pInput->GetKeyDown(VK_UP) || m_pInput->GetKeyDown('W')) {
 		m_MoveState = MoveState::Forward;
 	}
 	//後退
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
+	if (m_pInput->GetKeyDown(VK_DOWN) || m_pInput->GetKeyDown('S')) {
 		m_MoveState = MoveState::Backward;
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000 || GetAsyncKeyState('A') & 0x8000) {
-		m_MoveState = MoveState::Right;
+	if (m_pInput->GetKeyDown(VK_LEFT) || m_pInput->GetKeyDown('A')) {
+		if(m_bTankControlMode)
+			m_vRotation.y -= m_TurnSpeed;
+		else
+			m_MoveState = MoveState::Left;
 	}
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState('D') & 0x8000) {
-		m_MoveState = MoveState::Left;
+	if (m_pInput->GetKeyDown(VK_RIGHT) || m_pInput->GetKeyDown('D')) {
+		if (m_bTankControlMode)
+			m_vRotation.y += m_TurnSpeed;
+		else
+			m_MoveState = MoveState::Right;
 	}
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+	if (m_pInput->GetKeyDown(VK_SPACE)) {
 		m_MoveState = MoveState::Up;
 	}
-	if (GetAsyncKeyState(VK_CONTROL) & 0x8000) {
+	if (m_pInput->GetKeyDown(VK_LCONTROL)) {
 		m_MoveState = MoveState::Down;
 	}
 	RadioControl();
