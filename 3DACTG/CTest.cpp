@@ -207,6 +207,7 @@ HRESULT CTest::LoadData()
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
 	m_pPlayer->AttachMesh(*m_pWomanMesh);
+	m_pPlayer->SetRotation(0.f, D3DXToRadian(180.f), 0.f);
 	m_pPlayer->SetScale(0.6f);
 	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0,0,2.f,m_MazeCellSize));
 
@@ -375,12 +376,14 @@ void CTest::Update()
 		m_pPlayer->Update();
 		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
 		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
-		m_pCamera->SetPosition(staticCamPos);
+		D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 0.f, -1.f);
+		m_pCamera->SetPosition(staticCamPos + offset);
 		
 		m_pCameraController->StaticCamera(
 			m_pPlayer->GetPosition(),
 			m_mouseDelta,
 			m_mouseSense);
+
 		for (auto& path : m_pSewerPathArray)
 		{
 			Pair pathCoords = path->GetMazeCoords();
