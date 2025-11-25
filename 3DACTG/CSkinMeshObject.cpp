@@ -34,7 +34,7 @@ void CSkinMeshObject::Draw(
 	m_pMesh->SetScale( m_vScale );
 
 	//レンダリング.
-	m_pMesh->Render( View, Proj, Light, Camera.vPosition,
+	m_pMesh->Render(View, Proj, Light, Camera.vPosition, Fog,
 		m_pAnimCtrl );	//クローンを設定
 }
 

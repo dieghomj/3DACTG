@@ -1,10 +1,10 @@
 #pragma once
 #include "CStaticMeshObject.h"
-#include "CCharacter.h"
+#include "CAnimCharacter.h"
 #include "CInput.h"
 
 class CPlayer 
-	: public CCharacter
+	: public CAnimCharacter
 {
 
 public:

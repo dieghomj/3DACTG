@@ -34,12 +34,11 @@ CBaseEnemy::~CBaseEnemy()
 
 void CBaseEnemy::Update()
 {
-	CCharacter::Update();
+
+	if(m_StepList.empty())
+		return;
 
 	Pair prevCell = { m_CurrentCol, m_CurrentRow};
-
- 	if (m_StepList.empty())
-		return;
 	
 	m_CurrentCol = m_StepList[m_pathStep].x;
 	m_CurrentRow = m_StepList[m_pathStep].y;
@@ -66,6 +65,9 @@ void CBaseEnemy::Update()
 		m_vPosition = vNextStep;
 		GetNextStep();
 	}
+
+	CCharacter::Update();
+
 
 }
 

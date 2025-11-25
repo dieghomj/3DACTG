@@ -23,11 +23,11 @@ public:
 	virtual void Draw( D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog ) override;
 
 	//メッシュを接続する.
-	void AttachMesh( CStaticMesh& pMesh ){
+	virtual void AttachMesh( CStaticMesh& pMesh ){
 		m_pMesh = &pMesh;
 	}
 	//メッシュを切り離す.
-	void DetachMesh(){
+	virtual void DetachMesh(){
 		m_pMesh = nullptr;
 	}
 

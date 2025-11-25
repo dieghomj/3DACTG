@@ -3,6 +3,8 @@
 #include "CDirectX11.h"
 #include "CTest.h"
 #include "CMenu.h"
+#include "CGameTest.h"
+#include "ScorpionScene.h"
 
 
 //ウィンドウを画面中央で起動を有効にする.
@@ -95,16 +97,20 @@ HRESULT CMain::Create()
 
 	//メニューシーンのインスタンス化.
 	m_pMenu = new CMenu(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
-
+	m_pGame = new CGameTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	//テストシーンのインスタンス生成.
-	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager); 
+	m_pScorpion = new ScorpionScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+
 
 	//ゲームシーンクラスのインスタンス生成.
+	m_pSceneManager->AddScene(m_pGame, "COMBAT");
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pTest, "GAME");
+	m_pSceneManager->AddScene(m_pScorpion,"SCORPION");
 
 	//シーン変更.
-	m_pSceneManager->ChangeScene("GAME");
+	m_pSceneManager->ChangeScene("COMBAT");
 
 	return S_OK;
 }

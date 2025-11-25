@@ -43,7 +43,6 @@ public:
 	struct CBUFFER_PER_FRAME
 	{
 		D3DXVECTOR4	CameraPos;			// カメラ位置.
-
 		D3DXVECTOR4	LightColor;			// ライトの色.
 		D3DXVECTOR4	LightDir;			// ライト方向.
 		D3DXVECTOR4	AmbientColor;		// 環境光の色.

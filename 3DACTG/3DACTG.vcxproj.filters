@@ -82,6 +82,18 @@
     <Filter Include="Source\GameObject\StaticMeshObject\Character\Enemy">
       <UniqueIdentifier>{698b8dc0-9bfa-4f93-a1d6-edb7a80402f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scene\SceneManager">
+      <UniqueIdentifier>{75555713-448e-47e4-98b7-3517313ec4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{1937b783-58c0-4b6e-8c3a-a30256dca726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Sewer">
+      <UniqueIdentifier>{8f2b860b-0cd9-4e9e-8ca8-09d6d17feb01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character\StaticPlayer">
+      <UniqueIdentifier>{dafe21c7-ce4b-40a5-8d47-119d5913a896}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -129,12 +141,6 @@
     <ClCompile Include="CSoundManager.cpp">
       <Filter>Source\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="CScene.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="CSceneManager.cpp">
-      <Filter>Source\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="CBoundingSphere.cpp">
       <Filter>Source\Collision</Filter>
     </ClCompile>
@@ -171,9 +177,6 @@
     <ClCompile Include="CAnimCharacter.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
-      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
-    </ClCompile>
     <ClCompile Include="CMaze.cpp">
       <Filter>Source\Maze</Filter>
     </ClCompile>
@@ -201,6 +204,33 @@
     </ClCompile>
     <ClCompile Include="CCameraController.cpp">
       <Filter>Source\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CScene.cpp">
+      <Filter>Source\Scene\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneManager.cpp">
+      <Filter>Source\Scene\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameTest.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CInput.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CXInput.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="CSewerPath.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Sewer</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character\StaticPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="CSkinPlayer.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CZako.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,12 +276,6 @@
     <ClInclude Include="CSoundManager.h">
       <Filter>Source\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="CScene.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="CSceneManager.h">
-      <Filter>Source\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="CBoundingSphere.h">
       <Filter>Source\Collision</Filter>
     </ClInclude>
@@ -288,9 +312,6 @@
     <ClInclude Include="CAnimCharacter.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
-    </ClInclude>
     <ClInclude Include="CMaze.h">
       <Filter>Source\Maze</Filter>
     </ClInclude>
@@ -324,6 +345,33 @@
     </ClInclude>
     <ClInclude Include="CCameraController.h">
       <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CScene.h">
+      <Filter>Source\Scene\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneManager.h">
+      <Filter>Source\Scene\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameTest.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CInput.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CXInput.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="CSewerPath.h">
+      <Filter>Source\GameObject\StaticMeshObject\Sewer</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\StaticPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkinPlayer.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CZako.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

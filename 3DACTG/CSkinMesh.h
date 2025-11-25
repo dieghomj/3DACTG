@@ -43,8 +43,15 @@ public:
 	//シェーダーに渡す値.
 	struct CBUFFER_PER_FRAME
 	{
-		D3DXVECTOR4 CameraPos;		//カメラ位置.
-		D3DXVECTOR4 vLightDir;		//ライト方向.
+		D3DXVECTOR4	CameraPos;			// カメラ位置.
+		D3DXVECTOR4	LightColor;			// ライトの色.
+		D3DXVECTOR4	LightDir;			// ライト方向.
+		D3DXVECTOR4	AmbientColor;		// 環境光の色.
+		D3DXVECTOR4 FogColor;			//フォグの色.
+		D3DXVECTOR4 FogParams;			//フォグのパラメータ(x=開始距離,y=終了距離,z=密度,w=モード).
+		float		AffineIntensity;	// アフィンマッピングの強度.
+		float		VertexSnapping;		// 頂点スナッピングの強度.
+		float		pad1, pad2;			// パディング.
 	};
 
 	//ボーン単位.
@@ -53,9 +60,9 @@ public:
 		D3DXMATRIX mBone[D3DXPARSER::MAX_BONES];
 		CBUFFER_PER_BONES()
 		{
-			for ( int i = 0; i < D3DXPARSER::MAX_BONES; i++ )
+			for (int i = 0; i < D3DXPARSER::MAX_BONES; i++)
 			{
-				D3DXMatrixIdentity( &mBone[i] );
+				D3DXMatrixIdentity(&mBone[i]);
 			}
 		}
 	};
@@ -69,140 +76,142 @@ public:
 		UINT BoneIndex[4];		//ボーン 番号.
 		float BoneWeight[4];	//ボーン 重み.
 		VERTEX()
-			: Position		()
-			, vNormal		()
-			, Texture		()
-			, BoneIndex		()
-			, BoneWeight	()
-		{}
+			: Position()
+			, vNormal()
+			, Texture()
+			, BoneIndex()
+			, BoneWeight()
+		{
+		}
 	};
 
 public:
 	CSkinMesh();	//コンストラクタ.
 	~CSkinMesh();	//デストラクタ.
 
-	HRESULT Init( CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR FileName );
+	HRESULT Init(CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR FileName);
 
 	//解放関数.
 	HRESULT Release();
 
 	//描画関数.
-	void Render( const D3DXMATRIX& mView, 
-		const D3DXMATRIX& mProj, 
+	void Render(const D3DXMATRIX& mView,
+		const D3DXMATRIX& mProj,
 		const LIGHT& Light,
 		const D3DXVECTOR3& CamPos,
-		const LPD3DXANIMATIONCONTROLLER pAC );	//nullptrでデフォルト使用する.
+		const FOG& Fog,
+		const LPD3DXANIMATIONCONTROLLER pAC);	//nullptrでデフォルト使用する.
 
-	double GetAnimSpeed()				{ return m_AnimSpeed;		}
-	void SetAnimSpeed( double Speed )	{ m_AnimSpeed = Speed;		}
+	double GetAnimSpeed() { return m_AnimSpeed; }
+	void SetAnimSpeed(double Speed) { m_AnimSpeed = Speed; }
 
-	double GetAnimTime()				{ return m_AnimTime;		}
-	void SetAnimTime( double Time )		{ m_AnimTime = Time;		}
+	double GetAnimTime() { return m_AnimTime; }
+	void SetAnimTime(double Time) { m_AnimTime = Time; }
 
 	//パーサークラスからアニメーションコントローラを取得する.
 	LPD3DXANIMATIONCONTROLLER GetAnimationController() { return m_pD3dxMesh->m_pAnimController; }
 
 	//アニメーションセットの切り替え.
-	void ChangeAnimSet( int index, LPD3DXANIMATIONCONTROLLER pAC );
+	void ChangeAnimSet(int index, LPD3DXANIMATIONCONTROLLER pAC);
 	//アニメーションセットの切り替え(開始フレーム指定可能版).
-	void ChangeAnimSet_StartPos( int Index, double StartFramePos, LPD3DXANIMATIONCONTROLLER pAC );
+	void ChangeAnimSet_StartPos(int Index, double StartFramePos, LPD3DXANIMATIONCONTROLLER pAC);
 
 	//アニメーション停止時間を取得.
-	double GetAnimPeriod( int Index );
+	double GetAnimPeriod(int Index);
 	//アニメーション数を取得.
-	int GetAnimMax( LPD3DXANIMATIONCONTROLLER pAC = nullptr );
+	int GetAnimMax(LPD3DXANIMATIONCONTROLLER pAC = nullptr);
 
 	//指定したボーン情報(座標・行列)を取得する関数.
-	bool GetMatrixFromBone( LPCSTR BoneName, D3DXMATRIX* pOutMat );
-	bool GetPosFromBone( LPCSTR BoneName, D3DXVECTOR3* pOutPos);
-	bool GetDeviaPosFromBone( LPCSTR BoneName, D3DXVECTOR3* pOutPos, D3DXVECTOR3 SpecifiedPos = { 0.0f, 0.0f, 0.0f } );
+	bool GetMatrixFromBone(LPCSTR BoneName, D3DXMATRIX* pOutMat);
+	bool GetPosFromBone(LPCSTR BoneName, D3DXVECTOR3* pOutPos);
+	bool GetDeviaPosFromBone(LPCSTR BoneName, D3DXVECTOR3* pOutPos, D3DXVECTOR3 SpecifiedPos = { 0.0f, 0.0f, 0.0f });
 
 	//座標情報を設定.
-	void SetPosition( const D3DXVECTOR3& vPos ) { m_Position = vPos;	}
-	void SetPositionX( float x )				{ m_Position.x = x;		}
-	void SetPositionY( float y )				{ m_Position.y = y;		}
-	void SetPositionZ( float z )				{ m_Position.z = z;		}
+	void SetPosition(const D3DXVECTOR3& vPos) { m_Position = vPos; }
+	void SetPositionX(float x) { m_Position.x = x; }
+	void SetPositionY(float y) { m_Position.y = y; }
+	void SetPositionZ(float z) { m_Position.z = z; }
 
 	//回転情報を設定.
-	void SetRotation( const D3DXVECTOR3& vRot ) { m_Rotation = vRot;	}
-	void SetRotationY( float y )				{ m_Rotation.y = y;		}
-	void SetRotationX( float x )				{ m_Rotation.x = x;		}
-	void SetRotationZ( float z )				{ m_Rotation.z = z;		}
+	void SetRotation(const D3DXVECTOR3& vRot) { m_Rotation = vRot; }
+	void SetRotationY(float y) { m_Rotation.y = y; }
+	void SetRotationX(float x) { m_Rotation.x = x; }
+	void SetRotationZ(float z) { m_Rotation.z = z; }
 
 	//拡縮情報を設定・取得.
-	void SetScale( const D3DXVECTOR3& Scale )	{ m_Scale = Scale;		}
-	void SetScaleX( const float x )				{ m_Scale.x = x;		}
-	void SetScaleY( const float y )				{ m_Scale.x = y;		}
-	void SetScaleZ( const float z )				{ m_Scale.x = z;		}
+	void SetScale(const D3DXVECTOR3& Scale) { m_Scale = Scale; }
+	void SetScaleX(const float x) { m_Scale.x = x; }
+	void SetScaleY(const float y) { m_Scale.x = y; }
+	void SetScaleZ(const float z) { m_Scale.x = z; }
 
 private:
 	//Xファイルからスキンメッシュを作成する.
-	HRESULT LoadXMesh( LPCTSTR FileName );
+	HRESULT LoadXMesh(LPCTSTR FileName);
 
 	//シェーダを作成する.
 	HRESULT CreateShader();
 	//インデックスバッファを作成する.
-	HRESULT CreateIndexBuffer( DWORD Size, int* pIndex, ID3D11Buffer** ppIndexBuffer );
+	HRESULT CreateIndexBuffer(DWORD Size, int* pIndex, ID3D11Buffer** ppIndexBuffer);
 
 	//メッシュを作成する.
-	HRESULT CreateAppMeshFromD3DXMesh( LPD3DXFRAME pFrame );
+	HRESULT CreateAppMeshFromD3DXMesh(LPD3DXFRAME pFrame);
 
 	//コンスタントバッファ作成する.
-	HRESULT CreateCBuffer( ID3D11Buffer** pConstantBuffer, UINT Size );
+	HRESULT CreateCBuffer(ID3D11Buffer** pConstantBuffer, UINT Size);
 	//サンプラを作成する.
-	HRESULT CreateSampler( ID3D11SamplerState** pSampler );
+	HRESULT CreateSampler(ID3D11SamplerState** pSampler);
 
 	//全てのメッシュを作成する.
-	void BuildAllMesh( D3DXFRAME* pFrame );
+	void BuildAllMesh(D3DXFRAME* pFrame);
 
 	//Xファイルからスキン関連の情報を読み出す関数.
-	HRESULT ReadSkinInfo( MYMESHCONTAINER* pContainer, VERTEX* pVB, SKIN_PARTS_MESH* pParts );
+	HRESULT ReadSkinInfo(MYMESHCONTAINER* pContainer, VERTEX* pVB, SKIN_PARTS_MESH* pParts);
 
 	//ボーンを次のポーズ位置にセットする関数.
-	void SetNewPoseMatrices( SKIN_PARTS_MESH* pParts, int Frame, MYMESHCONTAINER* pContainer );
+	void SetNewPoseMatrices(SKIN_PARTS_MESH* pParts, int Frame, MYMESHCONTAINER* pContainer);
 	//次の(現在の)ポーズ行列を返す関数.
-	D3DXMATRIX GetCurrentPoseMatrix( SKIN_PARTS_MESH* pParts, int Index );
+	D3DXMATRIX GetCurrentPoseMatrix(SKIN_PARTS_MESH* pParts, int Index);
 
 	//フレーム描画.
-	void DrawFrame( LPD3DXFRAME pFrame );
+	void DrawFrame(LPD3DXFRAME pFrame);
 	//パーツ描画.
-	void DrawPartsMesh( SKIN_PARTS_MESH* pMesh, D3DXMATRIX World, MYMESHCONTAINER* pContainer );
+	void DrawPartsMesh(SKIN_PARTS_MESH* pMesh, D3DXMATRIX World, MYMESHCONTAINER* pContainer);
 	//ワールド行列算出.
 	void CalcWorldMatrix();
 	//各種シェーダに送るデータ.
-	void SendCBufferPerBone( SKIN_PARTS_MESH* pMesh );
+	void SendCBufferPerBone(SKIN_PARTS_MESH* pMesh);
 	void SendCBufferPerFrame();
 	void SendCBufferPerMesh();
-	void SendCBufferPerMaterial( MY_SKINMATERIAL* pMaterial );
-	void SendTexture( MY_SKINMATERIAL* pMaterial );
+	void SendCBufferPerMaterial(MY_SKINMATERIAL* pMaterial);
+	void SendTexture(MY_SKINMATERIAL* pMaterial);
 
 	//全てのメッシュを削除.
-	void DestroyAllMesh( D3DXFRAME* pFrame );
-	HRESULT DestroyAppMeshFromD3DXMesh( LPD3DXFRAME p );
+	void DestroyAllMesh(D3DXFRAME* pFrame);
+	HRESULT DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p);
 
 	//マルチバイト文字をUnicode文字に変換する.
-	void ConvertCharaMultiByteToUnicode( WCHAR* Dest, size_t DestArraySize, const CHAR* str );
+	void ConvertCharaMultiByteToUnicode(WCHAR* Dest, size_t DestArraySize, const CHAR* str);
 
 private:
 	//Dx9.
-	CDirectX9*				m_pDx9;
+	CDirectX9* m_pDx9;
 	LPDIRECT3DDEVICE9		m_pDevice9;	//Dx9デバイスオブジェクト.
 
 	//Dx11.
-	CDirectX11*				m_pDx11;
-	ID3D11Device*			m_pDevice11;
-	ID3D11DeviceContext*	m_pContext11;
+	CDirectX11* m_pDx11;
+	ID3D11Device* m_pDevice11;
+	ID3D11DeviceContext* m_pContext11;
 
-	ID3D11VertexShader*		m_pVertexShader;
-	ID3D11InputLayout*		m_pVertexLayout;
-	ID3D11PixelShader*		m_pPixelShader;
-	ID3D11SamplerState*		m_pSampleLinear;
+	ID3D11VertexShader* m_pVertexShader;
+	ID3D11InputLayout* m_pVertexLayout;
+	ID3D11PixelShader* m_pPixelShader;
+	ID3D11SamplerState* m_pSampleLinear;
 
 	//コンスタントバッファ.
-	ID3D11Buffer*			m_pCBufferPerMesh;		//コンスタントバッファ(メッシュ毎).
-	ID3D11Buffer*			m_pCBufferPerMaterial;	//コンスタントバッファ(マテリアル毎).
-	ID3D11Buffer*			m_pCBufferPerFrame;		//コンスタントバッファ(フレーム毎).
-	ID3D11Buffer*			m_pCBufferPerBone;		//コンスタントバッファ(ボーン毎).
+	ID3D11Buffer* m_pCBufferPerMesh;		//コンスタントバッファ(メッシュ毎).
+	ID3D11Buffer* m_pCBufferPerMaterial;	//コンスタントバッファ(マテリアル毎).
+	ID3D11Buffer* m_pCBufferPerFrame;		//コンスタントバッファ(フレーム毎).
+	ID3D11Buffer* m_pCBufferPerBone;		//コンスタントバッファ(ボーン毎).
 
 	D3DXVECTOR3		m_Position;		//位置(x,y,z).
 	D3DXVECTOR3		m_Rotation;		//回転値(x,y,z).
@@ -216,6 +225,7 @@ private:
 
 	LIGHT			m_Light;
 	D3DXVECTOR3		m_CamPos;
+	FOG				m_Fog;
 
 	//アニメーション速度.
 	double m_AnimSpeed;

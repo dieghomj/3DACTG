@@ -3,7 +3,6 @@
 #include "CDirectX11.h"
 #include "CTime.h"
 #include "CSceneManager.h"
-#include "CCommon.h"
 #include "CCamera.h"
 #include "CCameraController.h"
 

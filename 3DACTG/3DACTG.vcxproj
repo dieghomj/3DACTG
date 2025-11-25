@@ -169,6 +169,7 @@
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CBaseEnemy.cpp" />
+    <ClCompile Include="CGameTest.cpp" />
     <ClCompile Include="CMain.cpp" />
     <ClCompile Include="CMaze.cpp" />
     <ClCompile Include="CMinimap.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="CSkinMesh.cpp" />
     <ClCompile Include="CSkinMeshObject.cpp" />
     <ClCompile Include="CSkinMeshParser.cpp" />
+    <ClCompile Include="CSkinPlayer.cpp" />
     <ClCompile Include="CSound.cpp" />
     <ClCompile Include="CSoundManager.cpp" />
     <ClCompile Include="CSprite2D.cpp" />
@@ -193,6 +195,8 @@
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CXInput.cpp" />
     <ClCompile Include="CInput.cpp" />
+    <ClCompile Include="CZako.cpp" />
+    <ClCompile Include="ScorpionScene.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -217,6 +221,7 @@
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CBaseEnemy.h" />
+    <ClInclude Include="CGameTest.h" />
     <ClInclude Include="CMain.h" />
     <ClInclude Include="CMaze.h" />
     <ClInclude Include="CMinimap.h" />
@@ -227,6 +232,7 @@
     <ClInclude Include="CSkinMesh.h" />
     <ClInclude Include="CSkinMeshObject.h" />
     <ClInclude Include="CSkinMeshParser.h" />
+    <ClInclude Include="CSkinPlayer.h" />
     <ClInclude Include="CSound.h" />
     <ClInclude Include="CSoundManager.h" />
     <ClInclude Include="CSprite2D.h" />
@@ -238,11 +244,13 @@
     <ClInclude Include="CMenu.h" />
     <ClInclude Include="CTime.h" />
     <ClInclude Include="CUIObject.h" />
+    <ClInclude Include="CZako.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="CXInput.h" />
     <ClInclude Include="CInput.h" />
     <ClInclude Include="MyMacro.h" />
     <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="ScorpionScene.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

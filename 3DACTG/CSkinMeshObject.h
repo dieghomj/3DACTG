@@ -23,8 +23,6 @@ public:
 	void AttachMesh(CSkinMesh& pMesh);
 	//メッシュを切り離す.
 	void DetachMesh();
-	
-
 
 	//コライダー作成
 	CCollider* GetCollider() const {
@@ -51,6 +49,6 @@ public:
 
 protected:
 	CSkinMesh*					m_pMesh;
-	CCollider*			m_pCollider;
+	CCollider*					m_pCollider;
 	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//アニメーションコントローラ
 };

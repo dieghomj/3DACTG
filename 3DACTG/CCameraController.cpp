@@ -5,6 +5,9 @@ CCameraController::CCameraController()
 	: m_pCamera		()
 	, m_vPosition	(0.f, 0.f, 0.f)
 	, m_vRotation	(0.f, 0.f, 0.f)
+	, m_FP_offset	(0.f, 0.f, 0.f)
+	, m_TP_offset	(0.f, 1.5f, -3.5f)
+	, m_distance	(6.f)
 {
 }
 
@@ -13,7 +16,7 @@ CCameraController::CCameraController(CCamera* camera)
 	, m_vPosition	(0.f, 0.f, 0.f)
 	, m_vRotation	(0.f, 0.f, 0.f)
 	, m_FP_offset	(0.f, 0.f, 0.f)
-	, m_TP_offset	(0.f, 1.5f, -3.5f)
+	, m_TP_offset	(0.f, 0.5f, -3.5f)
 	, m_distance	(6.f)
 	, m_minDistance	(0.5f)
 	, m_maxLookUp	(D3DX_PI / 4.f)

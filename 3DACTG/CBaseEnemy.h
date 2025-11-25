@@ -7,6 +7,13 @@ class CBaseEnemy :
 {
 
 public:
+
+	enum enState {
+		Move,
+		Attack,
+		Dead
+	};
+
 	CBaseEnemy();
 	CBaseEnemy(std::vector<Pair> path, int width, int height);
 
@@ -22,7 +29,9 @@ public:
 private:
 	void GetNextStep();
 
-private:
+protected:
+
+	int m_State;
 
 	int m_MazeWidth;
 	int m_MazeHeight;
