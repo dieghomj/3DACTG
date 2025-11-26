@@ -2,13 +2,15 @@
 #include "CPlayer.h"
 
 CPlayer::CPlayer()
-	: m_vVelocity	(0.f, 0.f, 0.f)
+	: CAnimCharacter()
+	, m_vVelocity	(0.f, 0.f, 0.f)
 	, m_TurnSpeed	(0.05f)
-	, m_MoveSpeed	(0.1f)
+	, m_MoveSpeed	(0.06f)
 	, m_MoveState	(Stop)
 	, m_PlayerState (Idle)
 	, m_pInput		(nullptr)
 	, m_bTankControlMode(false)
+	, m_AnimationState(AnimIdle)
 {
 	m_pInput = new CInput();
 }
@@ -20,6 +22,15 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
+	bool animFin = false;
+	if (m_PlayerState == Attacking)
+	{
+		animFin = SetAnimNo(m_AnimationState);
+		if (animFin)
+			m_PlayerState = Idle;
+	}
+	else
+		SetAnimNo(m_AnimationState);
 	HandleInput();
 	m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる
@@ -42,6 +53,31 @@ void CPlayer::Update()
 void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
 	CAnimCharacter::Draw(View, Proj, Light, Camera, Fog);
+}
+
+void CPlayer::AnimControl()
+{
+
+	switch (m_PlayerState) {
+	
+		case Idle:
+			//待機
+			m_AnimationState = AnimIdle;
+			break;
+		case Attacking:
+			//攻撃
+			m_AnimationState = AnimAttack;
+			break;
+		case Running:
+			//走る
+			m_AnimationState = AnimRun;
+			break;
+		case Jumping:
+			//ジャンプ
+			m_AnimationState = AnimJump;
+			break;
+	}
+	
 }
 
 void CPlayer::RadioControl()
@@ -71,34 +107,48 @@ void CPlayer::RadioControl()
 
 	//移動状態によって処理を分ける
 	switch (m_MoveState) {
-	case MoveState::Forward:	//前進
-		m_vPosition += vecAxisZ * m_MoveSpeed;
-		break;
-	case MoveState::Backward:	//後退
-		m_vPosition -= vecAxisZ * m_MoveSpeed;
-		break;
-	case MoveState::Left:	//左移動
-		m_vPosition -= vecAxisX * m_MoveSpeed;
-		break;
-	case MoveState::Right:	//右移動
-		m_vPosition += vecAxisX * m_MoveSpeed;
-		break;
-	case MoveState::Up:	//上昇
-		m_vPosition.y += m_MoveSpeed;
-		break;
-	case MoveState::Down:	//下降
-		m_vPosition.y -= m_MoveSpeed;
- 		break;
-	default:
-		break;
+		case MoveState::Forward:	//前進
+			m_vPosition += vecAxisZ * m_MoveSpeed;
+			break;
+		case MoveState::Backward:	//後退
+			m_vPosition -= vecAxisZ * m_MoveSpeed;
+			break;
+		case MoveState::Left:	//左移動
+			m_vPosition -= vecAxisX * m_MoveSpeed;
+			break;
+		case MoveState::Right:	//右移動
+			m_vPosition += vecAxisX * m_MoveSpeed;
+			break;
+		case MoveState::Up:	//上昇
+			m_vPosition.y += m_MoveSpeed;
+			break;
+		case MoveState::Down:	//下降
+			m_vPosition.y -= m_MoveSpeed;
+ 			break;
+		default:
+			break;
 	}
+
+	if( m_MoveState != MoveState::Stop )
+		m_PlayerState = Running;
+	else
+	{
+		if ((m_PlayerState != Attacking) && (m_PlayerState != Jumping))
+			m_PlayerState = Idle;
+	}
+
 	//上記の移動処理が終われば停止状態にしておく
-	m_MoveState = MoveState::Stop; 
+	m_MoveState = MoveState::Stop;
 }
 
 void CPlayer::HandleInput()
 { 
 	m_pInput->Update();
+
+	if (m_pInput->GetKeyDown(VK_LBUTTON))
+	{
+		m_PlayerState = Attacking;
+	}
 	if (m_pInput->GetKeyDown(VK_UP) || m_pInput->GetKeyDown('W')) {
 		m_MoveState = MoveState::Forward;
 	}
@@ -125,6 +175,7 @@ void CPlayer::HandleInput()
 		m_MoveState = MoveState::Down;
 	}
 	RadioControl();
+	AnimControl();
 }
 
 

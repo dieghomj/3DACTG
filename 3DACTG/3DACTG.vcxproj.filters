@@ -94,9 +94,6 @@
     <Filter Include="Source\GameObject\StaticMeshObject\Character\StaticPlayer">
       <UniqueIdentifier>{dafe21c7-ce4b-40a5-8d47-119d5913a896}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\GameObject\StaticMeshObject\Ground">
-      <UniqueIdentifier>{dcd8a915-a0fa-486d-bcc0-53d66659aa2d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -226,16 +223,13 @@
     <ClCompile Include="CSewerPath.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Sewer</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
-      <Filter>Source\GameObject\StaticMeshObject\Character\StaticPlayer</Filter>
-    </ClCompile>
-    <ClCompile Include="CSkinPlayer.cpp">
-      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
-    </ClCompile>
     <ClCompile Include="CZako.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
     <ClCompile Include="ScorpionScene.cpp" />
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
@@ -368,16 +362,13 @@
     <ClInclude Include="CSewerPath.h">
       <Filter>Source\GameObject\StaticMeshObject\Sewer</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>Source\GameObject\StaticMeshObject\Character\StaticPlayer</Filter>
-    </ClInclude>
-    <ClInclude Include="CSkinPlayer.h">
-      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
-    </ClInclude>
     <ClInclude Include="CZako.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
     <ClInclude Include="ScorpionScene.h" />
+    <ClInclude Include="CPlayer.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "CEffect.h"
 #include "CGameTest.h"
 
 CGameTest::CGameTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
@@ -38,6 +39,10 @@ void CGameTest::Create()
 	{
 		m_pEnemyList.emplace_back(new CZako());
 	}
+
+	CEffect::GetInstance()->Create(
+		m_pDx11->GetDevice(),
+		m_pDx11->GetContext());
 }
 
 void CGameTest::Release()
@@ -101,11 +106,20 @@ void CGameTest::Update()
 
 
 	m_pPlayer->Update();
-	for (auto& enemy : m_pEnemyList)
+	//for (auto& enemy : m_pEnemyList)
+	//{
+	//	enemy->TickAttackTimer(m_pTime->GetDeltaTime());
+	//	enemy->Update();
+	//}
+
+	static ::EsHandle hEffect = -1;
+	if (m_pPlayer->GetPlayerState() == CPlayer::Attacking)
 	{
-		enemy->TickAttackTimer(m_pTime->GetDeltaTime());
-		enemy->Update();
+		hEffect = CEffect::Play(CEffect::enList::AttackEffect, m_pPlayer->GetPosition() + D3DXVECTOR3(0.f,0.5f,0.3f));
+		CEffect::SetSpeed(hEffect, 1.f);
+		CEffect::SetScale(hEffect, D3DXVECTOR3(0.06f, 0.06f, 0.06f));
 	}
+
 
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 	m_pCameraController->ThirdPersonCamera(
@@ -130,6 +144,8 @@ void CGameTest::Draw()
 	{
 		enemy->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
 	}
+
+	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
 
 }
 

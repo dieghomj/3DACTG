@@ -25,6 +25,8 @@ public:
 	}
 
 	void SetAnimSpeed(double speed) { m_AnimSpeed = speed; }
+	bool SetAnimNo(int no);
+
 
 private:
 

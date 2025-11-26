@@ -25,15 +25,7 @@ void CAnimCharacter::InitAnimation()
 void CAnimCharacter::Update()
 {
 	
-	if (GetAsyncKeyState('N') & 0x80000)
-	{
-		m_AnimNo++;
-		if (m_AnimNo >= m_pAnimCtrl->GetMaxNumAnimationSets())
-		{
-			m_AnimNo = 0;
-		}
-		m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
-	}
+	m_AnimTime += (float)m_AnimSpeed;
 
 }
 
@@ -76,5 +68,23 @@ void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
 	}
 
 	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
+}
+
+bool CAnimCharacter::SetAnimNo(int no)
+{
+	bool isFinished = (m_AnimTime >= m_pSkinMesh->GetAnimPeriod(no));
+	if (isFinished)
+	{
+		m_AnimTime = 0.f;
+		m_AnimNo = no;
+		m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
+		//ここでアニメーションブレンド関数を呼ぶ
+		
+		return isFinished;
+	}
+
+
+
+	return false;
 }
 

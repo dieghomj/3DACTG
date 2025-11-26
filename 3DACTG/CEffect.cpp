@@ -172,6 +172,8 @@ HRESULT CEffect::LoadData()
 		{ enList::MagmaEffect,	u"Data\\Effects\\Magma Effect\\magma.efk"	},
 		{ enList::CircleEffect,	u"Data\\Effekseer\\Laser01.efk"	},
 		{ enList::SpriteEffect,	u"Data\\Effekseer\\Laser01.efk"	},
+		{ enList::AttackEffect,	u"Data\\Effects\\Combat\\attack.efk"	},
+		{ enList::BloodEffect,	u"Data\\Effects\\Combat\\blood.efk"	},
 	};
 	//配列の最大要素数を算出（配列全体のサイズ／配列１つ分のサイズ）
 	int list_max = sizeof(EList) / sizeof(EList[0]);

@@ -45,6 +45,8 @@ public:
 		MagmaEffect = 0,	//‰¼‚Åİ’è
 		CircleEffect,		//‰¼‚Åİ’è
 		SpriteEffect,		//‰¼‚Åİ’è
+		AttackEffect,		//‰¼‚Åİ’è
+		BloodEffect,		//‰¼‚Åİ’è
 		Max			//Å‘å”
 	};
 

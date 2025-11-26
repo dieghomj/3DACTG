@@ -420,8 +420,12 @@ void CSkinMesh::Render(
 		pAC->AdvanceTime(m_AnimSpeed, nullptr);
 	}
 
+	D3DXMATRIX mRotFix;
+	D3DXMatrixRotationY(&mRotFix, D3DX_PI);
+
 	D3DXMATRIX m;
 	D3DXMatrixIdentity(&m);
+	m = m * mRotFix;
 	m_pD3dxMesh->UpdateFrameMatrices(m_pD3dxMesh->m_pFrameRoot, &m);
 	DrawFrame(m_pD3dxMesh->m_pFrameRoot);
 }
