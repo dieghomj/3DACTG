@@ -62,7 +62,7 @@ HRESULT CGameTest::LoadData()
 	m_pPlayerSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\animeWoman.x");
 	m_pGroundMeshObject->AttachMesh(*m_pGroundMesh);
 
-	m_pPlayer->AttachMesh(*m_pPlayerMesh);
+	//m_pPlayer->AttachMesh(*m_pPlayerMesh);
 	m_pPlayer->AttachSkinMesh(*m_pPlayerSkinMesh);
 	m_pPlayer->SetScale(0.01f);
 	for( auto& enemy : m_pEnemyList )

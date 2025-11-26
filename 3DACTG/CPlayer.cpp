@@ -35,13 +35,13 @@ void CPlayer::Update()
 		m_pCrossRay->Ray[dir].Position.y += 0.1f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 	}
-	CCharacter::Update();
+	CAnimCharacter::Update();
 	
 }
 
 void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
 {
-	CCharacter::Draw(View, Proj, Light, Camera, Fog);
+	CAnimCharacter::Draw(View, Proj, Light, Camera, Fog);
 }
 
 void CPlayer::RadioControl()
