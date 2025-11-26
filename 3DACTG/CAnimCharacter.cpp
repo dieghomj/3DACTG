@@ -5,9 +5,9 @@ CAnimCharacter::CAnimCharacter()
 	: CCharacter()
 	, m_pSkinMesh(nullptr)
 	, m_pAnimCtrl(nullptr)
-	, m_AnimNo(10)
+	, m_AnimNo(1)
 	, m_AnimTime(0.f)
-	, m_AnimSpeed(0.002f)
+	, m_AnimSpeed(0.02f)
 	, m_vBonePos(0.f, 0.f, 0.f)
 {
 
@@ -17,25 +17,23 @@ CAnimCharacter::~CAnimCharacter()
 {
 }
 
+void CAnimCharacter::InitAnimation()
+{
+	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
+}
+
 void CAnimCharacter::Update()
 {
-
-	m_pSkinMesh->SetAnimSpeed(m_AnimSpeed);
-
-	//アニメーション切替
-	if (GetAsyncKeyState('N') & 0x8000)
+	
+	if (GetAsyncKeyState('N') & 0x80000)
 	{
-		m_AnimNo = 10;		//登場アニメーション
-		m_AnimTime = 0.0;	//アニメーション経過時間初期化
+		m_AnimNo++;
+		if (m_AnimNo >= m_pAnimCtrl->GetMaxNumAnimationSets())
+		{
+			m_AnimNo = 0;
+		}
 		m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
 	}
-	
-
-	m_AnimNo++;
-	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
-
-	//アニメーション切替
-	
 
 }
 
@@ -76,5 +74,7 @@ void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
 	{
 		_ASSERT_EXPR(false, L"アニメーションコントローラのクローン作成失敗");
 	}
+
+	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
 }
 

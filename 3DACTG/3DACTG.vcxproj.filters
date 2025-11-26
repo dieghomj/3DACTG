@@ -94,6 +94,9 @@
     <Filter Include="Source\GameObject\StaticMeshObject\Character\StaticPlayer">
       <UniqueIdentifier>{dafe21c7-ce4b-40a5-8d47-119d5913a896}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Ground">
+      <UniqueIdentifier>{dcd8a915-a0fa-486d-bcc0-53d66659aa2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -232,6 +235,7 @@
     <ClCompile Include="CZako.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
+    <ClCompile Include="ScorpionScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CTest.h">
@@ -373,6 +377,7 @@
     <ClInclude Include="CZako.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
+    <ClInclude Include="ScorpionScene.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

@@ -11,6 +11,7 @@ public:
 	CAnimCharacter();
 	virtual ~CAnimCharacter() override;
 	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	virtual void InitAnimation();
 	virtual void Update() override;
 	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
 	
