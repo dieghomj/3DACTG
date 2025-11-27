@@ -94,6 +94,9 @@
     <Filter Include="Source\GameObject\StaticMeshObject\Character\StaticPlayer">
       <UniqueIdentifier>{dafe21c7-ce4b-40a5-8d47-119d5913a896}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Light">
+      <UniqueIdentifier>{cb403754-8c6f-4bb3-a830-98f52c7fa3ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CTest.cpp">
@@ -229,6 +232,9 @@
     <ClCompile Include="ScorpionScene.cpp" />
     <ClCompile Include="CPlayer.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpotLight.cpp">
+      <Filter>Source\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -368,6 +374,9 @@
     <ClInclude Include="ScorpionScene.h" />
     <ClInclude Include="CPlayer.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpotLight.h">
+      <Filter>Source\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

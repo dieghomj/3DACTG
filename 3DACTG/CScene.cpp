@@ -57,6 +57,19 @@ void CScene::Update()
 
 }
 
+void CScene::AddSpotLight(CSpotLight& spotlight)
+{
+	m_pSpotLightList.emplace_back(&spotlight);
+}
+
+void CScene::RenderSpotLights(D3DXMATRIX& mView, D3DXMATRIX& mProj, LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog)
+{
+	for (auto& spotlight : m_pSpotLightList)
+	{
+		spotlight->Render(mView, mProj, Light, CamPos, Fog);
+	}
+}
+
 void CScene::UpdateMousePos()
 {
 	POINT mousePos;

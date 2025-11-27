@@ -5,6 +5,7 @@
 #include "CSceneManager.h"
 #include "CCamera.h"
 #include "CCameraController.h"
+#include "CSpotLight.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -24,6 +25,10 @@ public:
 	virtual void Start() = 0;
 	virtual void Update();
 	virtual void Draw() = 0;
+
+	void AddSpotLight(CSpotLight& spotlight);
+	void RenderSpotLights(D3DXMATRIX& mView, D3DXMATRIX& mProj,
+		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog);
 
 	bool IsPause() const { return m_IsPause; }
 
@@ -47,7 +52,8 @@ protected:
 	FOG				m_Fog;
 	CAMERA			m_Camera;
 	CCamera*		m_pCamera;
-	CCameraController* m_pCameraController;
+	CCameraController*			m_pCameraController;
+	std::vector<CSpotLight*>	m_pSpotLightList;
 
 	bool			m_IsPause = false;
 

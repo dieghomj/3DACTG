@@ -25,6 +25,7 @@ cbuffer per_frame : register(b2)
     float4 g_AmbientColor; // Ambient Color
     float4 g_FogColor; // Fog Color
     float4 g_FogParams; // Fog Parameters (start, end, density, unused)
+    float g_LightIntensity; // Light Intensity
     float g_AffineIntensity; // PSX Affine Texture Mapping Intensity
     float g_VertexSnapping; // PSX Vertex Snapping Intensity
 };
@@ -122,7 +123,7 @@ float4 PS_Main(PS_INPUT input) : SV_Target
 	// Final Color Calculation
     float3 diffuse = g_Diffuse.rgb * texColor.rgb * g_LightColor.rgb * NdotL;
     float3 ambient = g_AmbientColor.rgb * texColor.rgb;
-    float3 color = ambient + diffuse;
+    float3 color = (ambient + diffuse) * g_LightIntensity;
     
     float alpha = texColor.a;
     

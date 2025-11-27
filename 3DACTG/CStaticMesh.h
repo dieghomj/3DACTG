@@ -48,9 +48,10 @@ public:
 		D3DXVECTOR4	AmbientColor;		// 環境光の色.
 		D3DXVECTOR4 FogColor;			//フォグの色.
 		D3DXVECTOR4 FogParams;			//フォグのパラメータ(x=開始距離,y=終了距離,z=未使用,w=未使用).
+		float		LightIntensity;		// ライトの強度.
 		float		AffineIntensity;	// アフィンマッピングの強度.
 		float		VertexSnapping;		// 頂点スナッピングの強度.
-		float		pad1, pad2;			// パディング.
+		float		_padding;			// パディング.
 	};
 
 	//頂点の構造体.

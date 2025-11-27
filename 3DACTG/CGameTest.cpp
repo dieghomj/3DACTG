@@ -82,7 +82,7 @@ HRESULT CGameTest::LoadData()
 void CGameTest::Start()
 {
 	m_pDx11->SetDepth(true);
-	m_GlobalLight.fIntensity = 100.f;
+	m_GlobalLight.fIntensity = 0.2f;
 	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 4.0f);
 	m_GlobalLight.Position = D3DXVECTOR3(0.0f, 10.0f, -5.0f);
 
