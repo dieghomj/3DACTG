@@ -196,9 +196,13 @@ HRESULT CEffect::LoadData()
 
 //描画
 void CEffect::Draw(
-	const D3DXMATRIX& mView, const D3DXMATRIX& mProj,
-	const LIGHT& Light, const CAMERA& Camera)
+	SCENE_DATA& sceneData)
 {
+
+	D3DXMATRIX mView = sceneData.mView;	//ビュー行列
+	D3DXMATRIX mProj = sceneData.mProj;	//プロジェクション行列
+	CAMERA& Camera = sceneData.Camera;	//カメラ情報
+
 	//ビュー行列を設定
 	SetViewMatrix(mView);
 

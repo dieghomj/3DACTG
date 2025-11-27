@@ -19,7 +19,7 @@ public:
 	CSewerPath();
 	virtual ~CSewerPath() override;
 	virtual void Update() override;
-	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	void SetPlayer(CCharacter& player) { m_pPlayer = &player; }
 

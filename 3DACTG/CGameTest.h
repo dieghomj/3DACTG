@@ -1,6 +1,7 @@
 #pragma once
 #include "CScene.h"
 #include "CPlayer.h"
+#include "CFont.h"
 #include "CZako.h"
 
 class CGameTest 
@@ -19,7 +20,8 @@ class CGameTest
 	void Draw();
 
 private:
-	
+
+	//-----Ground------
 	CStaticMesh* m_pGroundMesh;
 	CStaticMeshObject* m_pGroundMeshObject;
 	CStaticMeshObject* m_pMeshObject;
@@ -32,6 +34,9 @@ private:
 	//-----Enemy--------
 	std::vector<CZako*> m_pEnemyList;
 	CStaticMesh* m_pEnemyMesh;
+
+	//-----------------
+	CFont* m_pText = nullptr;
 
 };
 

@@ -29,8 +29,14 @@ void CAnimCharacter::Update()
 
 }
 
-void CAnimCharacter::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CAnimCharacter::Draw(SCENE_DATA& sceneData)
 {
+
+	D3DXMATRIX& View = sceneData.mView;
+	D3DXMATRIX& Proj = sceneData.mProj;
+	LIGHT& Light = sceneData.Light;
+	CAMERA& Camera = sceneData.Camera;
+	FOG& Fog = sceneData.Fog;
 
 	if (m_pSkinMesh == nullptr) {
 		return;

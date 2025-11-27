@@ -22,7 +22,7 @@ public:
     double StopTimer();
 
     double GetTimerElapsed() const { return m_timerElapsed; };
-
+	double GetFramePerSec() const { return m_framePerSec; };
     // Getters for external use
     float GetDeltaTime() const { return deltaTime; }
     double GetFixedDeltaTime() const { return m_fixedStepDuration; }
@@ -41,4 +41,5 @@ protected:
     // Fixed Time Step Variables
     double m_fixedStepDuration; // The target time for a single fixed update (e.g., 16.666 ms)
     double m_timeAccumulator;   // Time accumulated since the last fixed update
+	double m_framePerSec;       // Actual frames per second
 };

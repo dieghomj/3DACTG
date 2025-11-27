@@ -20,7 +20,7 @@ public:
 	~CBaseEnemy();
 
 	void Update();
-	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog);
+	void Draw(SCENE_DATA& sceneData);
 
 	void SetPath(std::vector<Pair> path);
 	int GetCurrentRow() const { return m_CurrentRow; }

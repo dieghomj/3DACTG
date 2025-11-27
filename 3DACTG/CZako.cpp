@@ -71,9 +71,9 @@ void CZako::Update()
 	CBaseEnemy::Update();
 }
 
-void CZako::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CZako::Draw(SCENE_DATA& sceneData)
 {
-	CBaseEnemy::Draw(View, Proj, Light, Camera, Fog);
+	CBaseEnemy::Draw(sceneData);
 }
 
 void CZako::TickAttackTimer(float deltaTime)

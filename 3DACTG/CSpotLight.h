@@ -62,12 +62,17 @@ public:
 		m_OuterAngle = OuterAngle;
 	}
 
+	void SetIntensity(float Intensity) {
+		m_Intensity = Intensity;
+	}
+
 private:
-	D3DXVECTOR3 m_vPosition;		//位置
+	D3DXVECTOR3 m_vPosition;	//位置
 	D3DXVECTOR3 m_vDirection;	//方向
 	D3DXCOLOR	m_Color;		//色
 	float		m_Range;		//範囲
 	float		m_InnerAngle;	//内側角度
 	float		m_OuterAngle;	//外側角度
+	float		m_Intensity;	//強度
 };
 

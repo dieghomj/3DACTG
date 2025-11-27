@@ -11,7 +11,7 @@ class CZako
 	CZako(std::vector<Pair> path, int width, int height);
 	~CZako();
 	void Update() override;
-	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	void Draw(SCENE_DATA& sceneData) override;
 
 	void TickAttackTimer(float deltaTime);
 	void SetTargetPlayer(CPlayer* player) { m_pPlayer = player; }

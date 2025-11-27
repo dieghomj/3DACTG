@@ -27,8 +27,6 @@ public:
 	virtual void Draw() = 0;
 
 	void AddSpotLight(CSpotLight& spotlight);
-	void RenderSpotLights(D3DXMATRIX& mView, D3DXMATRIX& mProj,
-		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog);
 
 	bool IsPause() const { return m_IsPause; }
 
@@ -53,7 +51,8 @@ protected:
 	CAMERA			m_Camera;
 	CCamera*		m_pCamera;
 	CCameraController*			m_pCameraController;
-	std::vector<CSpotLight*>	m_pSpotLightList;
+	std::vector<SPOT_LIGHT*>	m_pSpotLightList;
+	SCENE_DATA		m_SceneInfo;
 
 	bool			m_IsPause = false;
 

@@ -425,10 +425,10 @@ void CTest::Update()
 void CTest::Draw()
 {
 
-	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-	m_pGround->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	m_pCamera->Draw(m_SceneInfo);
+	m_pGround->Draw(m_SceneInfo);
 	//m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
-	m_pPlayer->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	m_pPlayer->Draw(m_SceneInfo);
 
 	//レイの描画
 	m_pPlayerRayY->Render(m_mView, m_mProj, m_pPlayer->GetRayY());
@@ -441,20 +441,20 @@ void CTest::Draw()
 	for (auto& path : m_pSewerPathArray)
 	{
 		path->UpdateCollider();
-		path->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+		path->Draw(m_SceneInfo);
 	}
 	// ゴースト描画
 	for( int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i]->UpdateCollider();
-		m_pGhostList[i]->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+		m_pGhostList[i]->Draw(m_SceneInfo);
 	}
-	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+	CEffect::GetInstance()->Draw(m_SceneInfo);
 
 	// アイテム描画
 	for (auto& item : m_ItemMeshArray)
 	{
-		item->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+		item->Draw(m_SceneInfo);
 	}
 
 

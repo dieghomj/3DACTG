@@ -36,11 +36,13 @@ bool CSpriteObject::IsHit(CGameObject* obj, float rad)
 
 }
 
-void CSpriteObject::Draw( D3DXMATRIX& View, D3DXMATRIX& Proj )
+void CSpriteObject::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 {
 	if( m_pSprite == nullptr ){
 		return;
 	}
+
+	
 
 	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ðXV.
 	m_pSprite->SetPosition( m_vPosition );
@@ -51,8 +53,9 @@ void CSpriteObject::Draw( D3DXMATRIX& View, D3DXMATRIX& Proj )
 	m_pSprite->Render( View, Proj );
 }
 
-void CSpriteObject::Draw(
-	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CSpriteObject::Draw(SCENE_DATA& sceneData)
 {
+	D3DXMATRIX View = sceneData.mView;
+	D3DXMATRIX Proj = sceneData.mProj;
 	Draw( View, Proj );
 }

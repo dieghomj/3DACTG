@@ -37,7 +37,7 @@ void CUIObject::Draw()
 }
 
 void CUIObject::Draw(
-	D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+	SCENE_DATA& sceneData)
 {
 	Draw();
 }

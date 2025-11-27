@@ -29,8 +29,13 @@ void CCamera::Update()
 	m_bStaticCamera = false;
 }
 
-void CCamera::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CCamera::Draw(SCENE_DATA& sceneData)
 {
+
+	D3DXMATRIX& View = sceneData.mView;
+	D3DXMATRIX& Proj = sceneData.mProj;
+	CAMERA& Camera = sceneData.Camera;
+
 	UpdateViewMatrix(View, Proj); 
 	// ÉJÉÅÉâèÓïÒÇç\ë¢ëÃÇ…äiî[
 	Camera.vPosition = m_vPosition;

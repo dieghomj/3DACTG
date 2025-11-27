@@ -56,8 +56,8 @@ void ScorpionScene::Update()
 
 void ScorpionScene::Draw()
 {
-	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-	m_pScorpion->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	m_pCamera->Draw(m_SceneInfo);
+	m_pScorpion->Draw(m_SceneInfo);
 	
 	m_pText->Render(
 		TEXT("ROLANDO"),

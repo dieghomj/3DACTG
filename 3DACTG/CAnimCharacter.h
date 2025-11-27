@@ -20,7 +20,7 @@ public:
 	//CGameObjectで純粋仮想関数の宣言がされてるのでこちらで定義を書く.
 	virtual void InitAnimation();
 	virtual void Update() override;
-	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	virtual void Draw(SCENE_DATA& sceneData) override;
 	
 	//メッシュを接続する.
 	void AttachSkinMesh(CSkinMesh& pMesh);

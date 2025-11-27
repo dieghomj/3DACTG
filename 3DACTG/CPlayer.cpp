@@ -50,9 +50,9 @@ void CPlayer::Update()
 	
 }
 
-void CPlayer::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CPlayer::Draw(SCENE_DATA& sceneData)
 {
-	CAnimCharacter::Draw(View, Proj, Light, Camera, Fog);
+	CAnimCharacter::Draw(sceneData);
 }
 
 void CPlayer::AnimControl()

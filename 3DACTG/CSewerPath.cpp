@@ -43,7 +43,7 @@ void CSewerPath::Update()
 
 }
 
-void CSewerPath::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CSewerPath::Draw(SCENE_DATA& sceneData)
 {
-	CStaticMeshObject::Draw(View, Proj, Light, Camera, Fog);
+	CStaticMeshObject::Draw(sceneData);
 }

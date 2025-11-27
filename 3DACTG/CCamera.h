@@ -11,7 +11,7 @@ public:
 	// CGameObject を介して継承されました
 	void Update() override;
 
-	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	void Draw(SCENE_DATA& sceneData) override;
 
 	// レンズ設定（FOV/アスペクト/ニア/ファー）
 	void SetPerspective(float fovY, float aspect, float zn, float zf);

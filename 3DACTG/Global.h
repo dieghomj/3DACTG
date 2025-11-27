@@ -41,6 +41,7 @@ const int WND_H = 720;	//ウィンドウの高さ.
 const int FPS = 60;		//フレームレート.
 const float AFFINE_INTENSITY = 1.f;	//アフィン変換の強度.
 const float VERTEX_SNAPPING = 64.f;		//頂点スナッピングの強度.
+const int	MAX_LIGHT = 4;	//最大ライト数.
 const double PI = 3.14159265358979323846;
 
 //=================================	================
@@ -54,6 +55,7 @@ struct CAMERA
 	float yaw;
 	float pitch;
 };
+
 //ライト情報.
 struct LIGHT
 {
@@ -63,6 +65,7 @@ struct LIGHT
 	float		fIntensity;	//強度(明るさ).
 };
 
+//フォグ情報.
 struct FOG {
 	bool		Enable;		//フォグ有効無効.
 	D3DXVECTOR4 Color;		//フォグの色.
@@ -70,6 +73,31 @@ struct FOG {
 	float		End;		//フォグ終了距離.
 	float		Density;	//フォグ密度(指数関数フォグ用).
 	int			Mode;		//フォグの種類(線形,指数関数,指数関数2乗).
+};
+
+//スポットライト情報.
+struct SPOT_LIGHT
+{
+	D3DXVECTOR4 LightOrigin;	//ライトの位置.
+	D3DXVECTOR4 LightDir;	//ライトの方向.
+	D3DXVECTOR4	LightColor;		//ライトの色.
+	float		fIntensity;	//ライトの強度.
+	float		fRange;		//ライトの届く距離.
+	float		fInnerAngle;//内側の角度(完全に光る範囲).
+	float		fOuterAngle;//外側の角度(徐々に暗くなる範囲).
+};
+
+//シーン情報構造体.
+struct SCENE_DATA
+{
+	const char* name;
+	D3DXMATRIX	mView;
+	D3DXMATRIX	mProj;
+	CAMERA		Camera;
+	LIGHT		Light;
+	FOG			Fog;
+	SPOT_LIGHT*	pSpotLightArray;
+	int			SpotLightNum;
 };
 
 struct Pair

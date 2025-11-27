@@ -71,9 +71,9 @@ void CBaseEnemy::Update()
 
 }
 
-void CBaseEnemy::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CBaseEnemy::Draw(SCENE_DATA& sceneData)
 {
-	CCharacter::Draw(View, Proj, Light, Camera, Fog);
+	CCharacter::Draw(sceneData);
 }
 
 void CBaseEnemy::SetPath(std::vector<Pair> path)

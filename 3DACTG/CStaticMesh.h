@@ -54,6 +54,13 @@ public:
 		float		_padding;			// パディング.
 	};
 
+	struct CBUFFER_PER_SPOTLIGHT
+	{
+		SPOT_LIGHT SpotLights[MAX_LIGHT]; //スポットライト配列.
+		int NumSpotLights;        //スポットライトの数.
+		D3DXVECTOR3 _padding;     //パディング.
+	};
+
 	//頂点の構造体.
 	struct VERTEX
 	{
@@ -194,6 +201,7 @@ private:
 	ID3D11Buffer*			m_pCBufferPerMesh;		//コンスタントバッファ(メッシュ毎).
 	ID3D11Buffer*			m_pCBufferPerMaterial;	//コンスタントバッファ(マテリアル毎).
 	ID3D11Buffer*			m_pCBufferPerFrame;		//コンスタントバッファ(フレーム毎).
+	ID3D11Buffer*			m_pCBufferPerSpotLight;	//コンスタントバッファ(スポットライト毎).
 
 	ID3D11Buffer*			m_pVertexBuffer;	//頂点バッファ.
 	ID3D11Buffer**			m_ppIndexBuffer;	//インデックスバッファ.

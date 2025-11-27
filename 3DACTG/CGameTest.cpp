@@ -44,6 +44,10 @@ void CGameTest::Create()
 	CEffect::GetInstance()->Create(
 		m_pDx11->GetDevice(),
 		m_pDx11->GetContext());
+
+
+	m_pText = new CFont();
+
 }
 
 void CGameTest::Release()
@@ -76,15 +80,27 @@ HRESULT CGameTest::LoadData()
 		enemy->AttachMesh(*m_pEnemyMesh);
 	}
 
+	m_pText->Init(*m_pDx11);
+
 	return S_OK;
 }
 
 void CGameTest::Start()
 {
 	m_pDx11->SetDepth(true);
-	m_GlobalLight.fIntensity = 0.2f;
-	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 4.0f);
+	m_GlobalLight.fIntensity = 0.5f;
+	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	m_GlobalLight.Position = D3DXVECTOR3(0.0f, 10.0f, -5.0f);
+
+	CSpotLight* flashlight = new CSpotLight();
+
+	flashlight->SetPosition(D3DXVECTOR3(0.0f, 5.0f, -15.0f));
+	flashlight->SetDirection(D3DXVECTOR3(0.0f, -0.5f, 1.0f));
+	flashlight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
+	flashlight->SetRange(50.0f);
+	flashlight->SetInnerAngle(D3DXToRadian(15.0f));
+	flashlight->SetOuterAngle(D3DXToRadian(30.0f));
+	//AddSpotLight(*flashlight);
 
 	m_Fog.Enable = false;
 
@@ -108,7 +124,6 @@ void CGameTest::Update()
 	CScene::Update();
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
-
 
 	m_pPlayer->Update();
 	//for (auto& enemy : m_pEnemyList)
@@ -153,17 +168,25 @@ void CGameTest::Update()
 
 void CGameTest::Draw()
 {
-
-	m_pCamera->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-
-	m_pGroundMeshObject->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
-	m_pPlayer->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+	m_pCamera->Draw(m_SceneInfo);
+	m_pGroundMeshObject->Draw(m_SceneInfo);
+	m_pPlayer->Draw(m_SceneInfo);
 	for (auto& enemy : m_pEnemyList)
 	{
-		enemy->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera, m_Fog);
+		enemy->Draw(m_SceneInfo);
 	}
 
-	CEffect::GetInstance()->Draw(m_mView, m_mProj, m_GlobalLight, m_Camera);
+	CEffect::GetInstance()->Draw(m_SceneInfo);
+
+
+	TCHAR buffer[256];
+	_stprintf_s(buffer, L"FPS: %.2f", m_pTime->GetFramePerSec());
+	m_pText->Render(
+		buffer,
+		50,
+		50,
+		50.0f
+	);
 
 }
 

@@ -603,6 +603,21 @@ HRESULT CStaticMesh::CreateConstantBuffer()
 		return E_FAIL;
 	}
 
+	//コンスタントバッファ(スッポトライト毎).
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//コンスタントバッファを指定.
+	cb.ByteWidth = sizeof(CBUFFER_PER_SPOTLIGHT);	//コンスタントバッファのサイズ.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//書き込みでアクセス.
+	cb.MiscFlags = 0;				//その他のフラグ(未使用).
+	cb.StructureByteStride = 0;		//構造体のサイズ(未使用).
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//使用方法:直接書き込み.
+	//コンスタントバッファの作成.
+	if (FAILED(
+		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerSpotLight)))
+	{
+		_ASSERT_EXPR(false, _T("コンスタントバッファ(フレーム用)作成失敗"));
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -659,7 +674,7 @@ void CStaticMesh::Render(
 
 		//----- ライト情報 -----.
 		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // White light
-		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f); // Dim ambient
+		cb.AmbientColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f); // Dim ambient
 		cb.LightDir = D3DXVECTOR4(Light.vDirection.x, Light.vDirection.y, Light.vDirection.z, 0.0f);
 		D3DXVec4Normalize(&cb.LightDir, &cb.LightDir);
 		cb.LightIntensity = Light.fIntensity;

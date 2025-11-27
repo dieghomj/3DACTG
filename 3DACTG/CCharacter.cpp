@@ -23,7 +23,7 @@ void CCharacter::Update()
 	CStaticMeshObject::Update();
 }
 
-void CCharacter::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog)
+void CCharacter::Draw(SCENE_DATA& sceneData)
 {
-	CStaticMeshObject::Draw(View, Proj, Light, Camera, Fog);
+	CStaticMeshObject::Draw(sceneData);
 }

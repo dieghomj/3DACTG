@@ -48,6 +48,14 @@ CScene::~CScene()
 
 void CScene::Update()
 {
+	m_SceneInfo.mView = m_mView;
+	m_SceneInfo.mProj = m_mProj;
+	m_SceneInfo.Camera = m_Camera;
+	m_SceneInfo.Fog = m_Fog;
+	m_SceneInfo.Light = m_GlobalLight;
+	m_SceneInfo.SpotLightNum = static_cast<int>(m_pSpotLightList.size());
+	m_SceneInfo.pSpotLightArray = m_pSpotLightList.empty() ? nullptr : m_pSpotLightList[0];
+
 	UpdateMousePos();
 
 	if (GetAsyncKeyState('P') & 0x0001)
@@ -59,15 +67,17 @@ void CScene::Update()
 
 void CScene::AddSpotLight(CSpotLight& spotlight)
 {
-	m_pSpotLightList.emplace_back(&spotlight);
-}
+	
+	SPOT_LIGHT spotLightInfo;
+	spotLightInfo.LightOrigin = D3DXVECTOR4(spotlight.GetPosition(),0.f);
+	spotLightInfo.LightColor = D3DXVECTOR4(spotlight.GetColor());
+	spotLightInfo.LightDir = D3DXVECTOR4(spotlight.GetDirection(), 0.f);
+	spotLightInfo.fIntensity = 1.0f;
+	spotLightInfo.fRange = spotlight.GetRange();
+	spotLightInfo.fInnerAngle = spotlight.GetInnerAngle();
+	spotLightInfo.fOuterAngle = spotlight.GetOuterAngle();
 
-void CScene::RenderSpotLights(D3DXMATRIX& mView, D3DXMATRIX& mProj, LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog)
-{
-	for (auto& spotlight : m_pSpotLightList)
-	{
-		spotlight->Render(mView, mProj, Light, CamPos, Fog);
-	}
+	m_pSpotLightList.emplace_back(&spotLightInfo);
 }
 
 void CScene::UpdateMousePos()
@@ -85,7 +95,6 @@ void CScene::UpdateMousePos()
 	//// Reset cursor to center
 	ClientToScreen(m_hWnd, &center);
 	SetCursorPos(center.x, center.y);
-
 }
 
 POINT CScene::GetMouseSeudoPos()
