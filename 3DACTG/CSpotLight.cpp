@@ -9,6 +9,7 @@ CSpotLight::CSpotLight()
 	, m_Range		(10.0f)
 	, m_InnerAngle	(D3DXToRadian(20.0f))
 	, m_OuterAngle	(D3DXToRadian(30.0f))
+	, m_Intensity	(1.0f)
 {
 }
 

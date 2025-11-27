@@ -54,10 +54,21 @@ public:
 		float		_padding;			// パディング.
 	};
 
+	struct SPOT_LIGHT_DATA
+	{
+		D3DXVECTOR4	LightOrigin;	//ライトの位置.
+		D3DXVECTOR4	LightDir;		//ライトの方向.
+		D3DXVECTOR4	LightColor;		//ライトの色.
+		float		fIntensity;		//ライトの強度.
+		float		fRange;			//ライトの届く距離.
+		float		fInnerCos;	//内側の角度(完全に光る範囲).
+		float		fOuterCos;	//外側の角度(徐々に暗くなる範囲).
+	};
+
 	struct CBUFFER_PER_SPOTLIGHT
 	{
-		SPOT_LIGHT SpotLights[MAX_LIGHT]; //スポットライト配列.
-		int NumSpotLights;        //スポットライトの数.
+		SPOT_LIGHT_DATA SpotLights[MAX_LIGHT]; //スポットライト配列.
+		UINT NumSpotLights;        //スポットライトの数.
 		D3DXVECTOR3 _padding;     //パディング.
 	};
 
@@ -129,7 +140,7 @@ public:
 
 	//レンダリング用.
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj,
-		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog);
+		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog, const SPOT_LIGHT* pSpotLightArr, int SpotLightNo);
 
 	//座標情報を設定.
 	void SetPosition( const D3DXVECTOR3& Pos ) { m_Position = Pos; }

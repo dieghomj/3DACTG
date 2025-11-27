@@ -29,6 +29,8 @@ void CStaticMeshObject::Draw(
 	LIGHT& Light = sceneData.Light;
 	CAMERA& Camera = sceneData.Camera;
 	FOG& Fog = sceneData.Fog;
+	SPOT_LIGHT* pSpotLightArr = sceneData.pSpotLightArray;
+	int SpotLightNo = sceneData.SpotLightNum;
 
 	if( m_pMesh == nullptr ){
 		return;
@@ -40,7 +42,7 @@ void CStaticMeshObject::Draw(
 	m_pMesh->SetScale( m_vScale );
 
 	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
-	m_pMesh->Render( View, Proj, Light, Camera.vPosition, Fog);
+	m_pMesh->Render( View, Proj, Light, Camera.vPosition, Fog, pSpotLightArr, SpotLightNo);
 }
 
 HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)

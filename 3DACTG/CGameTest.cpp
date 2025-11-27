@@ -88,19 +88,20 @@ HRESULT CGameTest::LoadData()
 void CGameTest::Start()
 {
 	m_pDx11->SetDepth(true);
-	m_GlobalLight.fIntensity = 0.5f;
+	m_GlobalLight.fIntensity = 0.0f;
 	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	m_GlobalLight.Position = D3DXVECTOR3(0.0f, 10.0f, -5.0f);
 
 	CSpotLight* flashlight = new CSpotLight();
 
-	flashlight->SetPosition(D3DXVECTOR3(0.0f, 5.0f, -15.0f));
-	flashlight->SetDirection(D3DXVECTOR3(0.0f, -0.5f, 1.0f));
+	flashlight->SetPosition(D3DXVECTOR3(0.0f, 5.0f, -5.0f));
+	flashlight->SetDirection(D3DXVECTOR3(0.0f, 0.0f, 1.0f));
 	flashlight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
 	flashlight->SetRange(50.0f);
 	flashlight->SetInnerAngle(D3DXToRadian(15.0f));
 	flashlight->SetOuterAngle(D3DXToRadian(30.0f));
-	//AddSpotLight(*flashlight);
+	flashlight->SetIntensity(2.0f);
+	AddSpotLight(*flashlight);
 
 	m_Fog.Enable = false;
 
@@ -177,7 +178,6 @@ void CGameTest::Draw()
 	}
 
 	CEffect::GetInstance()->Draw(m_SceneInfo);
-
 
 	TCHAR buffer[256];
 	_stprintf_s(buffer, L"FPS: %.2f", m_pTime->GetFramePerSec());

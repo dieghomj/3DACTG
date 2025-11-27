@@ -614,7 +614,7 @@ HRESULT CStaticMesh::CreateConstantBuffer()
 	if (FAILED(
 		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerSpotLight)))
 	{
-		_ASSERT_EXPR(false, _T("コンスタントバッファ(フレーム用)作成失敗"));
+		_ASSERT_EXPR(false, _T("コンスタントバッファ(ライト用)作成失敗"));
 		return E_FAIL;
 	}
 
@@ -626,7 +626,9 @@ HRESULT CStaticMesh::CreateConstantBuffer()
 //  最終的に画面に出力するのは別クラスのレンダリング関数がやる.
 void CStaticMesh::Render(
 	D3DXMATRIX& mView, D3DXMATRIX& mProj,
-	LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog)
+	LIGHT& Light, D3DXVECTOR3& CamPos, 
+	FOG& Fog, const SPOT_LIGHT* pSpotLightArr, 
+	int SpotLightNo)
 {
 	//ワールド行列、スケール行列、回転行列、平行移動行列.
 	D3DXMATRIX mWorld, mScale, mRot, mTran;
@@ -654,13 +656,13 @@ void CStaticMesh::Render(
 	//拡縮×回転×移動 ※順番がとても大切！！.
 	mWorld = mScale * mRot * mTran;
 
-
 	//使用するシェーダのセット.
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);	//頂点シェーダ.
 	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);	//ピクセルシェーダ.
 
 	//シェーダのコンスタントバッファに各種データを渡す.
 	D3D11_MAPPED_SUBRESOURCE pData;
+	D3D11_MAPPED_SUBRESOURCE pDataSpot;
 	//バッファ内のデータの書き換え開始時にMap.
 	if (SUCCEEDED(m_pContext11->Map(
 		m_pCBufferPerFrame, 0,
@@ -674,7 +676,7 @@ void CStaticMesh::Render(
 
 		//----- ライト情報 -----.
 		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // White light
-		cb.AmbientColor = D3DXVECTOR4(0.2f, 0.3f, 0.4f, 1.0f); // Dim ambient
+		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f); // Dim ambient
 		cb.LightDir = D3DXVECTOR4(Light.vDirection.x, Light.vDirection.y, Light.vDirection.z, 0.0f);
 		D3DXVec4Normalize(&cb.LightDir, &cb.LightDir);
 		cb.LightIntensity = Light.fIntensity;
@@ -699,6 +701,51 @@ void CStaticMesh::Render(
 	//このコンスタントバッファをどのシェーダで使用するか？.
 	m_pContext11->VSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//頂点シェーダ.
 	m_pContext11->PSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//ピクセルシェーダ.
+
+
+	if (SUCCEEDED(m_pContext11->Map(
+		m_pCBufferPerSpotLight, 0,
+		D3D11_MAP_WRITE_DISCARD,
+		0, &pDataSpot)))
+	{
+		CBUFFER_PER_SPOTLIGHT cb;
+		const int num = (SpotLightNo < MAX_LIGHT) ? SpotLightNo : MAX_LIGHT;
+		cb.NumSpotLights = num;
+		for ( int i = 0; i < SpotLightNo; i++ )
+		{
+			auto* light = &cb.SpotLights[i];
+			const auto& in = pSpotLightArr[i];
+
+			light->LightOrigin = in.LightOrigin;
+
+			// 方向ベクトルは正規化
+			D3DXVECTOR4 dir = in.LightDir;
+			D3DXVec4Normalize(&dir, &dir);
+			light->LightDir = dir;
+
+			light->fIntensity = in.fIntensity;
+			light->fRange = in.fRange;
+
+			// 角度が degree ならラジアンに変換してから cos を取る
+			// もし既にラジアンなら D3DXToRadian は不要
+			const float innerRad = D3DXToRadian(in.fInnerAngle);
+			const float outerRad = D3DXToRadian(in.fOuterAngle);
+			light->fInnerCos = cosf(innerRad);
+			light->fOuterCos = cosf(outerRad);
+		}
+
+		memcpy_s(
+			pDataSpot.pData,	//コピー先のバッファ.
+			pDataSpot.RowPitch,	//コピー先のバッファサイズ.
+			(void*)(&cb),	//コピー元のバッファ.
+			sizeof(cb));	//コピー元のバッファサイズ.
+
+		//バッファ内のデータの書き換え終了時にUnmap.
+		m_pContext11->Unmap(m_pCBufferPerSpotLight, 0);
+	}
+
+	m_pContext11->VSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//頂点シェーダ.
+	m_pContext11->PSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//ピクセルシェーダ.
 
 	//メッシュのレンダリング.
 	RenderMesh(mWorld, mView, mProj);

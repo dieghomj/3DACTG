@@ -42,8 +42,6 @@ void CSpriteObject::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 		return;
 	}
 
-	
-
 	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ðXV.
 	m_pSprite->SetPosition( m_vPosition );
 	m_pSprite->SetRotation( m_vRotation );

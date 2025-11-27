@@ -14,6 +14,8 @@ INT WINAPI WinMain(
 	_In_ PSTR lpCmdLine,
 	_In_ INT nCmdShow)
 {
+	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+
 	CMain* pCMain = new CMain();	//‰Šú‰»•ƒNƒ‰ƒXéŒ¾.
 
 	if (pCMain != nullptr)

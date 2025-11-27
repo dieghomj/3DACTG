@@ -363,9 +363,6 @@ void CTest::Update()
 		return;
 	}
 	
-	
-
-
 	// プレイヤーカメラ
 	if (playerCamera)
 	{

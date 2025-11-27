@@ -32,16 +32,16 @@ void CCamera::Update()
 void CCamera::Draw(SCENE_DATA& sceneData)
 {
 
-	D3DXMATRIX& View = sceneData.mView;
-	D3DXMATRIX& Proj = sceneData.mProj;
-	CAMERA& Camera = sceneData.Camera;
+	D3DXMATRIX* View = &sceneData.mView;
+	D3DXMATRIX* Proj = &sceneData.mProj;
+	CAMERA* Camera = &sceneData.Camera;
 
-	UpdateViewMatrix(View, Proj); 
+	UpdateViewMatrix(*View, *Proj); 
 	// ƒJƒƒ‰î•ñ‚ð\‘¢‘Ì‚ÉŠi”[
-	Camera.vPosition = m_vPosition;
-	Camera.vLook = m_vLook;
-	Camera.yaw = m_Yaw;
-	Camera.pitch = m_Pitch;
+	Camera->vPosition = m_vPosition;
+	Camera->vLook = m_vLook;
+	Camera->yaw = m_Yaw;
+	Camera->pitch = m_Pitch;
 }
 
 void CCamera::SetPerspective(float fovY, float aspect, float zn, float zf)
