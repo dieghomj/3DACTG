@@ -47,7 +47,7 @@ private:
 	CRay* m_pPlayerRayY;
 	CRay* m_pCrossRay[4];
 
-	CStaticMesh* m_pWomanMesh;
+	CSkinMesh* m_pWomanMesh;
 	CStaticMesh* m_TMPItemMesh;
 	std::vector<CStaticMeshObject*> m_ItemMeshArray;
 

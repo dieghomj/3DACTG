@@ -9,7 +9,7 @@ CPlayer::CPlayer()
 	, m_MoveState	(Stop)
 	, m_PlayerState (Idle)
 	, m_pInput		(nullptr)
-	, m_bTankControlMode(false)
+	, m_bTankControlMode(true)
 	, m_AnimationState(AnimIdle)
 {
 	m_pInput = new CInput();
@@ -25,14 +25,14 @@ void CPlayer::Update()
 	bool animFin = false;
 	if (m_PlayerState == Attacking)
 	{
-		animFin = SetAnimNo(m_AnimationState);
+		animFin = SetAnimNo(m_AnimationState, FORCE_CHANGE);
 		if (animFin)
 			m_PlayerState = Idle;
 	}
 	else
-		SetAnimNo(m_AnimationState);
+	SetAnimNo(m_AnimationState);
 	HandleInput();
-	m_bTankControlMode = false;
+	//m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
@@ -75,6 +75,10 @@ void CPlayer::AnimControl()
 		case Jumping:
 			//ジャンプ
 			m_AnimationState = AnimJump;
+			break;
+		case Damaged:
+			//ダメージ
+			m_AnimationState = AnimDamaged;
 			break;
 	}
 	

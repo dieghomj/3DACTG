@@ -7,7 +7,7 @@ CAnimCharacter::CAnimCharacter()
 	, m_pAnimCtrl(nullptr)
 	, m_AnimNo(1)
 	, m_AnimTime(0.f)
-	, m_AnimSpeed(0.02f)
+	, m_AnimSpeed(0.04f)
 	, m_vBonePos(0.f, 0.f, 0.f)
 {
 
@@ -70,11 +70,14 @@ void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
 	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
 }
 
-bool CAnimCharacter::SetAnimNo(int no)
+bool CAnimCharacter::SetAnimNo(int no, int flag)
 {
 	bool isFinished = (m_AnimTime >= m_pSkinMesh->GetAnimPeriod(no));
-	if (isFinished)
+
+	if (isFinished || (FORCE_CHANGE | flag))
 	{
+		if(m_AnimNo == no)
+			return isFinished;
 		m_AnimTime = 0.f;
 		m_AnimNo = no;
 		m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);

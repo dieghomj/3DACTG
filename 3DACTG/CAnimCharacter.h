@@ -8,6 +8,13 @@ class CAnimCharacter
 
 public:
 
+	enum
+	{
+		NO_FLAG = 0,	//フラグ無し.
+		FORCE_CHANGE = 1,	//強制的にアニメーションを切り替えるフラグ.
+		BLEND_CHANGE = 2,	//アニメーションをブレンドして切り替えるフラグ.
+	};
+
 	CAnimCharacter();
 	virtual ~CAnimCharacter() override;
 	//CGameObjectで純粋仮想関数の宣言がされてるのでこちらで定義を書く.
@@ -25,7 +32,7 @@ public:
 	}
 
 	void SetAnimSpeed(double speed) { m_AnimSpeed = speed; }
-	bool SetAnimNo(int no);
+	bool SetAnimNo(int no, int flag = 0);
 
 
 private:

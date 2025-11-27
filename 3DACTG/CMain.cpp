@@ -110,7 +110,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(m_pScorpion,"SCORPION");
 
 	//ƒV[ƒ“•ÏX.
-	m_pSceneManager->ChangeScene("COMBAT");
+	m_pSceneManager->ChangeScene("GAME");
 
 	return S_OK;
 }

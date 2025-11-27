@@ -123,7 +123,7 @@ void CTest::Create()
 
 	// ƒvƒŒƒCƒ„[ì¬
 	m_pPlayer = new CPlayer();
-	m_pWomanMesh = new CStaticMesh();
+	m_pWomanMesh = new CSkinMesh();
 	m_pPlayerRayY = new CRay();
 	for( int dir = 0; dir < CROSSRAY::max; dir++ ) {
 		m_pCrossRay[dir] = new CRay();
@@ -161,7 +161,7 @@ HRESULT CTest::LoadData()
 
 	m_pWomanMesh->Init(
 		*m_pDx9, *m_pDx11,
-		_T("Data\\Mesh\\Skin\\Woman\\PSXVillageWoman.x"));
+		_T("Data\\Mesh\\Skin\\WomanAnime\\WomanAnime.X"));
 
 	m_TMPItemMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -214,13 +214,12 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
-	m_pPlayer->AttachMesh(*m_pWomanMesh);
+	m_pPlayer->AttachSkinMesh(*m_pWomanMesh);
 	m_pPlayer->SetRotation(0.f, D3DXToRadian(180.f), 0.f);
-	m_pPlayer->SetScale(0.6f);
+	m_pPlayer->SetScale(0.03f);
 	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0,0,2.f,m_MazeCellSize));
 
 	RAY	ray = m_pPlayer->GetRayY();
-
 	m_pPlayerRayY->Init(*m_pDx11, ray);
 
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {

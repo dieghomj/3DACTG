@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CEffect.h"
 #include "CGameTest.h"
+#include <random>
 
 CGameTest::CGameTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, pManager)
@@ -63,8 +64,8 @@ HRESULT CGameTest::LoadData()
 {
 	m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\Ground.x");
 	m_pEnemyMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako\\zako.x");
-	m_pPlayerMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\animeWoman.x");
-	m_pPlayerSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\animeWoman.x");
+	m_pPlayerMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\WomanAnime.x");
+	m_pPlayerSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\WomanAnime.x");
 	m_pGroundMeshObject->AttachMesh(*m_pGroundMesh);
 
 	//m_pPlayer->AttachMesh(*m_pPlayerMesh);
@@ -100,6 +101,10 @@ void CGameTest::Start()
 
 void CGameTest::Update()
 {
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<float> rnd(-0.5f, 0.5f);
+
 	CScene::Update();
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
@@ -115,11 +120,24 @@ void CGameTest::Update()
 	static ::EsHandle hEffect = -1;
 	if (m_pPlayer->GetPlayerState() == CPlayer::Attacking)
 	{
-		hEffect = CEffect::Play(CEffect::enList::AttackEffect, m_pPlayer->GetPosition() + D3DXVECTOR3(0.f,0.5f,0.3f));
-		CEffect::SetSpeed(hEffect, 1.f);
-		CEffect::SetScale(hEffect, D3DXVECTOR3(0.06f, 0.06f, 0.06f));
+		if (!CEffect::IsPlaying(hEffect))
+		{
+			hEffect = CEffect::Play(CEffect::enList::AttackEffect, m_pPlayer->GetPosition() + D3DXVECTOR3(rnd(mt), 0.5f, 0.2f));
+			CEffect::SetScale(hEffect, D3DXVECTOR3(0.2f, 0.2f, 0.2f));
+			CEffect::SetSpeed(hEffect, 1.f);
+		}
 	}
 
+	static ::EsHandle hBloodEffect = -1;
+	/*if (m_pPlayer->GetPlayerState() == CPlayer::Damaged)
+	{
+		if (!CEffect::IsPlaying(hBloodEffect))
+		{
+			hBloodEffect = CEffect::Play(CEffect::enList::BloodEffect, m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, 0.5f, 0.0f));
+			CEffect::SetScale(hBloodEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+			CEffect::SetSpeed(hBloodEffect, 1.f);
+		}
+	}*/
 
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 	m_pCameraController->ThirdPersonCamera(

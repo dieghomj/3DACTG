@@ -20,19 +20,21 @@ public:
 	};
 
 	enum PlayerState {
-		Idle = 1,
-		Running = 4,
-		Jumping = 3,
-		Attacking = 2
+		Idle = 0,
+		Attacking = 1,
+		Running = 3,
+		Jumping = 2,
+		Damaged = 4,
 	};
 
 	//アニメーション状態
 	//プレイヤーモデルによる修正が必要
 	enum AnimationState {
-		AnimIdle = 1,
-		AnimAttack = 2,
-		AnimJump = 3,
-		AnimRun = 4,
+		AnimDamaged = 0 ,
+		AnimIdle = 3,
+		AnimAttack = 1,
+		AnimJump = 4,
+		AnimRun = 2,
 	};
 
 public:
@@ -40,6 +42,9 @@ public:
 	virtual ~CPlayer() override;
 	virtual void Update() override;
 	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera, FOG& Fog) override;
+	void SetPlayerState(PlayerState state) {
+		m_PlayerState = state;
+	}
 	int GetPlayerState() const {
 		return m_PlayerState;
 	}
