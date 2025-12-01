@@ -26,6 +26,8 @@ class CCameraController
 
 	void SetPosition(float x, float y, float z) { m_vPosition = D3DXVECTOR3(x, y, z); };
 	void SetRotation(float pitch, float yaw, float roll) { m_vRotation = D3DXVECTOR3(yaw, pitch, roll); };
+	void SetTPOffset(float x, float y, float z) { m_TP_offset = D3DXVECTOR3(x, y, z); };
+	void SetTPOffset(const D3DXVECTOR3& offset) { m_TP_offset = offset; };
 	D3DXVECTOR3 GetPosition() const { return m_vPosition; };
 	D3DXVECTOR3 GetRotation() const { return m_vRotation; };
 	D3DXVECTOR3 GetForward() const { return m_pCamera->GetForward(); };
