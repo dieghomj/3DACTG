@@ -52,6 +52,10 @@ public:
 		m_bTankControlMode = mode;
 	}
 
+	bool IsFlashOn() const {
+		return m_bIsFlashOn;
+	}
+
 private:
 	void AnimControl();
 	void RadioControl();
@@ -68,5 +72,6 @@ protected:
 	AnimationState	m_AnimationState;			//アニメーション状態
 	CInput*			m_pInput;					//入力管理クラス
 	bool			m_bTankControlMode = false;	//タンク操作モードかどうか
+	bool			m_bIsFlashOn = false;		//懐中電灯が点いているかどうか
 };
 

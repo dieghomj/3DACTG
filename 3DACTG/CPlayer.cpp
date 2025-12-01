@@ -11,6 +11,7 @@ CPlayer::CPlayer()
 	, m_pInput		(nullptr)
 	, m_bTankControlMode(true)
 	, m_AnimationState(AnimIdle)
+	, m_bIsFlashOn(false)
 {
 	m_pInput = new CInput();
 }
@@ -133,12 +134,18 @@ void CPlayer::RadioControl()
 			break;
 	}
 
-	if( m_MoveState != MoveState::Stop )
+	if (m_MoveState != MoveState::Stop)
+	{
+		SetAnimSpeed(0.04f);
 		m_PlayerState = Running;
+	}
 	else
 	{
 		if ((m_PlayerState != Attacking) && (m_PlayerState != Jumping))
+		{
 			m_PlayerState = Idle;
+			SetAnimSpeed(0.01f);
+		}
 	}
 
 	//ã‹L‚ÌˆÚ“®ˆ—‚ªI‚í‚ê‚Î’âŽ~ó‘Ô‚É‚µ‚Ä‚¨‚­
@@ -149,9 +156,9 @@ void CPlayer::HandleInput()
 { 
 	m_pInput->Update();
 
-	if (m_pInput->GetKeyDown(VK_LBUTTON))
+	if (m_pInput->GetKeyUp(VK_LBUTTON))
 	{
-		m_PlayerState = Attacking;
+		m_bIsFlashOn = !m_bIsFlashOn;
 	}
 	if (m_pInput->GetKeyDown(VK_UP) || m_pInput->GetKeyDown('W')) {
 		m_MoveState = MoveState::Forward;

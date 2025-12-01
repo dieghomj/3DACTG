@@ -42,7 +42,7 @@ bool CInput::GetKeyDown(int key)
 bool CInput::GetKeyUp(int key)
 {
 
-	if (!m_KeyState[key])
+	if (m_KeyPrevState[key] && !m_KeyState[key])
 	{
 		return true;
 	}
