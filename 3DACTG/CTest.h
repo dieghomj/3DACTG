@@ -44,6 +44,8 @@ private:
 	CStaticMeshObject* m_pGround;
 	
 	CPlayer* m_pPlayer;
+	CSpotLight* m_pPlayerLight;
+
 	CRay* m_pPlayerRayY;
 	CRay* m_pCrossRay[4];
 

@@ -33,6 +33,10 @@ public:
 		m_PatternNo.y = y;
 	}
 
+	POINTS GetPatternNo() const {
+		return m_PatternNo;
+	}
+
 protected:
 	//CGameObject‚©‚çŒp³‚µ‚½ŠÖ”
 	//final : ‚±‚êˆÈ~‚Íoverride‚³‚¹‚È‚¢

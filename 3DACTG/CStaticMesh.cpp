@@ -676,7 +676,7 @@ void CStaticMesh::Render(
 
 		//----- ÉâÉCÉgèÓïÒ -----.
 		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // White light
-		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f); // Dim ambient
+		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.3f, 0.4f, 1.0f); // Dim ambient
 		cb.LightDir = D3DXVECTOR4(Light.vDirection.x, Light.vDirection.y, Light.vDirection.z, 0.0f);
 		D3DXVec4Normalize(&cb.LightDir, &cb.LightDir);
 		cb.LightIntensity = Light.fIntensity;

@@ -3,6 +3,7 @@
 #include "CPlayer.h"
 #include "CFont.h"
 #include "CZako.h"
+#include "CUIObject.h"
 
 class CGameTest 
 	: public CScene
@@ -33,6 +34,9 @@ private:
 
 	//-------Flashlight----------
 	CSpotLight* m_pFlashLight;
+
+	CSprite2D* m_pLightBarSprite;
+	CUIObject* m_pLightBar;
 
 	//-----Enemy--------
 	std::vector<CZako*> m_pEnemyList;

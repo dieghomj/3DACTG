@@ -100,6 +100,8 @@ void CTest::Create()
 	m_pCamera->SetPosition(0.f, 5.f, -15.f);
 	m_pCameraController = new CCameraController(m_pCamera);
 
+	m_pPlayerLight = new CSpotLight();
+
 	// 地面メッシュ作成
 	m_pGroundStaticMesh = new CStaticMesh();
 	// 地面オブジェクト作成
@@ -199,7 +201,7 @@ HRESULT CTest::LoadData()
 
 	if (FAILED(m_pGhostMesh->Init(
 		*m_pDx9, *m_pDx11,
-		_T("Data\\Mesh\\Static\\Ghost\\GhostB\\Ghost.X"))))
+		_T("Data\\Mesh\\Static\\EyeBall\\eyeball.x"))))
 	{
 		return E_FAIL;
 	}
@@ -230,7 +232,7 @@ HRESULT CTest::LoadData()
 	for(int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
-		m_pGhostList[i]->SetScale(0.09f);
+		m_pGhostList[i]->SetScale(1.0f);
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 
@@ -255,7 +257,9 @@ void CTest::Start()
 {
 	m_pDx11->SetDepth(true);
 	// 環境設定
-	m_GlobalLight.fIntensity = 1.f;
+	m_GlobalLight.fIntensity = 0.2f;
+
+	m_pCameraController->SetTPOffset(D3DXVECTOR3(0.f, 2.f, -5.f));
 
 	m_Fog.Color = D3DXVECTOR4(0.076, 0.0803f, 0.0709f, 1.0f);
 	m_Fog.Enable = m_bFog;
@@ -278,13 +282,23 @@ void CTest::Start()
 		}
 	}
 	static ::EsHandle hEffect = -1;
-	for (auto& item : m_ItemMeshArray)
-	{
-		D3DXVECTOR3 pos = item->GetPosition();
-		hEffect = CEffect::Play(CEffect::enList::MagmaEffect, pos);
-		CEffect::SetScale(hEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
-	}
+	//for (auto& item : m_ItemMeshArray)
+	//{
+	//	D3DXVECTOR3 pos = item->GetPosition();
+	//	hEffect = CEffect::Play(CEffect::enList::MagmaEffect, pos);
+	//	CEffect::SetScale(hEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+	//}
 	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+
+	m_pPlayerLight->SetPosition(D3DXVECTOR3(0.0f, 15.0f, 0.0f));
+	m_pPlayerLight->SetDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
+	m_pPlayerLight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
+	m_pPlayerLight->SetRange(150.0f);
+	m_pPlayerLight->SetInnerAngle(D3DXToRadian(15.0f));
+	m_pPlayerLight->SetOuterAngle(D3DXToRadian(30.0f));
+	m_pPlayerLight->SetIntensity(5.0f);
+	m_pPlayerLight->SetSceneIndex(AddSpotLight(m_pPlayerLight));
+
 }
 
 void CTest::Update()
@@ -359,6 +373,8 @@ void CTest::Update()
 		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 		m_pPlayer->SetRotation(playerRot);
+		m_pPlayerLight->SetIntensity(0.f);
+		UpdateSpotLight(m_pPlayerLight);
 
 		return;
 	}
@@ -383,6 +399,22 @@ void CTest::Update()
 			if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
 				path->Update();
 		}
+
+		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+		m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
+
+		if (m_pPlayer->IsFlashOn())
+		{
+			m_pPlayerLight->SetIntensity(1.0f);
+			UpdateSpotLight(m_pPlayerLight);
+		}
+		else
+		{
+			m_pPlayerLight->SetIntensity(0.0f);
+			UpdateSpotLight(m_pPlayerLight);
+
+		}
+
 		return; 
 	}
 	// スタティックカメラ
@@ -413,9 +445,13 @@ void CTest::Update()
 	m_pCameraController->FirstPersonCamera(
 		m_mouseDelta,
 		m_mouseSense);
+	m_pPlayerLight->SetIntensity(1.f);
+	m_pPlayerLight->SetPosition(m_pCameraController->GetPosition());
+	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 	//m_pPlayer->SetRotation(playerRot);
+	UpdateSpotLight(m_pPlayerLight);
 
 }
 

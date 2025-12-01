@@ -30,6 +30,8 @@ void CGameTest::Create()
 	m_pCameraController = new CCameraController(m_pCamera);
 
 	m_pFlashLight = new CSpotLight();
+	m_pLightBarSprite = new CSprite2D();
+	m_pLightBar = new CUIObject();
 
 	m_pGroundMesh = new CStaticMesh();
 	m_pGroundMeshObject = new CStaticMeshObject();
@@ -68,11 +70,21 @@ void CGameTest::Release()
 
 HRESULT CGameTest::LoadData()
 {
+
 	m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\Ground.x");
 	m_pEnemyMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako\\zako.x");
 	m_pPlayerMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\WomanAnime.x");
 	m_pPlayerSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\WomanAnime\\WomanAnime.x");
 	m_pGroundMeshObject->AttachMesh(*m_pGroundMesh);
+
+	CSprite2D::SPRITE_STATE lightBarState = {
+		320.0f, 131.0f,
+		320.0f, 516.0f,
+		320.0f, 131.0f
+	};
+
+	m_pLightBarSprite->Init(*m_pDx11, L"Data\\Texture\\lantern.png", lightBarState);
+	m_pLightBar->AttachSprite(*m_pLightBarSprite);
 
 	//m_pPlayer->AttachMesh(*m_pPlayerMesh);
 	m_pPlayer->AttachSkinMesh(*m_pPlayerSkinMesh);
@@ -84,13 +96,14 @@ HRESULT CGameTest::LoadData()
 
 	m_pText->Init(*m_pDx11);
 
+
 	return S_OK;
 }
 
 void CGameTest::Start()
 {
 	m_pDx11->SetDepth(true);
-	m_GlobalLight.fIntensity = 0.1f;
+	m_GlobalLight.fIntensity = 0.2f;
 	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	m_GlobalLight.Position = D3DXVECTOR3(0.0f, 10.0f, -5.0f);
 
@@ -98,11 +111,11 @@ void CGameTest::Start()
 	m_pFlashLight->SetDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
 	m_pFlashLight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
 	m_pFlashLight->SetRange(100.0f);
-	// inner < outer
 	m_pFlashLight->SetInnerAngle(D3DXToRadian(15.0f));
 	m_pFlashLight->SetOuterAngle(D3DXToRadian(30.0f));
-	m_pFlashLight->SetIntensity(1.0f);
+	m_pFlashLight->SetIntensity(0.0f);
 	m_pFlashLight->SetSceneIndex(AddSpotLight(m_pFlashLight));
+
 
 	m_Fog.Enable = false;
 
@@ -110,11 +123,14 @@ void CGameTest::Start()
 	for( auto& enemy : m_pEnemyList )
 	{
 		enemy->SetTargetPlayer(m_pPlayer);
-		enemy->SetScale(0.005f);
+		enemy->SetScale(1.0f);
 		enemy->SetPosition(D3DXVECTOR3(5*cnt++, 0.0f, 5.0f));
 	}
 	m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	m_pCamera->SetPosition(D3DXVECTOR3(0.0f, 5.0f, -15.0f));
+
+	m_pGroundMeshObject->SetRotation(D3DXVECTOR3(D3DXToRadian(180.f), D3DXToRadian(0.f), 0.f));
+
 }
 
 void CGameTest::Update()
@@ -127,12 +143,16 @@ void CGameTest::Update()
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
 
+	bool prevFlashOnState = m_pPlayer->IsFlashOn();
+
 	m_pPlayer->Update();
 
 	m_pFlashLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, 1.5f, 0.f));
 	m_pFlashLight->SetDirection(m_pCamera->GetForward());
 
 	UpdateSpotLight(m_pFlashLight);
+
+	m_pLightBar->Update();
 
 	//for (auto& enemy : m_pEnemyList)
 	//{
@@ -149,6 +169,29 @@ void CGameTest::Update()
 			CEffect::SetScale(hEffect, D3DXVECTOR3(0.2f, 0.2f, 0.2f));
 			CEffect::SetSpeed(hEffect, 1.f);
 		}
+	}
+	
+	if(m_pPlayer->IsFlashOn())
+	{
+		m_pFlashLight->SetIntensity(1.0f);
+		UpdateSpotLight(m_pFlashLight);
+
+		if (!prevFlashOnState)
+		{
+			int y = m_pLightBar->GetPatternNo().y;
+
+			if (y > 2)
+				y = 2;
+
+			m_pLightBar->SetPatternNo(0, y + 1);
+		}
+
+	}
+	else
+	{
+		m_pFlashLight->SetIntensity(0.0f);
+		UpdateSpotLight(m_pFlashLight);
+
 	}
 
 	static ::EsHandle hBloodEffect = -1;
@@ -185,6 +228,8 @@ void CGameTest::Draw()
 	}
 
 	CEffect::GetInstance()->Draw(m_SceneInfo);
+
+	m_pLightBar->Draw();
 
 	TCHAR buffer[256];
 	_stprintf_s(buffer, L"FPS: %.2f", m_pTime->GetFramePerSec());
