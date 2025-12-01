@@ -59,7 +59,6 @@ static float3 ToSRGB(float3 col)
 
 float3 ApplySpotLights(float3 pos, float3 normal)
 {
-    float3 N = normalize(normal);
     float3 accumulatedLight = float3(0, 0, 0);
     
     [loop]
@@ -68,7 +67,7 @@ float3 ApplySpotLights(float3 pos, float3 normal)
         SpotLightData light = g_SpotLights[i];
         
         float3 lightDir = normalize(pos.xyz - light.origin.xyz);
-        float NdotL = saturate(dot(N, -lightDir));
+        float NdotL = saturate(dot(normal, -lightDir));
         
         // Spotlight effect
         float spotEffect = dot(light.direction.xyz, lightDir);
@@ -78,7 +77,7 @@ float3 ApplySpotLights(float3 pos, float3 normal)
         float distance = length(pos.xyz - light.origin.xyz);
         float attenuation = saturate(1.0 - (distance / light.range));
 
-        float3 lightContribution = light.color.rgb * NdotL * spotFactor * attenuation * light.intensity;
+        float3 lightContribution = light.color.rgb  * spotFactor * attenuation * light.intensity;
         accumulatedLight += lightContribution;
     }
     
@@ -126,7 +125,7 @@ PS_INPUT VS_Main(VS_INPUT input)
     // --- PSX Effects End ---
     
 	// Pass data to pixel shader
-    output.Normal = normalize(mul(input.Normal, (float3x3) g_mW));
+    output.Normal = mul(input.Normal, (float3x3) g_mW);
     output.UV = input.UV;
 
     return output;
@@ -152,7 +151,7 @@ PS_INPUT VS_NoTex(float4 Pos : POSITION, float3 Norm : NORMAL)
     }
     // --- PSX Effects End ---
     
-    output.Normal = normalize(mul(Norm, (float3x3) g_mW));
+    output.Normal = mul(Norm, (float3x3) g_mW);
     output.UV = float2(0, 0); // No UV
 
     return output;
