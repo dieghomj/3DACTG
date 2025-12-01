@@ -1,6 +1,5 @@
 #pragma once
 #include "CBaseEnemy.h"
-#include "CPlayer.h"
 
 class CZako 
 	: public CBaseEnemy
@@ -14,14 +13,14 @@ class CZako
 	void Draw(SCENE_DATA& sceneData) override;
 
 	void TickAttackTimer(float deltaTime);
-	void SetTargetPlayer(CPlayer* player) { m_pPlayer = player; }
+	void SetTargetPlayer(CGameObject* player) { m_pPlayer = player; }
 
 private:
 	float attackRange;
 	float attackCooldown;
 	float attackTimer;
 
-	CPlayer* m_pPlayer;
+	CGameObject* m_pPlayer;
 
 };
 

@@ -1,9 +1,9 @@
 #pragma once
-#include "CCharacter.h"
+#include "CAnimCharacter.h"
 #include <vector>
 
 class CBaseEnemy :
-	public CCharacter
+	public CAnimCharacter
 {
 
 public:

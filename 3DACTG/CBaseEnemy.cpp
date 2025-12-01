@@ -2,7 +2,7 @@
 #include "CMaze.h"
 
 CBaseEnemy::CBaseEnemy()
-	: CCharacter()
+	: CAnimCharacter()
 	, moveTime		(0.f)
 	, moveSpeed		(0.05f)
 	, m_pathStep		(0)
@@ -14,7 +14,7 @@ CBaseEnemy::CBaseEnemy()
 }
 
 CBaseEnemy::CBaseEnemy(std::vector<Pair> path, int width, int height)
-	: CCharacter	()
+	: CAnimCharacter()
 	, moveTime		(0.f)
 	, moveSpeed		(0.05f)
 	, m_pathStep	(0)
@@ -34,7 +34,6 @@ CBaseEnemy::~CBaseEnemy()
 
 void CBaseEnemy::Update()
 {
-
 	if(m_StepList.empty())
 		return;
 
@@ -66,14 +65,14 @@ void CBaseEnemy::Update()
 		GetNextStep();
 	}
 
-	CCharacter::Update();
+	CAnimCharacter::Update();
 
 
 }
 
 void CBaseEnemy::Draw(SCENE_DATA& sceneData)
 {
-	CCharacter::Draw(sceneData);
+	CAnimCharacter::Draw(sceneData);
 }
 
 void CBaseEnemy::SetPath(std::vector<Pair> path)

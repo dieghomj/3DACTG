@@ -29,6 +29,12 @@ void CAnimCharacter::Update()
 
 }
 
+//デバッグのみ使用
+void CAnimCharacter::RenderStatic(SCENE_DATA& sceneData)
+{
+	CCharacter::Draw(sceneData);
+}
+
 void CAnimCharacter::Draw(SCENE_DATA& sceneData)
 {
 

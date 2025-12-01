@@ -21,6 +21,8 @@ public:
 	virtual void InitAnimation();
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
+	//デバッグのみ使用
+	void RenderStatic(SCENE_DATA& sceneData);
 	
 	//メッシュを接続する.
 	void AttachSkinMesh(CSkinMesh& pMesh);
