@@ -31,6 +31,9 @@ private:
 	CSkinMesh* m_pPlayerSkinMesh;
 	CPlayer* m_pPlayer;
 
+	//-------Flashlight----------
+	CSpotLight* m_pFlashLight;
+
 	//-----Enemy--------
 	std::vector<CZako*> m_pEnemyList;
 	CStaticMesh* m_pEnemyMesh;

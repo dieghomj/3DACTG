@@ -29,6 +29,8 @@ void CGameTest::Create()
 		0.1f, 1000.0f);
 	m_pCameraController = new CCameraController(m_pCamera);
 
+	m_pFlashLight = new CSpotLight();
+
 	m_pGroundMesh = new CStaticMesh();
 	m_pGroundMeshObject = new CStaticMeshObject();
 	m_pMeshObject = new CStaticMeshObject();
@@ -88,20 +90,19 @@ HRESULT CGameTest::LoadData()
 void CGameTest::Start()
 {
 	m_pDx11->SetDepth(true);
-	m_GlobalLight.fIntensity = 0.0f;
+	m_GlobalLight.fIntensity = 0.1f;
 	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	m_GlobalLight.Position = D3DXVECTOR3(0.0f, 10.0f, -5.0f);
 
-	CSpotLight* flashlight = new CSpotLight();
-
-	flashlight->SetPosition(D3DXVECTOR3(0.0f, 5.0f, -5.0f));
-	flashlight->SetDirection(D3DXVECTOR3(0.0f, 0.0f, 1.0f));
-	flashlight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
-	flashlight->SetRange(50.0f);
-	flashlight->SetInnerAngle(D3DXToRadian(15.0f));
-	flashlight->SetOuterAngle(D3DXToRadian(30.0f));
-	flashlight->SetIntensity(2.0f);
-	AddSpotLight(*flashlight);
+	m_pFlashLight->SetPosition(D3DXVECTOR3(0.0f, 15.0f, 0.0f));
+	m_pFlashLight->SetDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
+	m_pFlashLight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
+	m_pFlashLight->SetRange(100.0f);
+	// inner < outer
+	m_pFlashLight->SetInnerAngle(D3DXToRadian(15.0f));
+	m_pFlashLight->SetOuterAngle(D3DXToRadian(30.0f));
+	m_pFlashLight->SetIntensity(1.0f);
+	m_pFlashLight->SetSceneIndex(AddSpotLight(m_pFlashLight));
 
 	m_Fog.Enable = false;
 
@@ -127,6 +128,12 @@ void CGameTest::Update()
 	m_pCameraController->Update(0);
 
 	m_pPlayer->Update();
+
+	m_pFlashLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, 1.5f, 0.f));
+	m_pFlashLight->SetDirection(m_pCamera->GetForward());
+
+	UpdateSpotLight(m_pFlashLight);
+
 	//for (auto& enemy : m_pEnemyList)
 	//{
 	//	enemy->TickAttackTimer(m_pTime->GetDeltaTime());
