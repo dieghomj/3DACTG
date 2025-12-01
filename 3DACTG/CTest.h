@@ -10,9 +10,16 @@
 #include "CBaseEnemy.h"
 #include "CMaze.h"
 #include "CSewerPath.h"
+#include "CZako.h"
 
-#define MAZE_H 64
-#define MAZE_W 64
+//-----------------
+// 定数定義
+//-----------------
+const float SEWER_MESHWIDTH = 10.5f;
+const int MAZE_H = 64;
+const int MAZE_W = 64;
+const int CELL_SIZE = 10;
+const int ENEMY_COUNT = 1;
 
 class CTest : public CScene
 {
@@ -30,6 +37,10 @@ public:
 
 private:
 
+	void UpdatePlayerCamera();
+	void UpdateFPCamera();
+	void UpdateStaticCamera();
+
 	void GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
 	Pair NextMazePosition();
@@ -38,37 +49,61 @@ private:
 
 private:
 	
-
-	CFont* m_SDFText;
+	// 地面
 	CStaticMesh* m_pGroundStaticMesh;
 	CStaticMeshObject* m_pGround;
 	
+	// プレイヤー
 	CPlayer* m_pPlayer;
+	// 懐中電灯
 	CSpotLight* m_pPlayerLight;
+	// 懐中電灯UI
+	CSprite2D* m_pLightBarSprite;
+	CUIObject* m_pLightBar;
+	
+	CSprite2D* m_pHealthBarSprite;
+	CUIObject* m_pHealthBar;
 
+	// プレイヤーレイ
 	CRay* m_pPlayerRayY;
 	CRay* m_pCrossRay[4];
 
+	// 女性メッシュ
 	CSkinMesh* m_pWomanMesh;
+
+	// アイテムメッシュ
 	CStaticMesh* m_TMPItemMesh;
 	std::vector<CStaticMeshObject*> m_ItemMeshArray;
 
+	// 壁メッシュ
 	CStaticMesh* m_pWallStaticMesh;
 
+	// 下水道メッシュ
 	CStaticMesh* m_pSewerLineMesh;
 	CStaticMesh* m_pSewerTurnMesh;
 	CStaticMesh* m_pSewerTJunctionMesh;
 	CStaticMesh* m_pSewerCrossMesh;
 	CStaticMesh* m_pSewerEndMesh;
 
+	// 下水道パスオブジェクト
 	std::vector<CSewerPath*> m_pSewerPathArray;
 
+	// ゴースト/敵
 	CStaticMesh* m_pGhostMesh;
 	CBaseEnemy* m_pGhostList[128];
+	// ザコ
+	CSkinMesh* m_pZakoMesh;
+	CStaticMesh* m_pZakoStaticMesh;
+	CZako* m_pZakoList[128];
 
+	// デバッグ用コライダー描画
 	CDebugColliderRender* m_pDbgCollider = nullptr;
+	// デバッグ用テキスト描画
+	CFont* m_SDFText;
 
+	// コライダー表示フラグ
 	bool m_ShowCollider = true;
+	// フォグ有無
 	bool m_bFog = true;
 
 	//迷路
@@ -79,6 +114,7 @@ private:
 	int					m_MazeStride;
 	float				m_MazeCellSize;
 
+	// ミニマップ
 	CUIObject*			m_pMiniMapUI;
 	CSprite2D*			m_pMiniMapSprite;
 	CMiniMapTexture*	m_pMiniMap;

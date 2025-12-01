@@ -5,11 +5,10 @@
 #include "CEffect.h"
 #include <stdio.h>
 
-#define ENEMY_COUNT 1
-#define SEWER_MESHWIDTH 10.5f 
-
 int currX = 0;
 int currY = 0;
+// カメラ切り替え用フラグ
+//　デバッグのみ使用
 bool ghostCamera = false;
 bool playerCamera = false;
 bool staticCamera = true;
@@ -23,10 +22,17 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pPlayer				(nullptr)
 	, m_pWomanMesh			(nullptr)
 	, m_pPlayerRayY			(nullptr)
+	, m_pCrossRay			{ nullptr, nullptr, nullptr, nullptr }
+	, m_pPlayerLight		(nullptr)
+	, m_pLightBarSprite		(nullptr)
+	, m_pLightBar			(nullptr)
 
+	, m_pHealthBarSprite	(nullptr)
+	, m_pHealthBar			(nullptr)
+
+	//アイテム関連
 	, m_TMPItemMesh			(nullptr)
 	, m_ItemMeshArray		()
-
 
 	// ゴースト関連
 	, m_pGhostList			()
@@ -48,6 +54,8 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pSewerTurnMesh		(nullptr)
 	, m_pSewerEndMesh		(nullptr)
 	, m_pWallStaticMesh		(nullptr)
+
+	// ミニマップ関連
 	, m_pMiniMapUI			(nullptr)
 	, m_pMiniMapSprite		(nullptr)
 	, m_pMiniMap			(nullptr)
@@ -67,6 +75,10 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 CTest::~CTest()
 {
+
+	//TODO:まだ破棄してないオブジェクトを破棄する.
+	
+
 	for (auto& path : m_pSewerPathArray)
 	{
 		delete path;
@@ -113,12 +125,14 @@ void CTest::Create()
 	// 壁メッシュ作成
 	m_pWallStaticMesh = new CStaticMesh();
 
+	// 下水道メッシュ作成
 	m_pSewerLineMesh = new CStaticMesh();
 	m_pSewerTJunctionMesh = new CStaticMesh();
 	m_pSewerCrossMesh = new CStaticMesh();
 	m_pSewerTurnMesh = new CStaticMesh();
 	m_pSewerEndMesh = new CStaticMesh();
 
+	// ミニマップ作成
 	m_pMiniMap = new CMiniMapTexture();
 	m_pMiniMapSprite = new CSprite2D();
 	m_pMiniMapUI = new CUIObject();
@@ -131,14 +145,31 @@ void CTest::Create()
 		m_pCrossRay[dir] = new CRay();
 	}
 
-	m_TMPItemMesh = new CStaticMesh();
+	// 懐中電灯UI作成
+	m_pLightBarSprite = new CSprite2D();
+	m_pLightBar = new CUIObject();
+
+	//
+	m_pHealthBarSprite = new CSprite2D();
+	m_pHealthBar = new CUIObject();
+
+	// アイテムメッシュ作成
+	m_TMPItemMesh = new CStaticMesh();		// アイテムで電灯を回復する予定
 
 	// ゴーストメッシュ作成
 	m_pGhostMesh = new CStaticMesh();
+	m_pZakoMesh = new CSkinMesh();
+	m_pZakoStaticMesh = new CStaticMesh();
+
 	// ゴースト作成
 	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i] = new CBaseEnemy(m_pMazeGen->GeneratePath(i, (m_MazeCellH - 1) - i), m_MazeCellW, m_MazeCellH);
+	}
+
+	for (int i = 0; i < ENEMY_COUNT; ++i )
+	{
+		m_pZakoList[i] = new CZako();
 	}
 	
 	m_pDbgCollider = new CDebugColliderRender();
@@ -167,7 +198,7 @@ HRESULT CTest::LoadData()
 
 	m_TMPItemMesh->Init(
 		*m_pDx9, *m_pDx11,
-		_T("Data\\Mesh\\DebugSphere.x"));
+		_T("Data\\Mesh\\Static\\Item\\Item.X"));
 
 	if (FAILED(m_pGroundStaticMesh->Init(
 		*m_pDx9, *m_pDx11,
@@ -206,10 +237,55 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
+	//if(FAILED(m_pZakoMesh->Init(
+	//	*m_pDx9, *m_pDx11,
+	//	_T("Data\\Mesh\\Skin\\Zako\\zako.x"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if(FAILED(m_pZakoStaticMesh->Init(
+		*m_pDx9, *m_pDx11,
+		_T("Data\\Mesh\\Skin\\zako\\zako.x"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pDbgCollider->Init(*m_pDx11)))
 	{
 		return E_FAIL;
 	}
+
+	CSprite2D::SPRITE_STATE lightBarState = {
+		320.0f, 131.0f,
+		320.0f, 516.0f,
+		320.0f, 131.0f
+	};
+
+	CSprite2D::SPRITE_STATE healthBarState = {
+		320.0f, 131.0f,
+		94.f, 64.f,
+		94.f, 30.f
+	};
+
+	if (FAILED(m_pLightBarSprite->Init(
+		*m_pDx11,
+		_T("Data\\Texture\\lantern.png"),
+		lightBarState)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pHealthBarSprite->Init(
+		*m_pDx11,
+		_T("Data\\Texture\\Health.png"),
+		healthBarState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pLightBar->AttachSprite(*m_pLightBarSprite);
+	m_pHealthBar->AttachSprite(*m_pHealthBarSprite);
 
 	//m_pMiniMap->Init(*m_pDx11->GetDevice(), *m_pDx11->GetContext(), m_MazeCellW, m_MazeCellH);
 
@@ -236,13 +312,19 @@ HRESULT CTest::LoadData()
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 	}
 
+	for (int i = 0; i < ENEMY_COUNT; ++i)
+	{
+		m_pZakoList[i]->AttachMesh(*m_pZakoStaticMesh);
+		//m_pZakoList[i]->AttachSkinMesh(*m_pZakoMesh);
+		m_pZakoList[i]->SetScale(1.0f);
+		m_pZakoList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	}
+
 	CStaticMeshObject* pSewerLine = new CStaticMeshObject();
 	CStaticMeshObject* pSewerTurn = new CStaticMeshObject();
 	CStaticMeshObject* pSewerTJunc = new CStaticMeshObject();
 	CStaticMeshObject* pSewerCross = new CStaticMeshObject();
 	CStaticMeshObject* pSewerEnd = new CStaticMeshObject();
-
-
 
 	return S_OK;
 
@@ -250,21 +332,21 @@ HRESULT CTest::LoadData()
 
 void CTest::Release()
 {
-	
+	//
 }
 
 void CTest::Start()
 {
 	m_pDx11->SetDepth(true);
 	// 環境設定
-	m_GlobalLight.fIntensity = 0.2f;
+	m_GlobalLight.fIntensity = 0.4f;
 
 	m_pCameraController->SetTPOffset(D3DXVECTOR3(0.f, 2.f, -5.f));
 
-	m_Fog.Color = D3DXVECTOR4(0.076, 0.0803f, 0.0709f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.076, 0.0803f, 0.0909f, 1.0f);
 	m_Fog.Enable = m_bFog;
 	m_Fog.Mode = D3DFOG_LINEAR;
-	m_Fog.Start = 5.0f;
+	m_Fog.Start = 15.0f;
 	m_Fog.End = 150.0f;
 	m_Fog.Density = 0.1f;
 
@@ -272,9 +354,9 @@ void CTest::Start()
 	{
 		for (int j = 0; j < m_MazeCellW; ++j)
 		{
-			D3DXVECTOR3 pos = m_pMazeGen->CellToWorldRC(i, j, 3.f, m_MazeCellSize);
+			D3DXVECTOR3 pos = m_pMazeGen->CellToWorldRC(i, j, 1.f, m_MazeCellSize);
 			CStaticMeshObject* itemMeshObj = new CStaticMeshObject;
-			//itemMeshObj->AttachMesh(*m_TMPItemMesh);
+			itemMeshObj->AttachMesh(*m_TMPItemMesh);
 			itemMeshObj->SetPosition(pos);
 			itemMeshObj->SetScale(0.2f);
 			itemMeshObj->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
@@ -282,12 +364,13 @@ void CTest::Start()
 		}
 	}
 	static ::EsHandle hEffect = -1;
-	//for (auto& item : m_ItemMeshArray)
-	//{
-	//	D3DXVECTOR3 pos = item->GetPosition();
-	//	hEffect = CEffect::Play(CEffect::enList::MagmaEffect, pos);
-	//	CEffect::SetScale(hEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
-	//}
+	for (auto& item : m_ItemMeshArray)
+	{
+		D3DXVECTOR3 pos = item->GetPosition();
+		//hEffect = CEffect::Play(CEffect::enList::MagmaEffect, pos);
+		//CEffect::SetScale(hEffect, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+	}
+
 	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 
 	m_pPlayerLight->SetPosition(D3DXVECTOR3(0.0f, 15.0f, 0.0f));
@@ -298,6 +381,12 @@ void CTest::Start()
 	m_pPlayerLight->SetOuterAngle(D3DXToRadian(30.0f));
 	m_pPlayerLight->SetIntensity(5.0f);
 	m_pPlayerLight->SetSceneIndex(AddSpotLight(m_pPlayerLight));
+
+	m_pLightBar->SetScale(0.5);
+	m_pLightBar->SetPosition(5.f, WND_H / 2, 0.f);
+
+	m_pHealthBar->SetScale(0.8);
+	m_pHealthBar->SetPosition(5.f, WND_H / 2 - 131.f, 0.f);
 
 }
 
@@ -382,76 +471,33 @@ void CTest::Update()
 	// プレイヤーカメラ
 	if (playerCamera)
 	{
-		m_pPlayer->Update();
-		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-		m_pCameraController->ThirdPersonCamera(
-			playerPos,
-			5.f,
-			m_mouseDelta,
-			m_mouseSense);
-		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-		m_pPlayer->SetRotation(playerRot);
-		for (auto& path : m_pSewerPathArray)
-		{
-			Pair pathCoords = path->GetMazeCoords();
-			Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
-			if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
-				path->Update();
-		}
+		UpdatePlayerCamera();
 
+		//
 		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
 		m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 
 		if (m_pPlayer->IsFlashOn())
 		{
-			m_pPlayerLight->SetIntensity(1.0f);
-			UpdateSpotLight(m_pPlayerLight);
+			m_pPlayerLight->SetIntensity(3.5f);
 		}
 		else
 		{
 			m_pPlayerLight->SetIntensity(0.0f);
-			UpdateSpotLight(m_pPlayerLight);
-
 		}
 
-		return; 
+		UpdateSpotLight(m_pPlayerLight);
+
+		return;
 	}
+
 	// スタティックカメラ
 	if( staticCamera )
 	{
-		m_pPlayer->SetTankControlMode(true);
-		m_pPlayer->Update();
-		Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-		D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
-		D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 0.f, -1.f);
-		m_pCamera->SetPosition(staticCamPos + offset);
-		
-		m_pCameraController->StaticCamera(
-			m_pPlayer->GetPosition(),
-			m_mouseDelta,
-			m_mouseSense);
-
-		for (auto& path : m_pSewerPathArray)
-		{
-			Pair pathCoords = path->GetMazeCoords();
-			Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
-			if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))		
-			path->Update();
-		}
-		return;
+		return UpdateStaticCamera();
 	}
-	// 通常カメラ
-	m_pCameraController->FirstPersonCamera(
-		m_mouseDelta,
-		m_mouseSense);
-	m_pPlayerLight->SetIntensity(1.f);
-	m_pPlayerLight->SetPosition(m_pCameraController->GetPosition());
-	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
-	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-	//m_pPlayer->SetRotation(playerRot);
-	UpdateSpotLight(m_pPlayerLight);
+
+	UpdateFPCamera();
 
 }
 
@@ -462,7 +508,6 @@ void CTest::Draw()
 	m_pGround->Draw(m_SceneInfo);
 	//m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
 	m_pPlayer->Draw(m_SceneInfo);
-
 	//レイの描画
 	m_pPlayerRayY->Render(m_mView, m_mProj, m_pPlayer->GetRayY());
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
@@ -479,8 +524,8 @@ void CTest::Draw()
 	// ゴースト描画
 	for( int i = 0; i < ENEMY_COUNT; ++i)
 	{
-		m_pGhostList[i]->UpdateCollider();
-		m_pGhostList[i]->Draw(m_SceneInfo);
+		//m_pGhostList[i]->UpdateCollider();
+		m_pGhostList[i]->RenderStatic(m_SceneInfo);
 	}
 	CEffect::GetInstance()->Draw(m_SceneInfo);
 
@@ -519,6 +564,15 @@ void CTest::Draw()
 #pragma endregion
 
 	}
+
+	//UI
+
+	m_pLightBar->Draw();
+	m_pHealthBar->SetPatternNo(0, 1);
+	m_pHealthBar->Draw();
+	m_pHealthBar->SetPatternNo(0, 0);
+	m_pHealthBar->Draw();
+
 
 	// テキスト描画
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -788,4 +842,66 @@ Pair CTest::WorldToMazeCoords(const D3DXVECTOR3& worldPos)
 
 	// 整数のグリッド座標として返す
 	return { static_cast<int>(row), static_cast<int>(col) };
+}
+
+void CTest::UpdateFPCamera()
+{
+	// 通常カメラ
+	m_pCameraController->FirstPersonCamera(
+		m_mouseDelta,
+		m_mouseSense);
+	m_pPlayerLight->SetIntensity(1.f);
+	m_pPlayerLight->SetPosition(m_pCameraController->GetPosition());
+	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
+	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	//m_pPlayer->SetRotation(playerRot);
+	UpdateSpotLight(m_pPlayerLight);
+}
+
+void CTest::UpdateStaticCamera()
+{
+	m_pPlayer->SetTankControlMode(true);
+	m_pPlayer->Update();
+	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
+	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
+	D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 0.f, -1.f);
+	m_pCamera->SetPosition(staticCamPos + offset);
+
+	m_pCameraController->StaticCamera(
+		m_pPlayer->GetPosition(),
+		m_mouseDelta,
+		m_mouseSense);
+
+	for (auto& path : m_pSewerPathArray)
+	{
+		Pair pathCoords = path->GetMazeCoords();
+		Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
+		if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
+			path->Update();
+	}
+	return;
+}
+
+void CTest::UpdatePlayerCamera()
+{
+	m_pPlayer->Update();
+	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	m_pCameraController->ThirdPersonCamera(
+		playerPos,
+		5.f,
+		m_mouseDelta,
+		m_mouseSense);
+	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	m_pPlayer->SetRotation(playerRot);
+	for (auto& path : m_pSewerPathArray)
+	{
+		Pair pathCoords = path->GetMazeCoords();
+		Pair playerCoords = WorldToMazeCoords(m_pPlayer->GetPosition());
+		if ((pathCoords.x == playerCoords.x) && (pathCoords.y == playerCoords.y))
+			path->Update();
+	}
+
+	return;
 }
