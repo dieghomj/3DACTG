@@ -59,10 +59,11 @@ public:
 		D3DXVECTOR4	LightOrigin;	//ライトの位置.
 		D3DXVECTOR4	LightDir;		//ライトの方向.
 		D3DXVECTOR4	LightColor;		//ライトの色.
-		float		fIntensity;		//ライトの強度.
 		float		fRange;			//ライトの届く距離.
 		float		fInnerCos;	//内側の角度(完全に光る範囲).
 		float		fOuterCos;	//外側の角度(徐々に暗くなる範囲).
+		float		fIntensity;		//ライトの強度.
+		//float 		_padding;		//パディング.	
 	};
 
 	struct CBUFFER_PER_SPOTLIGHT

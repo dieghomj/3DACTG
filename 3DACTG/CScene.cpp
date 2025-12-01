@@ -54,7 +54,7 @@ void CScene::Update()
 	m_SceneInfo.Fog = m_Fog;
 	m_SceneInfo.Light = m_GlobalLight;
 	m_SceneInfo.SpotLightNum = static_cast<int>(m_pSpotLightList.size());
-	m_SceneInfo.pSpotLightArray = m_pSpotLightList.empty() ? nullptr : m_pSpotLightList[0];
+	m_SceneInfo.pSpotLightArray = m_pSpotLightList.empty() ? nullptr : &m_pSpotLightList[0];
 
 	UpdateMousePos();
 
@@ -65,19 +65,33 @@ void CScene::Update()
 
 }
 
-void CScene::AddSpotLight(CSpotLight& spotlight)
+int CScene::AddSpotLight(CSpotLight* spotlight)
 {
 	
 	SPOT_LIGHT spotLightInfo;
-	spotLightInfo.LightOrigin = D3DXVECTOR4(spotlight.GetPosition(),0.f);
-	spotLightInfo.LightColor = D3DXVECTOR4(spotlight.GetColor());
-	spotLightInfo.LightDir = D3DXVECTOR4(spotlight.GetDirection(), 0.f);
-	spotLightInfo.fIntensity = 1.0f;
-	spotLightInfo.fRange = spotlight.GetRange();
-	spotLightInfo.fInnerAngle = spotlight.GetInnerAngle();
-	spotLightInfo.fOuterAngle = spotlight.GetOuterAngle();
+	spotLightInfo.LightOrigin = D3DXVECTOR4(spotlight->GetPosition(),0.f);
+	spotLightInfo.LightColor = D3DXVECTOR4(spotlight->GetColor());
+	spotLightInfo.LightDir = D3DXVECTOR4(spotlight->GetDirection(), 0.f);
+	spotLightInfo.fIntensity = spotlight->GetIntensity();
+	spotLightInfo.fRange = spotlight->GetRange();
+	spotLightInfo.fInnerAngle = spotlight->GetInnerAngle();
+	spotLightInfo.fOuterAngle = spotlight->GetOuterAngle();
 
-	m_pSpotLightList.emplace_back(&spotLightInfo);
+	m_pSpotLightList.push_back(spotLightInfo);
+	return m_pSpotLightList.size() - 1;
+}
+
+void CScene::UpdateSpotLight(CSpotLight* spotlight)
+{
+	SPOT_LIGHT spotLightInfo;
+	spotLightInfo.LightOrigin = D3DXVECTOR4(spotlight->GetPosition(), 0.f);
+	spotLightInfo.LightColor = D3DXVECTOR4(spotlight->GetColor());
+	spotLightInfo.LightDir = D3DXVECTOR4(spotlight->GetDirection(), 0.f);
+	spotLightInfo.fIntensity = spotlight->GetIntensity();
+	spotLightInfo.fRange = spotlight->GetRange();
+	spotLightInfo.fInnerAngle = spotlight->GetInnerAngle();
+	spotLightInfo.fOuterAngle = spotlight->GetOuterAngle();
+	m_pSpotLightList[spotlight->GetSceneIndex()] = spotLightInfo;
 }
 
 void CScene::UpdateMousePos()

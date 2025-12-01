@@ -36,6 +36,14 @@ public:
 		return m_OuterAngle;
 	}
 
+	float GetIntensity() const {
+		return m_Intensity;
+	}
+
+	int GetSceneIndex() const {
+		return m_Index;
+	}
+
 
 	//位置設定
 	void SetPosition(const D3DXVECTOR3& vPosition) {
@@ -66,6 +74,11 @@ public:
 		m_Intensity = Intensity;
 	}
 
+	void SetSceneIndex(int index)
+	{
+		m_Index = index;
+	}
+
 private:
 	D3DXVECTOR3 m_vPosition;	//位置
 	D3DXVECTOR3 m_vDirection;	//方向
@@ -74,5 +87,6 @@ private:
 	float		m_InnerAngle;	//内側角度
 	float		m_OuterAngle;	//外側角度
 	float		m_Intensity;	//強度
+	int			m_Index;
 };
 

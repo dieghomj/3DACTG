@@ -10,7 +10,7 @@ SamplerState g_SamPoint : register(s0); // Use Point Sampler for PSX effect
 
 struct SpotLightData
 {
-    float4 position;
+    float4 origin;
     float4 direction;
     float4 color;
     float range;
@@ -67,19 +67,17 @@ float3 ApplySpotLights(float3 pos, float3 normal)
     {
         SpotLightData light = g_SpotLights[i];
         
-        float3 lightDir = light.position.xyz - pos.xyz;
-        float distance = length(lightDir);
-        lightDir = normalize(lightDir);
-        
-        float NdotL = saturate(dot(N, lightDir));
+        float3 lightDir = normalize(pos.xyz - light.origin.xyz);
+        float NdotL = saturate(dot(N, -lightDir));
         
         // Spotlight effect
         float spotEffect = dot(light.direction.xyz, lightDir);
         float spotFactor = smoothstep(light.outerCos, light.innerCos, spotEffect);
         
         // Attenuation
+        float distance = length(pos.xyz - light.origin.xyz);
         float attenuation = saturate(1.0 - (distance / light.range));
-        
+
         float3 lightContribution = light.color.rgb * NdotL * spotFactor * attenuation * light.intensity;
         accumulatedLight += lightContribution;
     }
@@ -103,8 +101,6 @@ struct PS_INPUT
     float3 Normal : TEXCOORD1;
     float3 WorldPos : TEXCOORD2;
 };
-
-
 
 //-------------------------------------------------
 //	Vertex Shader (With Texture)
@@ -176,10 +172,12 @@ float4 PS_Main(PS_INPUT input) : SV_Target
     float NdotL = saturate(dot(N, -L));
 
 	// Final Color Calculation
-    float3 diffuse = g_Diffuse.rgb * texColor.rgb * g_LightColor.rgb * NdotL;
-    float3 ambient = g_AmbientColor.rgb * texColor.rgb;
-    float3 color = (ambient + diffuse) * g_LightIntensity;
-    color += ApplySpotLights(input.WorldPos, input.Normal);
+    float3 baseDiffuse = g_Diffuse.rgb * g_LightColor.rgb * NdotL;
+    float3 baseAmbient = g_AmbientColor.rgb;
+    float3 spotDiffuse = ApplySpotLights(input.WorldPos, N);
+    float3 lit = (baseAmbient + baseDiffuse) * g_LightIntensity;
+    lit += spotDiffuse; // spotlights usually are not scaled by g_LightIntensity
+    float3 color = texColor.rgb * lit;
     
     float alpha = texColor.a;
     

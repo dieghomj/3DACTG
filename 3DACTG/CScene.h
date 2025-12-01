@@ -26,7 +26,8 @@ public:
 	virtual void Update();
 	virtual void Draw() = 0;
 
-	void AddSpotLight(CSpotLight& spotlight);
+	int AddSpotLight(CSpotLight* spotlight);
+	void UpdateSpotLight(CSpotLight* spotlight);
 
 	bool IsPause() const { return m_IsPause; }
 
@@ -51,7 +52,7 @@ protected:
 	CAMERA			m_Camera;
 	CCamera*		m_pCamera;
 	CCameraController*			m_pCameraController;
-	std::vector<SPOT_LIGHT*>	m_pSpotLightList;
+	std::vector<SPOT_LIGHT>	m_pSpotLightList;
 	SCENE_DATA		m_SceneInfo;
 
 	bool			m_IsPause = false;

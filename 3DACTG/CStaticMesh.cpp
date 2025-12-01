@@ -702,7 +702,6 @@ void CStaticMesh::Render(
 	m_pContext11->VSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//頂点シェーダ.
 	m_pContext11->PSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//ピクセルシェーダ.
 
-
 	if (SUCCEEDED(m_pContext11->Map(
 		m_pCBufferPerSpotLight, 0,
 		D3D11_MAP_WRITE_DISCARD,
@@ -711,10 +710,10 @@ void CStaticMesh::Render(
 		CBUFFER_PER_SPOTLIGHT cb;
 		const int num = (SpotLightNo < MAX_LIGHT) ? SpotLightNo : MAX_LIGHT;
 		cb.NumSpotLights = num;
-		for ( int i = 0; i < SpotLightNo; i++ )
+		for ( int i = 0; i < num; i++ )
 		{
 			auto* light = &cb.SpotLights[i];
-			const auto& in = pSpotLightArr[i];
+			const auto in = pSpotLightArr[i];
 
 			light->LightOrigin = in.LightOrigin;
 
@@ -725,13 +724,11 @@ void CStaticMesh::Render(
 
 			light->fIntensity = in.fIntensity;
 			light->fRange = in.fRange;
+			light->LightColor = in.LightColor;
 
 			// 角度が degree ならラジアンに変換してから cos を取る
-			// もし既にラジアンなら D3DXToRadian は不要
-			const float innerRad = D3DXToRadian(in.fInnerAngle);
-			const float outerRad = D3DXToRadian(in.fOuterAngle);
-			light->fInnerCos = cosf(innerRad);
-			light->fOuterCos = cosf(outerRad);
+			light->fInnerCos = cosf(in.fInnerAngle);
+			light->fOuterCos = cosf(in.fOuterAngle);
 		}
 
 		memcpy_s(
