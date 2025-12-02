@@ -33,6 +33,18 @@ public:
 		m_PatternNo.y = y;
 	}
 
+	void SetFillPercent(float percent, bool horizontal) {
+		if (m_pSprite) {
+			m_pSprite->SetFillPercent(percent, horizontal);
+		}
+	}
+
+	void SetAlpha(float alpha) {
+		if (m_pSprite) {
+			m_pSprite->SetAlpha(alpha);
+		}
+	}
+
 	POINTS GetPatternNo() const {
 		return m_PatternNo;
 	}

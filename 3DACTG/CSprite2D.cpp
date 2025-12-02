@@ -24,6 +24,8 @@ CSprite2D::CSprite2D()
 	, m_SpriteState		()
 	, m_PatternNo		()
 	, m_PatternMax		()
+	, m_Orientation		( 1.0f )
+	, m_FillPercent		( 1.0f )
 {
 }
 
@@ -386,6 +388,8 @@ void CSprite2D::Render()
 		cb.vUV.y =
 			m_SpriteState.Stride.h / m_SpriteState.Base.h
 			* static_cast<float>(m_PatternNo.y);
+		cb.vUV.z = m_FillPercent; //
+		cb.vUV.w = m_Orientation; //
 
 		//ビューポートの幅、高さを渡す
 		cb.fViewPortWidth	= static_cast<float>( WND_W );
@@ -426,4 +430,15 @@ void CSprite2D::Render()
 	//アルファブレンド無効にする.
 	m_pDx11->SetAlphaBlend( false );
 
+}
+
+void CSprite2D::SetFillPercent(float percent, bool horizontal)
+{
+	// clamp
+	if (percent < 0.0f) percent = 0.0f;
+	if (percent > 1.0f) percent = 1.0f;
+	// store
+	// Add member fields m_FillPercent and m_FillHorizontal in header (private) if not present.
+	m_FillPercent = percent;
+	m_Orientation = horizontal ? 1.0f : 0.0f;
 }

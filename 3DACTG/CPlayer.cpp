@@ -4,6 +4,7 @@
 CPlayer::CPlayer()
 	: CAnimCharacter()
 	, m_vVelocity	(0.f, 0.f, 0.f)
+	, m_pPlayerHealth(100.f)
 	, m_TurnSpeed	(0.05f)
 	, m_MoveSpeed	(0.06f)
 	, m_MoveState	(Stop)
@@ -32,6 +33,9 @@ void CPlayer::Update()
 	}
 	else
 	SetAnimNo(m_AnimationState);
+
+
+	m_pPlayerHealth-= 0.1f;
 	HandleInput();
 	//m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる

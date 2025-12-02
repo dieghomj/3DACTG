@@ -263,9 +263,9 @@ HRESULT CTest::LoadData()
 	};
 
 	CSprite2D::SPRITE_STATE healthBarState = {
-		320.0f, 131.0f,
+		300.0f, 100.0f,
 		94.f, 64.f,
-		94.f, 30.f
+		94.f, 26.f
 	};
 
 	if (FAILED(m_pLightBarSprite->Init(
@@ -385,7 +385,7 @@ void CTest::Start()
 	m_pLightBar->SetScale(0.5);
 	m_pLightBar->SetPosition(5.f, WND_H / 2, 0.f);
 
-	m_pHealthBar->SetScale(0.8);
+	m_pHealthBar->SetScale(1);
 	m_pHealthBar->SetPosition(5.f, WND_H / 2 - 131.f, 0.f);
 
 }
@@ -522,7 +522,7 @@ void CTest::Draw()
 		path->Draw(m_SceneInfo);
 	}
 	// ゴースト描画
-	for( int i = 0; i < ENEMY_COUNT; ++i)
+	for (int i = 0; i < ENEMY_COUNT; ++i)
 	{
 		//m_pGhostList[i]->UpdateCollider();
 		m_pGhostList[i]->RenderStatic(m_SceneInfo);
@@ -551,7 +551,7 @@ void CTest::Draw()
 			}
 		}
 
-		for( int i = 0; i < ENEMY_COUNT; ++i)
+		for (int i = 0; i < ENEMY_COUNT; ++i)
 		{
 			if (auto* col = m_pGhostList[i]->GetCollider())
 			{
@@ -566,13 +566,16 @@ void CTest::Draw()
 	}
 
 	//UI
-
+	m_pDx11->SetDepth(false);
 	m_pLightBar->Draw();
-	m_pHealthBar->SetPatternNo(0, 1);
-	m_pHealthBar->Draw();
-	m_pHealthBar->SetPatternNo(0, 0);
-	m_pHealthBar->Draw();
 
+	m_pHealthBar->SetPatternNo(0, 0);
+	m_pHealthBar->SetFillPercent(1, true);
+	m_pHealthBar->SetAlpha(0.5f);
+	m_pHealthBar->Draw();
+	m_pHealthBar->SetAlpha(1.f);
+	m_pHealthBar->SetFillPercent(m_pPlayer->GetPlayerHealth()/ 100.f, true);
+	m_pHealthBar->Draw();
 
 	// テキスト描画
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -603,6 +606,8 @@ void CTest::Draw()
 	//	auto text = CGlobal::debugText[i];
 	//	m_SDFText->Render(text, 200, 110 + i * 30.f, 30.f);
 	//}
+
+	m_pDx11->SetDepth(true);
 
 }	
 

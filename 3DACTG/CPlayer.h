@@ -48,6 +48,11 @@ public:
 	int GetPlayerState() const {
 		return m_PlayerState;
 	}
+
+	float GetPlayerHealth() const {
+		return m_pPlayerHealth;
+	}
+
 	void SetTankControlMode(bool mode) {
 		m_bTankControlMode = mode;
 	}
@@ -64,6 +69,7 @@ private:
 protected:
 
 	D3DXVECTOR3 m_vVelocity;				//速度ベクトル
+	float		m_pPlayerHealth;			//プレイヤーの体力
 
 	float			m_TurnSpeed;				//回転速度
 	float			m_MoveSpeed;				//移動速度

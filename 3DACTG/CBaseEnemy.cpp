@@ -10,6 +10,7 @@ CBaseEnemy::CBaseEnemy()
 	, m_MazeHeight		(0)
 	, m_CurrentRow		(0)
 	, m_CurrentCol		(0)
+	, m_StepList		()
 {
 }
 
@@ -23,6 +24,7 @@ CBaseEnemy::CBaseEnemy(std::vector<Pair> path, int width, int height)
 	, m_StepList	(path)
 	, m_CurrentCol	(path[0].x)
 	, m_CurrentRow	(path[0].y)
+	, m_State		(Move)
 {
 }
 
@@ -42,7 +44,7 @@ void CBaseEnemy::Update()
 	m_CurrentCol = m_StepList[m_pathStep].x;
 	m_CurrentRow = m_StepList[m_pathStep].y;
 
-	D3DXVECTOR3 vNextStep = CMaze::CellToWorldRC(m_CurrentRow, m_CurrentCol, m_MazeHeight, m_MazeWidth, 2.f, 12) ;
+	D3DXVECTOR3 vNextStep = CMaze::CellToWorldRC(m_CurrentRow, m_CurrentCol, m_MazeHeight, m_MazeWidth, 5.f, 12) ;
 	
 	if (m_pathStep == 0)
 	{

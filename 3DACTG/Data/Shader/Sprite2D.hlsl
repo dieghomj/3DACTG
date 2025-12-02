@@ -56,6 +56,29 @@ float4 PS_Main( VS_OUTPUT input ) : SV_Target
 
 	//プログラム制御のα値をテクスチャが持っているα値にかけ合わせる.
 	color.a *= g_Color.a;
+	
+	// fillPercent behavior:
+	// g_UV.z = percent (0..1). g_UV.w >= 0.5 -> horizontal, else vertical.
+    if (g_UV.z < 1.0f - 1e-6f) // if less than full
+    {
+        bool horizontal = (g_UV.w >= 0.5f);
+        if (horizontal)
+        {
+			// if UV.x beyond offset + percent => hide
+            if (input.UV.x > g_UV.x + g_UV.z)
+            {
+                color.a = 0.0f;
+            }
+        }
+        else
+        {
+			// vertical fill: show from top (lower y) to percent
+            if (input.UV.y > g_UV.y + g_UV.z)
+            {
+                color.a = 0.0f;
+            }
+        }
+    }
 
 	return color;
 }

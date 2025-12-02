@@ -93,6 +93,8 @@ public:
 	//拡大縮小情報を設定.
 	void SetScale(const D3DXVECTOR3& vScale) { m_vScale = vScale; }
 
+	void SetFillPercent(float percent, bool horizontal);
+
 	//α値を設定.
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 
@@ -127,6 +129,8 @@ private:
 
 	D3DXVECTOR2		m_UV;		//テクスチャUV座標.
 
+	float			m_Orientation;	//向き
+	float			m_FillPercent;	//塗りつぶし率
 	float			m_Alpha;	//α値(0:透明、1:完全不透明).
 
 	SPRITE_STATE	m_SpriteState;	//スプライト情報
