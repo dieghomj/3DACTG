@@ -21,7 +21,7 @@ public:
 
 private:
     struct VERTEX { D3DXVECTOR3 Pos; D3DXVECTOR4 Color; };
-    struct CBUFFER_VP { D3DXMATRIX mVP; };
+    struct CBUFFER_VP { D3DXMATRIX mWVP; };
 
     HRESULT CreateShader(ID3D11Device* device);
     HRESULT CreateBuffers(ID3D11Device* device, int maxVerts);
