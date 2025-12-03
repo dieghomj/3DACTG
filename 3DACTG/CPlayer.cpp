@@ -13,6 +13,7 @@ CPlayer::CPlayer()
 	, m_bTankControlMode(true)
 	, m_AnimationState(AnimIdle)
 	, m_bIsFlashOn(false)
+	, m_vDirection(0.f, 0.f, 1.f)
 {
 	m_pInput = new CInput();
 }
@@ -34,9 +35,10 @@ void CPlayer::Update()
 	else
 	SetAnimNo(m_AnimationState);
 
-
 	m_pPlayerHealth-= 0.1f;
 	HandleInput();
+
+
 	//m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
@@ -51,6 +53,7 @@ void CPlayer::Update()
 		m_pCrossRay->Ray[dir].Position.y += 0.1f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 	}
+
 	CAnimCharacter::Update();
 	
 }
@@ -94,6 +97,18 @@ void CPlayer::RadioControl()
 	//Z軸ベクトル(Z+方向への単位ベクトル)
 	//※大きさ（長さ）が１のベクトルを単位ベクトルという
 	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
+	D3DXMATRIX mRotY;
+
+	D3DXMatrixRotationY(
+		&mRotY,
+		m_vRotation.y);
+	D3DXVec3TransformCoord(
+		&m_vDirection,
+		&vecAxisZ,
+		&mRotY);
+
+	/*m_vDirection *= -1.f;*/
+
 	D3DXVECTOR3 vecAxisX(1.f, 0.f, 0.f);
 
 	//Y方向の回転行列
@@ -189,6 +204,7 @@ void CPlayer::HandleInput()
 	if (m_pInput->GetKeyDown(VK_LCONTROL)) {
 		m_MoveState = MoveState::Down;
 	}
+
 	RadioControl();
 	AnimControl();
 }

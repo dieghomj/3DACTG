@@ -26,7 +26,7 @@ CCamera::~CCamera()
 
 void CCamera::Update()
 {
-	m_bStaticCamera = false;
+	DisableStatic();
 }
 
 void CCamera::Draw(SCENE_DATA& sceneData)
@@ -35,8 +35,8 @@ void CCamera::Draw(SCENE_DATA& sceneData)
 	D3DXMATRIX* View = &sceneData.mView;
 	D3DXMATRIX* Proj = &sceneData.mProj;
 	CAMERA* Camera = &sceneData.Camera;
-
 	UpdateViewMatrix(*View, *Proj); 
+
 	// カメラ情報を構造体に格納
 	Camera->vPosition = m_vPosition;
 	Camera->vLook = m_vLook;
@@ -152,6 +152,11 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 			&cam_pos,			//(in)カメラの位置ベクトル.
 			&m_vStaticCamTarget,			//(in)注視点の位置ベクトル.
 			&vUpVec);			//(in)上方ベクトル.
+
+		// プロジェクション計算（レンズパラメータに基づく）
+		D3DXMatrixPerspectiveFovLH(
+			&mProj,	//(out)プロジェクション計算結果. 
+			m_FovY, m_Aspect, m_NearZ, m_FarZ);
 
 		return;
 	}

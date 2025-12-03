@@ -61,6 +61,14 @@ public:
 		return m_bIsFlashOn;
 	}
 
+	D3DXVECTOR3 GetVelocity() const {
+		return m_vVelocity;
+	}
+
+	D3DXVECTOR3 GetDirection() const {
+		return m_vDirection;
+	}
+
 private:
 	void AnimControl();
 	void RadioControl();
@@ -68,8 +76,9 @@ private:
 
 protected:
 
-	D3DXVECTOR3 m_vVelocity;				//速度ベクトル
-	float		m_pPlayerHealth;			//プレイヤーの体力
+	D3DXVECTOR3		m_vVelocity;				//速度ベクトル
+	D3DXVECTOR3		m_vDirection;				//移動方向ベクトル
+	float			m_pPlayerHealth;			//プレイヤーの体力
 
 	float			m_TurnSpeed;				//回転速度
 	float			m_MoveSpeed;				//移動速度

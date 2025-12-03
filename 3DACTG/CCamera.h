@@ -44,6 +44,8 @@ public:
 	float GetNearZ()  const { return m_NearZ; }
 	float GetFarZ()   const { return m_FarZ; }
 
+	void DisableStatic() { m_bStaticCamera = false; }
+
 private:
 
 	D3DXVECTOR3 m_vLook;

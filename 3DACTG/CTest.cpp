@@ -393,7 +393,6 @@ void CTest::Start()
 
 void CTest::Update()
 {
-
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
 
@@ -495,7 +494,19 @@ void CTest::Update()
 	// スタティックカメラ
 	if( staticCamera )
 	{
-		return UpdateStaticCamera();
+		UpdateStaticCamera();
+		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+		m_pPlayerLight->SetDirection(m_pPlayer->GetDirection());
+		if (m_pPlayer->IsFlashOn())
+		{
+			m_pPlayerLight->SetIntensity(3.5f);
+		}
+		else
+		{
+			m_pPlayerLight->SetIntensity(0.0f);
+		}
+		UpdateSpotLight(m_pPlayerLight);
+		return;
 	}
 
 	UpdateFPCamera();
@@ -870,14 +881,18 @@ void CTest::UpdateStaticCamera()
 	m_pPlayer->SetTankControlMode(true);
 	m_pPlayer->Update();
 	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 8.f, m_MazeCellSize);
-	D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 0.f, -1.f);
+	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 3.f, m_MazeCellSize);
+	D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 1.f, -1.f);
 	m_pCamera->SetPosition(staticCamPos + offset);
 
 	m_pCameraController->StaticCamera(
 		m_pPlayer->GetPosition(),
 		m_mouseDelta,
 		m_mouseSense);
+
+	m_pCamera->SetLens(D3DX_PI / 2.0f,
+		static_cast<float>(WND_W) / static_cast<float>(WND_H),
+		0.1f, 1000.0f);
 
 	for (auto& path : m_pSewerPathArray)
 	{

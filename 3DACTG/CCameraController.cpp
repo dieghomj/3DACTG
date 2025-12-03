@@ -77,7 +77,20 @@ void CCameraController::FirstPersonCamera(POINT delta, float sense)
 
 void CCameraController::StaticCamera(const D3DXVECTOR3& TargetPos, POINT delta, float sense)
 {
+	const float baseDist = 5.0f;           // 基本距離（必要に応じて調整）
+	const float minDist = 1.0f;           // 最小距離
+	float yaw = D3DXToRadian((float)delta.x * sense);
+	float pitch = D3DXToRadian((float)delta.y * sense);
+
+	if (m_pCamera->GetPosition() == TargetPos)
+	{
+		const D3DXVECTOR3 back(0.f, 0.5f, -5.f);
+		m_pCamera->SetPosition(TargetPos + back);
+	}
+
+	// 常にターゲットを注視
 	m_pCamera->LookAt(TargetPos);
+
 }
 
 void CCameraController::UpdateObjectRotationFromCamera(D3DXVECTOR3* TargetRot)
