@@ -1,4 +1,4 @@
-#include "CMenu.h"
+﻿#include "CMenu.h"
 
 CMenu::CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, pManager)
@@ -6,6 +6,11 @@ CMenu::CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pMenuBG		(nullptr)
 	, m_pMenuBGSprite(nullptr)
 	, m_SelectedOption(MENU_OPTION_START)
+	, m_IsFading(false)
+	, m_FadeAlpha(0.0f)
+	, m_FadeSpeed(0.1f) 
+	, m_pFade(nullptr)
+	, m_pFadeSprite(nullptr)
 {
 }
 
@@ -22,6 +27,10 @@ void CMenu::Create()
 	m_pMenuBG = new CUIObject();
 	m_pMenuOption = new CUIObject();
 	m_pMenuBGSprite = new CSprite2D;
+
+	// Fade overlay
+	m_pFade = new CUIObject();
+	m_pFadeSprite = new CSprite2D();
 }
 
 HRESULT CMenu::LoadData()
@@ -49,10 +58,23 @@ HRESULT CMenu::LoadData()
 	{
 		return E_FAIL;
 	}
-	
-	//m_pMenuBG->SetPosition(static_cast<float>(WND_W / 2 - 175), static_cast<float>(WND_H / 2 - 100), 0.0f);	
+
+	CSprite2D::SPRITE_STATE FadeSS = {
+	{WND_W, WND_H},  
+	{0, 0},          
+	{WND_W, WND_H},  
+	};
+
+	if (FAILED(m_pFadeSprite->Init(*m_pDx11, _T("Data\\Texture\\Black.png"), FadeSS)))
+	{
+		m_pFadeSprite->Init(*m_pDx11, _T("Data\\Texture\\UI\\MenuBG.png"), FadeSS);
+	}
 
 	m_pMenuBG->AttachSprite(*m_pMenuBGSprite);
+
+	m_pFadeSprite->SetAlpha(0.0f);
+	m_pFade->AttachSprite(*m_pFadeSprite);
+
 
 	return S_OK;
 
@@ -60,13 +82,17 @@ HRESULT CMenu::LoadData()
 
 void CMenu::Release()
 {
-	// Clean up resources
 }
 
 void CMenu::Start()
 {
-	// Initialize menu state
 	m_SelectedOption = MENU_OPTION_START;
+	m_IsFading = false;
+	m_FadeAlpha = 0.0f;
+	if (m_pFadeSprite)
+	{
+		m_pFadeSprite->SetAlpha(0.0f);
+	}
 }
 
 void CMenu::Update()
@@ -74,7 +100,23 @@ void CMenu::Update()
 	CScene::Update();
 
 	m_pMenuBG->Update();
-	// Handle keyboard input for menu navigation
+
+	if (m_IsFading)
+	{
+ 		m_FadeAlpha += m_FadeSpeed;
+		if (m_FadeAlpha >= 1.0f)
+		{
+			m_FadeAlpha = 1.0f;
+			m_pManager->ChangeScene("GAME");
+			return;
+		}
+		if (m_pFadeSprite)
+		{
+			m_pFadeSprite->SetAlpha(m_FadeAlpha);
+		}
+		return;
+	}
+
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
 		m_SelectedOption = MENU_OPTION_START;
@@ -84,13 +126,17 @@ void CMenu::Update()
 		m_SelectedOption = MENU_OPTION_EXIT;
 	}
 	
-	// Handle selection
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
 		if (m_SelectedOption == MENU_OPTION_START)
 		{
-			// Change to game scene
-			m_pManager->ChangeScene("GAME");
+			m_IsFading = true;
+			m_FadeAlpha = 0.0f;
+			m_FadeSpeed = 0.1f; 
+			if (m_pFadeSprite)
+			{
+				m_pFadeSprite->SetAlpha(0.0f);
+			}
 		}
 		else if (m_SelectedOption == MENU_OPTION_EXIT)
 		{
@@ -102,48 +148,49 @@ void CMenu::Update()
 
 void CMenu::Draw()
 {
-	// Draw text labels for the menu
-	m_pDx11->SetDepth(false); // Disable depth for 2D menu
+	m_pDx11->SetDepth(false); 
 	m_pMenuBG->Draw();
 
 	m_pMenuFont->SetColor(1.0f, 0.1f, 0.05f);
 	m_pMenuFont->SetAlpha(1.0f);
 
-	// Draw title
 	TCHAR titleText[64];
 	_stprintf_s(titleText, _T("MYSTERY MAZE"));
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 130), 90.0f, 60.0f);
 
-	// Draw start button text
 	if (m_SelectedOption == MENU_OPTION_START)
 	{
-		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f); // RED for selected
+		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f); 
 	}
 	else
 	{
-		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f); // White
+		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f); 
 	}
 	TCHAR startText[64];
 	_stprintf_s(startText, _T("> START GAME"));
 	m_pMenuFont->Render(startText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 - 20), 40.0f);
 
-	// Draw exit button text
 	if (m_SelectedOption == MENU_OPTION_EXIT)
 	{
-		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f); // RED for selected
+		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
 	}
 	else
 	{
-		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f); // White
+		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
 	}
 	TCHAR exitText[64];
 	_stprintf_s(exitText, _T("> EXIT"));
 	m_pMenuFont->Render(exitText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 80), 40.0f);
 		
-	// Draw instructions
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];
 	_stprintf_s(instructText, _T("Use UP/DOWN arrows to navigate, ENTER to select"));
 	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 210), static_cast<float>(WND_H - 50), 35.0f);
+
+	// Draw fade overlay last so it covers everything
+	if (m_pFade)
+	{
+		m_pFade->Draw();
+	}
 
 }

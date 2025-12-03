@@ -25,9 +25,14 @@ private:
 	CUIObject* m_pMenuBG;
 	CUIObject* m_pMenuOption;
 	CSprite2D* m_pMenuBGSprite;
+	CUIObject* m_pFade;
+	CSprite2D* m_pFadeSprite;
 	
 	// Menu state
 	int m_SelectedOption;
 	const int MENU_OPTION_START = 0;
 	const int MENU_OPTION_EXIT = 1;
+	bool m_IsFading;
+	float m_FadeAlpha;
+	float m_FadeSpeed;
 };
