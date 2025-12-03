@@ -29,8 +29,6 @@ CMaze::~CMaze()
 		m_pMazeData = nullptr;
 	}
 
-
-
 }
 
 D3DXVECTOR3 CMaze::CellToWorld(int cellIndex, float y, float cellSize) const
@@ -137,6 +135,7 @@ std::vector<Pair> CMaze::GeneratePath(int x, int y)
 void CMaze::GenerateMaze(int startX, int startY)
 {
 	GenerateMaze(m_pMazeData, m_Stride, m_RegionWidth, m_RegionHeight, startX, startY);
+	AddRandomLoops(m_pMazeData, m_Stride, m_RegionWidth, m_RegionHeight, 0.10f);
 }
 
 
@@ -318,3 +317,50 @@ void CMaze::ClampStart(int& startX, int& startY, int regionWidth, int regionHeig
 	if (startY >= regionHeight) startY = regionHeight - 1;
 }
 
+void CMaze::AddRandomLoops(int* maze, int stride, int regionWidth, int regionHeight, float probability)
+{
+	if (maze == nullptr || stride <= 0 || regionWidth <= 0 || regionHeight <= 0)
+		return;
+	if (probability <= 0.0f)
+		return;
+
+	static thread_local std::mt19937 rng{ std::random_device{}() };
+	std::uniform_real_distribution<float> chance(0.0f, 1.0f);
+
+	// Iterate all cells and consider opening a random neighboring wall
+	for (int y = 0; y < regionHeight; ++y)
+	{
+		for (int x = 0; x < regionWidth; ++x)
+		{
+			// Candidate directions; avoid double-processing by only considering East/South
+			const CMaze::Direction candidates[2] = { East, South };
+			for (int i = 0; i < 2; ++i)
+			{
+				const CMaze::Direction dir = candidates[i];
+				const Pair d = GetMovementFromDirection(dir);
+				const int nx = x + d.x;
+				const int ny = y + d.y;
+
+				if (!IsInBounds(nx, ny, regionWidth, regionHeight))
+					continue;
+
+				const int curIdx = y * stride + x;
+				const int nextIdx = ny * stride + nx;
+
+				// If a wall exists between current and neighbor, we can potentially open it
+				const bool closedForward = (maze[curIdx] & dir) == 0;
+				const bool closedBack = (maze[nextIdx] & GetOppositeDirection(dir)) == 0;
+
+				if (closedForward && closedBack)
+				{
+					// Randomly open to create a loop
+					if (chance(rng) < probability)
+					{
+						maze[curIdx] |= dir;
+						maze[nextIdx] |= GetOppositeDirection(dir);
+					}
+				}
+			}
+		}
+	}
+}

@@ -16,7 +16,6 @@ public:
 
 
 
-	static void ClampStart(int& startX, int& startY, int regionWidth, int regionHeight);
 
 public:
 
@@ -47,10 +46,12 @@ private:
 	
 	static Direction GetOppositeDirection(Direction dir);
 	static Pair GetMovementFromDirection(Direction dir);
+	static bool IsInBounds(int x, int y, int width, int height);
+	static void ClampStart(int& startX, int& startY, int regionWidth, int regionHeight);
 	static void ShuffleDirections(Direction* directions, int size);
 	
-	static bool IsInBounds(int x, int y, int width, int height);
 	bool IsValidPathMove(int x, int y, Direction dir, const bool* visited);
+	void AddRandomLoops(int* maze, int stride, int regionWidth, int regionHeight, float probability);
 
 private: 
 
