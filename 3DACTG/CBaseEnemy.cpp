@@ -56,10 +56,17 @@ void CBaseEnemy::Update()
 
 	D3DXVECTOR3 vDirection = vNextStep - m_vPosition;
 	float distance = D3DXVec3Length(&vDirection);
+	D3DXVec3Normalize(&vDirection, &vDirection);
+	float targetAngle = atan2f(vDirection.x, vDirection.z);
+	D3DXMATRIX rotY;
+
+	D3DXMatrixRotationY(&rotY, m_vRotation.y);
+	D3DXVec3TransformCoord(&m_vRotation, &m_vRotation, &rotY);
+
+	m_vRotation.y += (targetAngle - m_vRotation.y) * 0.1f;
 	
 	if (distance > 0.5f)
 	{
-		D3DXVec3Normalize(&vDirection, &vDirection);
 		m_vPosition += vDirection * moveSpeed;
 	}
 	else
@@ -69,7 +76,6 @@ void CBaseEnemy::Update()
 	}
 
 	CAnimCharacter::Update();
-
 
 }
 
