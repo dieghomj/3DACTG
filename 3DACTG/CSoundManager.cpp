@@ -33,7 +33,20 @@ bool CSoundManager::Load( HWND hWnd )
 	};
 	SoundList SList[] =
 	{
-		{ enList::SE_Jump,		_T("Data\\Sound\\SE\\Jump.wav"),_T("SE_Jump")},
+		{ enList::BGM_Title		, _T("Data\\Sound\\BGM\\game.wav"),				_T("BGM_Title")},
+		{ enList::BGM_Game		, _T("Data\\Sound\\BGM\\menu.mp3"),				_T("BGM_Game")},
+		{ enList::SE_Select		, _T("Data\\Sound\\SE\\select.wav"),			_T("SE_Select")},
+		{ enList::SE_Decide		, _T("Data\\Sound\\SE\\confirm.wav"),			_T("SE_Decide")},
+		{ enList::SE_Step		, _T("Data\\Sound\\SE\\Footstep.wav"),			_T("SE_Step")},
+		{ enList::SE_GameOver	, _T("Data\\Sound\\SE\\scream.wav"),			_T("SE_GameOver")},
+		{ enList::SE_ItemGet	, _T("Data\\Sound\\SE\\item.wav"),				_T("SE_ItemGet")},
+		{ enList::SE_GhostIdle	, _T("Data\\Sound\\SE\\enemyIdling.wav"),		_T("SE_GhostIdle")},
+		{ enList::SE_GhostChase	, _T("Data\\Sound\\SE\\enemyAttacking.wav"),	_T("SE_GhostChase")},
+		{ enList::SE_GhostDamage, _T("Data\\Sound\\SE\\enemyDamage.wav"),		_T("SE_GhostDamage")},
+		{ enList::SE_GhostDead	, _T("Data\\Sound\\SE\\enemyDead.wav"),			_T("SE_GhostDead")},
+		{ enList::SE_Flashlight	, _T("Data\\Sound\\SE\\Flashlight.wav"),		_T("SE_Flashlight")},
+		{ enList::SE_Result		, _T("Data\\Sound\\SE\\result.wav"),			_T("SE_Result")},
+
 	};
 	//配列の最大要素数を算出 (配列全体のサイズ/配列1つ分のサイズ).
 	int list_max = sizeof( SList ) / sizeof( SList[0] );

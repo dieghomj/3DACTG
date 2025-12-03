@@ -19,7 +19,7 @@ const float SEWER_MESHWIDTH = 10.5f;
 const int MAZE_H = 64;
 const int MAZE_W = 64;
 const int CELL_SIZE = 10;
-const int ENEMY_COUNT = 1;
+const int MAX_ENEMY_COUNT = 16;
 
 class CTest : public CScene
 {
@@ -38,15 +38,18 @@ public:
 
 private:
 
+	void OnEnemyKilled()
+	{
+		++m_EnemiesKilled;
+	}
 	void UpdatePlayerCamera();
 	void UpdateFPCamera();
 	void UpdateStaticCamera();
 
 	void GenerateMazeMeshObj(int regionHeight, int regionWidth, int stride);
 	void ClearMaze();
-	Pair NextMazePosition();
+	Pair NextMazePosition();	
 	Pair WorldToMazeCoords(const D3DXVECTOR3& worldPos);
-	void DrawTextMinimap();
 
 private:
 	
@@ -101,7 +104,7 @@ private:
 	CZako* m_pZakoList[128];
 
 	// デバッグ用コライダー描画
-	CDebugColliderRender* m_pDbgCollider = nullptr;
+	CDebugColliderRender* m_pDbgCollider;
 	// デバッグ用テキスト描画
 	CFont* m_SDFText;
 
@@ -110,6 +113,8 @@ private:
 	// フォグ有無
 	bool m_bFog = true;
 
+	int m_EnemiesKilled = 0;
+
 	//迷路
 	int					m_pMazeData[MAZE_H][MAZE_W];
 	CMaze* m_pMazeGen;
@@ -117,13 +122,8 @@ private:
 	int					m_MazeCellW;
 	int					m_MazeStride;
 	float				m_MazeCellSize;
+	int m_EnemyCount;
 
-	// ミニマップ
-	CUIObject*			m_pMiniMapUI;
-	CSprite2D*			m_pMiniMapSprite;
-	CMiniMapTexture*	m_pMiniMap;
-	int					m_miniMapStartX;
-	int					m_miniMapStartY;
-	int					m_miniMapCellSize;
-	int					m_miniMapFontSize;
+	CSpotLight* m_EndSpotLight;
+
 };

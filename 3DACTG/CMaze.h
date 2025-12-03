@@ -23,10 +23,14 @@ public:
 	CMaze(int* pMaze, int stride, int regionWidth, int regionHeight, int startX = 0, int startY = 0);
 	~CMaze();
 
+
+	void SetRegionSize(int regionWidth, int regionHeight) { m_RegionWidth = regionHeight; m_RegionHeight = regionHeight; };
 	int* GetMazeData() const { return m_pMazeData; }
 	int GetRegionWidth() const { return m_RegionWidth; }
 	int GetRegionHeight() const { return m_RegionHeight; }
 	int GetStride() const { return m_Stride; }
+	Pair GetExitCell() const { return m_ExitCell; };
+	D3DXVECTOR3 GetExitWorldPosition(float y, float cellSize) const;
 
 	D3DXVECTOR3 CellToWorld(int cellIndex, float y = 0.f, float cellSize = 4.0f) const;
 	D3DXVECTOR3 CellToWorldRC(int row, int col, float y = 0.f, float cellSize = 4.0f) const;
@@ -52,6 +56,7 @@ private:
 	
 	bool IsValidPathMove(int x, int y, Direction dir, const bool* visited);
 	void AddRandomLoops(int* maze, int stride, int regionWidth, int regionHeight, float probability);
+	void GenerateRandomExit(int startX, int startY);
 
 private: 
 
@@ -60,5 +65,8 @@ private:
 	int		m_RegionHeight;
 	int		m_Stride;
 
+	Pair         m_ExitCell = { 0, 0 };
+	D3DXVECTOR3  m_ExitWorldPos = D3DXVECTOR3(0.f, 0.f, 0.f);
+	bool m_HasExit;
 };
 

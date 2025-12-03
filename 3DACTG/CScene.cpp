@@ -2,7 +2,6 @@
 #include "CDirectX11.h"
 
 #include "CScene.h"
-#include "CSoundManager.h"
 
 CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: m_pDx9			(&pDx9)
@@ -58,11 +57,6 @@ void CScene::Update()
 
 	UpdateMousePos();
 
-	if (GetAsyncKeyState('P') & 0x0001)
-	{
-		m_IsPause = !m_IsPause;
-	}
-
 }
 
 int CScene::AddSpotLight(CSpotLight* spotlight)
@@ -114,4 +108,16 @@ void CScene::UpdateMousePos()
 POINT CScene::GetMouseSeudoPos()
 {
 	return m_mouseSeudoPos;
+}
+
+const TCHAR* CScene::DifficultyToText(CGameStats::DIFFICULTY d)
+{
+	switch (d)
+	{
+	case CGameStats::DIFF_EASY:   return _T("EASY");
+	case CGameStats::DIFF_NORMAL: return _T("NORMAL");
+	case CGameStats::DIFF_HARD:   return _T("HARD");
+	default:                  return _T("NORMAL");
+	}
+
 }

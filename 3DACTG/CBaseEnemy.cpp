@@ -5,7 +5,7 @@
 CBaseEnemy::CBaseEnemy()
 	: CAnimCharacter()
 	, moveTime		(0.f)
-	, moveSpeed		(0.05f)
+	, moveSpeed		(0.09f)
 	, m_pathStep		(0)
 	, m_MazeWidth		(0)
 	, m_MazeHeight		(0)
@@ -18,7 +18,7 @@ CBaseEnemy::CBaseEnemy()
 CBaseEnemy::CBaseEnemy(std::vector<Pair> path, int width, int height)
 	: CAnimCharacter()
 	, moveTime		(0.f)
-	, moveSpeed		(0.05f)
+	, moveSpeed		(0.09f)
 	, m_pathStep	(0)
 	, m_MazeWidth	(width)
 	, m_MazeHeight	(height)
@@ -122,10 +122,17 @@ void CBaseEnemy::Draw(SCENE_DATA& sceneData)
 	CAnimCharacter::Draw(sceneData);
 }
 
+void CBaseEnemy::Start()
+{
+	m_State = Move;
+	m_Health = 100.f;
+}
+
 void CBaseEnemy::SetPath(std::vector<Pair> path)
 {
 	m_StepList = path;
 	m_pathStep = 0;
+
 }
 
 void CBaseEnemy::ReactToSpotLight(const CSpotLight& spotLight)

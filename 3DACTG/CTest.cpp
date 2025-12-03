@@ -3,6 +3,7 @@
 #include "CMaze.h"
 #include "CDebugColliderRender.h"
 #include "CEffect.h"
+#include "CGameStats.h"
 #include <stdio.h>
 
 int currX = 0;
@@ -30,6 +31,9 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pHealthBarSprite	(nullptr)
 	, m_pHealthBar			(nullptr)
 
+	, m_pTensionSprite		(nullptr)
+	, m_pTensionUI			(nullptr)
+
 	//アイテム関連
 	, m_TMPItemMesh			(nullptr)
 	, m_ItemMeshArray		()
@@ -41,11 +45,17 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	// 迷路関連
 	, m_pMazeData			()
 	, m_pMazeGen			(nullptr)
-	, m_MazeCellH			(3)
-	, m_MazeCellW			(3)
+	, m_MazeCellH			(8)
+	, m_MazeCellW			(8)
 	, m_MazeStride			(64)
 	, m_MazeCellSize		(1.5 + SEWER_MESHWIDTH)
-	
+	, m_EnemyCount			(8)
+	, m_EnemiesKilled		(0)
+	, m_pZakoMesh			(nullptr)
+	, m_pZakoStaticMesh		(nullptr)
+	, m_pZakoList			()
+	, m_EndSpotLight		(nullptr)
+
 	// 迷路の壁リスト
 	, m_pSewerPathArray	()
 	, m_pSewerLineMesh		(nullptr)
@@ -54,15 +64,6 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pSewerTurnMesh		(nullptr)
 	, m_pSewerEndMesh		(nullptr)
 	, m_pWallStaticMesh		(nullptr)
-
-	// ミニマップ関連
-	, m_pMiniMapUI			(nullptr)
-	, m_pMiniMapSprite		(nullptr)
-	, m_pMiniMap			(nullptr)
-	, m_miniMapStartX		(20)
-	, m_miniMapStartY		(20)
-	, m_miniMapCellSize		(9)
-	, m_miniMapFontSize		(11)
 
 	// デバッグ関連
 	, m_SDFText				(nullptr)
@@ -122,6 +123,7 @@ void CTest::Create()
 	// 迷路作成
 	m_pMazeGen = new CMaze(*m_pMazeData, m_MazeStride, m_MazeCellW, m_MazeCellH);
 
+	m_EndSpotLight = new CSpotLight();
 	// 壁メッシュ作成
 	m_pWallStaticMesh = new CStaticMesh();
 
@@ -131,11 +133,6 @@ void CTest::Create()
 	m_pSewerCrossMesh = new CStaticMesh();
 	m_pSewerTurnMesh = new CStaticMesh();
 	m_pSewerEndMesh = new CStaticMesh();
-
-	// ミニマップ作成
-	m_pMiniMap = new CMiniMapTexture();
-	m_pMiniMapSprite = new CSprite2D();
-	m_pMiniMapUI = new CUIObject();
 
 	// プレイヤー作成
 	m_pPlayer = new CPlayer();
@@ -165,12 +162,12 @@ void CTest::Create()
 	m_pZakoStaticMesh = new CStaticMesh();
 
 	// ゴースト作成
-	for (int i = 0; i < ENEMY_COUNT; ++i)
+	for (int i = 0; i < MAX_ENEMY_COUNT; ++i)
 	{
-		m_pGhostList[i] = new CBaseEnemy(m_pMazeGen->GeneratePath(i, (m_MazeCellH - 1) - i), m_MazeCellW, m_MazeCellH);
+		m_pGhostList[i] = new CBaseEnemy();
 	}
 
-	for (int i = 0; i < ENEMY_COUNT; ++i )
+	for (int i = 0; i < MAX_ENEMY_COUNT; ++i )
 	{
 		m_pZakoList[i] = new CZako();
 	}
@@ -312,10 +309,11 @@ HRESULT CTest::LoadData()
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
 
+	m_pPlayer->AttachMesh(*m_TMPItemMesh);
 	m_pPlayer->AttachSkinMesh(*m_pWomanMesh);
 	m_pPlayer->SetRotation(0.f, D3DXToRadian(180.f), 0.f);
 	m_pPlayer->SetScale(0.03f);
-	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0,0,2.f,m_MazeCellSize));
+	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 
 	RAY	ray = m_pPlayer->GetRayY();
 	m_pPlayerRayY->Init(*m_pDx11, ray);
@@ -325,20 +323,20 @@ HRESULT CTest::LoadData()
 		m_pCrossRay[dir]->Init(*m_pDx11, ray);
 	}
 	
-	for(int i = 0; i < ENEMY_COUNT; ++i)
+	for(int i = 0; i < MAX_ENEMY_COUNT; ++i)
 	{
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
-		m_pGhostList[i]->SetScale(1.0f);
-		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		m_pGhostList[i]->SetScale(2.f);
+		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 		m_pGhostList[i]->SetTargetPlayer(m_pPlayer);
 	}
 
-	for (int i = 0; i < ENEMY_COUNT; ++i)
+	for (int i = 0; i < m_EnemyCount; ++i)
 	{
 		m_pZakoList[i]->AttachMesh(*m_pZakoStaticMesh);
 		//m_pZakoList[i]->AttachSkinMesh(*m_pZakoMesh);
 		m_pZakoList[i]->SetScale(1.0f);
-		m_pZakoList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		m_pZakoList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 	}
 
 	CStaticMeshObject* pSewerLine = new CStaticMeshObject();
@@ -358,18 +356,57 @@ void CTest::Release()
 
 void CTest::Start()
 {
+	switch (CGameStats::GetDifficulty())
+	{
+	case CGameStats::DIFF_EASY:
+		m_MazeCellH = 4;
+		m_MazeCellW = 4;
+		m_EnemyCount = 4;
+		break;
+	case CGameStats::DIFF_NORMAL:
+		m_MazeCellH = 8;
+		m_MazeCellW = 8;
+		m_EnemyCount = 8;
+		break;
+	case CGameStats::DIFF_HARD:
+		m_MazeCellH = 12;
+		m_MazeCellW = 12;
+		m_EnemyCount = 12;
+		break;
+	}
+
+	ClearMaze();
+	//迷路グリッド作成
+	m_pMazeGen->SetRegionSize(m_MazeCellW, m_MazeCellH);
+	m_pMazeGen->GenerateMaze(0, 0);
+	//迷路メッシュ作成
+	GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
+	// ゴーストパス再生成
+	for (int i = 0; i < m_EnemyCount; ++i)
+	{
+		auto ghost = m_pGhostList[i];
+		ghost->Start();
+		ghost->SetWidthHeight(m_MazeCellW, m_MazeCellH);
+		ghost->SetRowCol(m_MazeCellH - i, i);
+		ghost->SetPath(m_pMazeGen->GeneratePath(ghost->GetCurrentCol(), ghost->GetCurrentRow()));
+	}
+
+	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0, 2.f, m_MazeCellSize));
+	m_pPlayer->ApplyHeal(100.0f);
+	m_pPlayer->ApplyLightEffect(m_pPlayer->MAX_LIGHT_INT);
+
 	m_pDx11->SetDepth(true);
 	// 環境設定
-	m_GlobalLight.fIntensity = 0.4f;
+	m_GlobalLight.fIntensity = 0.5f;
 
-	m_pCameraController->SetTPOffset(D3DXVECTOR3(0.f, 2.f, -5.f));
-
-	m_Fog.Color = D3DXVECTOR4(0.076, 0.0803f, 0.0909f, 1.0f);
+	m_Fog.Color = D3DXVECTOR4(0.1f, 0.f, 0.12f, 1.0f);
 	m_Fog.Enable = m_bFog;
 	m_Fog.Mode = D3DFOG_LINEAR;
-	m_Fog.Start = 15.0f;
-	m_Fog.End = 150.0f;
+	m_Fog.Start = 111;
+	m_Fog.End = 0;
 	m_Fog.Density = 0.1f;
+
+	m_pCameraController->SetTPOffset(D3DXVECTOR3(0.f, 2.f, -5.f));
 
 	for (int i = 0; i < m_MazeCellH; ++i)
 	{
@@ -397,11 +434,15 @@ void CTest::Start()
 	m_pPlayerLight->SetPosition(D3DXVECTOR3(0.0f, 15.0f, 0.0f));
 	m_pPlayerLight->SetDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
 	m_pPlayerLight->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.8f, 1.0f));
-	m_pPlayerLight->SetRange(150.0f);
+	m_pPlayerLight->SetRange(30.0f);
 	m_pPlayerLight->SetInnerAngle(D3DXToRadian(15.0f));
 	m_pPlayerLight->SetOuterAngle(D3DXToRadian(30.0f));
 	m_pPlayerLight->SetIntensity(5.0f);
-	m_pPlayerLight->SetSceneIndex(AddSpotLight(m_pPlayerLight));
+	if(m_pPlayerLight->GetSceneIndex() != -1)
+	{
+		UpdateSpotLight(m_pPlayerLight);
+	}
+	else m_pPlayerLight->SetSceneIndex(AddSpotLight(m_pPlayerLight));
 
 	m_pLightBar->SetScale(0.5);
 	m_pLightBar->SetPosition(5.f, WND_H / 2, 0.f);
@@ -409,10 +450,27 @@ void CTest::Start()
 	m_pHealthBar->SetScale(1);
 	m_pHealthBar->SetPosition(5.f, WND_H / 2 - 131.f, 0.f);
 
+
+
+	const D3DXVECTOR3 exitPos = m_pMazeGen->GetExitWorldPosition(3.f, m_MazeCellSize);
+	m_EndSpotLight->SetPosition(exitPos + D3DXVECTOR3(0.f, 10.f, 0.f));
+	m_EndSpotLight->SetDirection(D3DXVECTOR3(0.f, -1.f, 0.f));
+	m_EndSpotLight->SetColor(D3DXCOLOR(0.8f, 0.2f, 0.2f, 1.0f));
+	m_EndSpotLight->SetRange(20.0f);
+	m_EndSpotLight->SetInnerAngle(D3DXToRadian(15.0f));
+	m_EndSpotLight->SetOuterAngle(D3DXToRadian(30.0f));
+	m_EndSpotLight->SetIntensity(3.0f);
+	if (m_EndSpotLight->GetSceneIndex() != -1)
+	{
+		UpdateSpotLight(m_EndSpotLight);
+	}
+	else m_EndSpotLight->SetSceneIndex(AddSpotLight(m_EndSpotLight));
 }
 
 void CTest::Update()
 {
+	CSoundManager::PlayLoop(CSoundManager::BGM_Game);
+
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
 
@@ -420,6 +478,7 @@ void CTest::Update()
 
 	m_Fog.Enable = m_bFog;
 
+#if 0 // デバッグ用
 	// 迷路再生成
 	if (GetAsyncKeyState('R') & 0x0001)
 	{
@@ -429,7 +488,7 @@ void CTest::Update()
 		//迷路メッシュ作成
 		GenerateMazeMeshObj(m_MazeCellH, m_MazeCellW, m_MazeStride);
 		// ゴーストパス再生成
-		for( int i = 0; i < ENEMY_COUNT; ++i)
+		for( int i = 0; i < m_EnemyCount; ++i)
 		{
 			auto ghost = m_pGhostList[i];
 			ghost->SetPath(m_pMazeGen->GeneratePath(ghost->GetCurrentCol(), ghost->GetCurrentRow()));
@@ -461,53 +520,101 @@ void CTest::Update()
 		m_pCamera->ResetCameraRot();
 		staticCamera = !staticCamera;
 	}
+#endif
+
+	if (m_pPlayer->GetPlayerHealth() <= 0)
+	{
+		CGameStats::EnemiesKilled = m_EnemiesKilled;
+		CGameStats::TimeMs = m_pTime->GetTotalTime();
+		CGameStats::ComputeScore();
+		CSoundManager::PlaySE(CSoundManager::SE_GameOver);
+		CSoundManager::Stop(CSoundManager::BGM_Game);
+		m_pManager->ChangeScene("GAME OVER");
+	}
+	
+	auto playerPos = m_pPlayer->GetPosition();
+	if (WorldToMazeCoords(playerPos).x == m_pMazeGen->GetExitCell().x &&
+		WorldToMazeCoords(playerPos).y == m_pMazeGen->GetExitCell().y)
+	{
+		CGameStats::EnemiesKilled = m_EnemiesKilled;
+		CGameStats::TimeMs = m_pTime->GetTotalTime();
+		CGameStats::ComputeScore();
+		CSoundManager::PlaySE(CSoundManager::SE_Result);
+		CSoundManager::Stop(CSoundManager::BGM_Game);
+		m_pManager->ChangeScene("RESULT");
+	}
 
 	// 地面更新
 	m_pGround->Update();
 
 	// ゴースト更新
-	for (int i = 0; i < ENEMY_COUNT; ++i)
+	for (int i = 0; i < m_EnemyCount; ++i)
 	{
+		if (m_pGhostList[i]->IsDead())
+		{
+			continue;
+		}
 		m_pGhostList[i]->Update();
+
+		int currAudio = 0;
+
+		if (m_pGhostList[i]->GetState() == CBaseEnemy::Attack)
+		{
+			currAudio = CSoundManager::SE_GhostChase;
+		}
+		else
+		{
+			currAudio = CSoundManager::SE_GhostIdle;
+		}
+
+		CSoundManager::GetInstance()->PlayLoop(CSoundManager::enList(currAudio));
+
+		m_pGhostList[i]->ReactToSpotLight(*m_pPlayerLight);
+
+		if (m_pGhostList[i]->IsDead())
+		{
+			CSoundManager::Stop(CSoundManager::enList(currAudio));
+			CSoundManager::PlaySE(CSoundManager::SE_GhostDead);
+			OnEnemyKilled();
+		}
 	}
 
+	 //ゴーストカメラ
+	if (ghostCamera)
+	{
+		EnemyCamera();
 
-
-	// ゴーストカメラ
-	//if (ghostCamera)
-	//{
-	//	EnemyCamera();
-
-	//	return;
-	//}
+		return;
+	}
 	
 	// プレイヤーカメラ
-	//if (playerCamera)
-	//{
-	//	UpdatePlayerCamera();
+	if (playerCamera)
+	{
+		UpdatePlayerCamera();
 
-	//	//
-	//	m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
-	//	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
+		//
+		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+		m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 
-	//	if (m_pPlayer->IsFlashOn())
-	//	{
-	//		m_pPlayerLight->SetIntensity(3.5f);
-	//	}
-	//	else
-	//	{
-	//		m_pPlayerLight->SetIntensity(0.0f);
-	//	}
+		if (m_pPlayer->IsFlashOn())
+		{
+			m_pPlayerLight->SetIntensity(m_pPlayer->GetLightIntensity());
+		}
+		else
+		{
+			m_pPlayerLight->SetIntensity(0.0f);
+		}
 
-	//	UpdateSpotLight(m_pPlayerLight);
+		UpdateSpotLight(m_pPlayerLight);
 
-	//	return;
-	//}
+		return;
+	}
 
 	// スタティックカメラ
 	if( staticCamera )
 	{
 		m_pPlayer->SetTankControlMode(true);
+		bool prevFlashState = m_pPlayer->IsFlashOn();
 		m_pPlayer->Update();
 		
 		if (m_pPlayer->GetPlayerHealth() <= 50)
@@ -520,11 +627,25 @@ void CTest::Update()
 		}
 		
 		UpdateStaticCamera();
-		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+	
+		
+		D3DXVECTOR3 lightOffset = D3DXVECTOR3(0.0f, 0.5f, 0.0f);
+		
+		D3DXVECTOR3 playerFwd = m_pPlayer->GetDirection();
+		lightOffset += playerFwd * -0.2f ;
+
+		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + lightOffset);
 		m_pPlayerLight->SetDirection(m_pPlayer->GetDirection());
+
+		if (prevFlashState != m_pPlayer->IsFlashOn())
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Flashlight);
+		}
+
 		if (m_pPlayer->IsFlashOn())
 		{
-			m_pPlayerLight->SetIntensity(3.5f);
+			
+			m_pPlayerLight->SetIntensity(m_pPlayer->GetLightIntensity());
 		}
 		else
 		{
@@ -534,7 +655,7 @@ void CTest::Update()
 		return;
 	}
 
-	//UpdateFPCamera();
+	UpdateFPCamera();
 
 }
 
@@ -559,6 +680,7 @@ void CTest::Draw()
 	m_pGround->Draw(m_SceneInfo);
 	//m_pWomanMesh->Render(m_mView, m_mProj, m_GlobalLight, m_Camera.vPosition, m_Fog);
 	m_pPlayer->Draw(m_SceneInfo);
+	m_pPlayer->UpdateCollider();
 	//レイの描画
 	m_pPlayerRayY->Render(m_mView, m_mProj, m_pPlayer->GetRayY());
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
@@ -569,14 +691,23 @@ void CTest::Draw()
 	// 迷路壁描画
 	for (auto& path : m_pSewerPathArray)
 	{
-		path->UpdateCollider();
 		path->Draw(m_SceneInfo);
 	}
 	// ゴースト描画
-	for (int i = 0; i < ENEMY_COUNT; ++i)
+	for (int i = 0; i < m_EnemyCount; ++i)
 	{
-		//m_pGhostList[i]->UpdateCollider();
+		if (m_pGhostList[i]->IsDead())
+		{
+			continue;
+		}
+		m_pGhostList[i]->UpdateCollider();
 		m_pGhostList[i]->RenderStatic(m_SceneInfo);
+		auto playerCol = m_pPlayer->GetCollider()->GetBSphere();
+		bool isHit = m_pGhostList[i]->GetCollider()->GetBSphere()->IsHit(*playerCol);
+		if (isHit)
+		{
+			m_pPlayer->ApplyDamage(0.8f);
+		}
 	}
 	CEffect::GetInstance()->Draw(m_SceneInfo);
 
@@ -584,14 +715,25 @@ void CTest::Draw()
 	for (auto& item : m_ItemMeshArray)
 	{
 		item->Draw(m_SceneInfo);
+		item->UpdateCollider();
+		auto playerCol = m_pPlayer->GetCollider()->GetBSphere();
+		bool isHit = item->GetCollider()->GetBSphere()->IsHit(*playerCol);
+		if (isHit)
+		{
+			m_pPlayer->ApplyLightEffect(0.5f);
+			CSoundManager::PlaySE(CSoundManager::SE_ItemGet);
+			item->SetPosition(D3DXVECTOR3(1000.f, 1000.f, 1000.f)); // 遠くに移動して消す
+		}
 	}
 
 
+#if 0
 #pragma region COLLIDER_DEBUG_DRAW
 	// コライダーのデバッグ描画
 	// デバッグ表示が有効な場合
 	if (m_pDbgCollider && m_ShowCollider)
 	{
+
 		m_pDx11->SetDepth(false);
 		for (auto& wall : m_pSewerPathArray)
 		{
@@ -602,22 +744,27 @@ void CTest::Draw()
 			}
 		}
 
-		for (int i = 0; i < ENEMY_COUNT; ++i)
+		for (int i = 0; i < m_EnemyCount; ++i)
 		{
 			if (auto* col = m_pGhostList[i]->GetCollider())
 			{
 				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
-					CCollider::COLLIDER_SHAPE_BOX, *col);
+					CCollider::COLLIDER_SHAPE_SPHERE, *col);
 			}
 		}
 
 		m_pDx11->SetDepth(true);
-#pragma endregion
-
 	}
+#pragma endregion
+#endif
 
 	//UI
 	m_pDx11->SetDepth(false);
+	m_pLightBar->SetFillPercent(1, true);
+	m_pLightBar->SetAlpha(0.5f);
+	m_pLightBar->Draw();
+	m_pLightBar->SetAlpha(1.f);
+	m_pLightBar->SetFillPercent(m_pPlayer->GetLightIntensity() / m_pPlayer->MAX_LIGHT_INT, true);
 	m_pLightBar->Draw();
 
 	m_pHealthBar->SetPatternNo(0, 0);
@@ -636,24 +783,37 @@ void CTest::Draw()
 
 	TCHAR text[64];
 	
-	//DrawTextMinimap();
-	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-	Pair cameraRC = WorldToMazeCoords(m_pCamera->GetPosition());
-	_stprintf_s(text, _T("PLAYER MAZE COORDS:%d,%d"), playerRC.x, playerRC.y);
-	m_SDFText->Render(text, 50, 50, 30.f);
-	_stprintf_s(text, _T("CAMERA MAZE COORDS:%d,%d"), cameraRC.x, cameraRC.y);
-	m_SDFText->Render(text, 50, 80, 30.f);
-	m_SDFText->Render(_T("PRESS R TO REGENERATE MAZE"), 50, 700, 25.f);
-	
-	if(ghostCamera)
-		m_SDFText->Render(_T("GHOST CAMERA"), 800, 50, 30.f);
-	else if (playerCamera)
-		m_SDFText->Render(_T("PLAYER CAMERA"), 800, 80, 30.f);
-	else if (staticCamera)
-		m_SDFText->Render(_T("STATIC CAMERA"), 800, 110, 30.f);
-	else
-		m_SDFText->Render(_T("FIRST PERSON CAMERA"), 800, 140, 30.f);
+	//Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
+	//Pair cameraRC = WorldToMazeCoords(m_pCamera->GetPosition());
+	//_stprintf_s(text, _T("PLAYER MAZE COORDS:%d,%d"), playerRC.x, playerRC.y);
+	//m_SDFText->Render(text, 50, 50, 30.f);
+	//_stprintf_s(text, _T("CAMERA MAZE COORDS:%d,%d"), cameraRC.x, cameraRC.y);
+	//m_SDFText->Render(text, 50, 80, 30.f);
+	//m_SDFText->Render(_T("PRESS R TO REGENERATE MAZE"), 50, 700, 25.f);
 
+	float sec = m_pTime->GetTotalTime() / 1000.f;
+	float min = sec / 60.f;
+	float remSec = sec - (static_cast<int>(min) * 60.f);
+
+	_stprintf_s(text, _T("%02.f:%02.f"), min, remSec);
+	m_SDFText->Render(text, WND_W/2 - 70.f, 50, 70.f);
+
+	//if(ghostCamera)
+	//	m_SDFText->Render(_T("GHOST CAMERA"), 800, 50, 30.f);
+	//else if (playerCamera)
+	//	m_SDFText->Render(_T("PLAYER CAMERA"), 800, 80, 30.f);
+	//else if (staticCamera)
+	//	m_SDFText->Render(_T("STATIC CAMERA"), 800, 110, 30.f);
+	//else
+	//	m_SDFText->Render(_T("FIRST PERSON CAMERA"), 800, 140, 30.f);
+
+
+	/*if (m_ShowCollider) {
+		m_SDFText->Render(_T("COLLIDERS: ON"), 800, 170, 30.f);
+	}
+	else {
+		m_SDFText->Render(_T("COLLIDERS: OFF"), 800, 170, 30.f);
+	}*/
 	//for (int i = 0; i < CGlobal::debugText.size(); i++)
 	//{
 	//	auto text = CGlobal::debugText[i];
@@ -796,71 +956,6 @@ void CTest::ClearMaze()
 	m_pSewerPathArray.clear();
 }
 
-void CTest::DrawTextMinimap()
-{
-	// --- MiniMap (文字) ---
-		// レイアウト
-	const int regionH = m_MazeCellH;	// 高さ
-	const int regionW = m_MazeCellW;	// 幅
-
-	TCHAR text[64];
-
-	// 迷路描画
-	for (int i = 0; i < regionH; ++i)
-	{
-		for (int j = 0; j < regionW; ++j)
-		{
-			float cx = m_miniMapStartX + j * m_miniMapCellSize;
-			float cy = m_miniMapStartY + i * m_miniMapCellSize;
-
-			// セールの真ん中に空白を描画
-			_stprintf_s(text, _T(" "));
-			m_SDFText->Render(text, cx, cy, m_miniMapFontSize);
-
-			// 北壁 (セルの上に'_'を描画)
-			if (!(m_pMazeData[i][j] & CMaze::North))
-			{
-				_stprintf_s(text, _T("_"));
-				m_SDFText->Render(text, cx, cy - m_miniMapCellSize * 0.5f, m_miniMapFontSize);
-			}
-			// 西壁 (セルの左に'|'を描画)
-			if (!(m_pMazeData[i][j] & CMaze::West))
-			{
-				_stprintf_s(text, _T("|"));
-				m_SDFText->Render(text, cx - m_miniMapCellSize * 0.5f, cy, m_miniMapFontSize);
-			}
-			// 南壁を描画
-			if (!(m_pMazeData[i][j] & CMaze::South))
-			{
-				_stprintf_s(text, _T("_"));
-				m_SDFText->Render(text, cx, cy + m_miniMapCellSize * 0.5f, m_miniMapFontSize);
-			}
-			// 東壁 (セルの右に'|'を描画)
-			if (!(m_pMazeData[i][j] & CMaze::East))
-			{
-				_stprintf_s(text, _T("|"));
-				m_SDFText->Render(text, cx + m_miniMapCellSize * 0.5f, cy, m_miniMapFontSize);
-			}
-		}
-	}
-
-
-	//// プレイヤー位置描画
-	//{
-	//	Pair playerMazePos = WorldToMazeCoords(m_pPlayer->GetPosition());
-
-	//	float pcx = m_miniMapStartX + playerMazePos.x * m_miniMapCellSize;
-	//	float pcy = m_miniMapStartY + playerMazePos.y * m_miniMapCellSize;
-	//	_stprintf_s(text, _T("*"));
-
-	//	m_SDFText->SetColor(1.0f, 0.0f, 0.0f);
-	//	m_SDFText->Render(text, pcx, pcy, m_miniMapFontSize);
-
-	//	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);
-	//}
-}
-
-
 Pair CTest::NextMazePosition()
 {
 
@@ -908,29 +1003,29 @@ void CTest::UpdateFPCamera()
 	m_pCameraController->FirstPersonCamera(
 		m_mouseDelta,
 		m_mouseSense);
-	m_pPlayerLight->SetIntensity(1.f);
-	m_pPlayerLight->SetPosition(m_pCameraController->GetPosition());
-	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 	//D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
 	//m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
 	//m_pPlayer->SetRotation(playerRot);
-	UpdateSpotLight(m_pPlayerLight);
 }
 
 void CTest::UpdateStaticCamera()
 {
 
 	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
-	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 3.f, m_MazeCellSize);
-	D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 1.f, -1.f);
-	m_pCamera->SetPosition(staticCamPos + offset);
+	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 2.5f, m_MazeCellSize);
+	D3DXVECTOR3 playerFwd = m_pPlayer->GetDirection();
+	D3DXVECTOR3 statiCamOffset = playerFwd * -2.f;
+	statiCamOffset.y += 2.f;
+	statiCamOffset.x += -2.f;
+	D3DXVECTOR3 forwardOffset = playerFwd * 2.f;
 
+	m_pCamera->SetPosition(staticCamPos + statiCamOffset);
 	m_pCameraController->StaticCamera(
-		m_pPlayer->GetPosition(),
+		m_pPlayer->GetPosition() + forwardOffset,
 		m_mouseDelta,
 		m_mouseSense);
 
-	m_pCamera->SetLens(D3DX_PI / 2.0f,
+	m_pCamera->SetLens(D3DX_PI / 2.50f,
 		static_cast<float>(WND_W) / static_cast<float>(WND_H),
 		0.1f, 1000.0f);
 

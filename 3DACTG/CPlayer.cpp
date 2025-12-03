@@ -4,7 +4,7 @@
 CPlayer::CPlayer()
 	: CAnimCharacter()
 	, m_vVelocity	(0.f, 0.f, 0.f)
-	, m_pPlayerHealth(100.f)
+	, m_PlayerHealth(100.f)
 	, m_TurnSpeed	(0.05f)
 	, m_MoveSpeed	(0.06f)
 	, m_MoveState	(Stop)
@@ -26,6 +26,13 @@ CPlayer::~CPlayer()
 void CPlayer::Update()
 {
 	bool animFin = false;
+	if (m_PlayerState == Damaged)
+	{
+		animFin = SetAnimNo(m_AnimationState, FORCE_CHANGE);
+		if (animFin)
+			m_PlayerState = Idle;
+	}
+	else
 	if (m_PlayerState == Attacking)
 	{
 		animFin = SetAnimNo(m_AnimationState, FORCE_CHANGE);
@@ -35,9 +42,20 @@ void CPlayer::Update()
 	else
 	SetAnimNo(m_AnimationState);
 
-	m_pPlayerHealth-= 0.1f;
 	HandleInput();
 
+	if (!IsFlashOn())
+	{
+		m_LightIntensity += 0.001f;
+		if (m_LightIntensity > MAX_LIGHT_INT)
+			m_LightIntensity = MAX_LIGHT_INT;
+	}
+	else
+	{
+		m_LightIntensity -= 0.005f;
+		if (m_LightIntensity < 0.f)
+			m_LightIntensity = 0.f;
+	}
 
 	//m_bTankControlMode = false;
 	//レイの位置をプレイヤーの座標にそろえる
@@ -61,6 +79,26 @@ void CPlayer::Update()
 void CPlayer::Draw(SCENE_DATA& sceneData)
 {
 	CAnimCharacter::Draw(sceneData);
+}
+
+void CPlayer::ApplyDamage(float damage)
+{
+	m_PlayerHealth -= damage;
+	if (m_PlayerHealth < 0.f)
+		m_PlayerHealth = 0.f;
+	m_PlayerState = Damaged;
+}
+
+void CPlayer::ApplyHeal(float heal)
+{
+	m_PlayerHealth += heal;
+	if (m_PlayerHealth > 100.f)
+		m_PlayerHealth = 100.f;
+}
+
+void CPlayer::ApplyLightEffect(float amount)
+{
+	m_LightIntensity += amount;
 }
 
 void CPlayer::AnimControl()

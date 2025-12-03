@@ -8,6 +8,9 @@ CMaze::CMaze()
 	, m_RegionWidth		(0)
 	, m_RegionHeight	(0)
 	, m_Stride			(0)
+	, m_HasExit			(false)
+	, m_ExitCell		({ 0, 0 })
+	, m_ExitWorldPos	(0.f, 0.f, 0.f)
 {
 }
 
@@ -16,8 +19,10 @@ CMaze::CMaze(int* pMaze, int stride, int regionWidth, int regionHeight, int star
 	, m_RegionWidth(regionWidth)
 	, m_RegionHeight(regionHeight)
 	, m_Stride(stride)
+	, m_HasExit(false)
+	, m_ExitCell({ 0, 0 })
+	, m_ExitWorldPos(0.f, 0.f, 0.f)
 {
-	GenerateMaze(pMaze, stride, regionWidth, regionHeight, startX, startY);
 }
 
 CMaze::~CMaze()
@@ -136,6 +141,7 @@ void CMaze::GenerateMaze(int startX, int startY)
 {
 	GenerateMaze(m_pMazeData, m_Stride, m_RegionWidth, m_RegionHeight, startX, startY);
 	AddRandomLoops(m_pMazeData, m_Stride, m_RegionWidth, m_RegionHeight, 0.10f);
+	GenerateRandomExit(startX, startY);
 }
 
 
@@ -363,4 +369,70 @@ void CMaze::AddRandomLoops(int* maze, int stride, int regionWidth, int regionHei
 			}
 		}
 	}
+}
+
+void CMaze::GenerateRandomExit(int startX, int startY)
+{
+	// Prefer dead-ends (cells with exactly one open passage)
+	std::vector<Pair> candidates;
+	candidates.reserve(m_RegionHeight * m_RegionWidth / 4);
+
+	for (int r = 0; r < m_RegionHeight; ++r)
+	{
+		for (int c = 0; c < m_RegionWidth; ++c)
+		{
+			const int cellBits = m_pMazeData[r * m_Stride + c];
+			const int openCount = __popcnt(cellBits); // number of open directions
+
+			if (openCount == 1)
+			{
+				if (!(r == startY && c == startX))
+				{
+					// Store as {row, col}
+					candidates.push_back({ r, c });
+				}
+			}
+		}
+	}
+
+	// Fallback to border cells if no dead-ends found
+	if (candidates.empty())
+	{
+		for (int r = 0; r < m_RegionHeight; ++r)
+		{
+			for (int c = 0; c < m_RegionWidth; ++c)
+			{
+				const bool isBorder = (r == 0) || (c == 0) || (r == (m_RegionHeight - 1)) || (c == (m_RegionWidth - 1));
+				if (isBorder && !(r == startY && c == startX))
+				{
+					candidates.push_back({ r, c });
+				}
+			}
+		}
+	}
+
+	// Absolute fallback: bottom-right
+	if (candidates.empty())
+	{
+		m_ExitCell = { m_RegionHeight - 1, m_RegionWidth - 1 };
+	}
+	else
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+		m_ExitCell = candidates[dist(gen)];
+	}
+
+	m_HasExit = true;
+}
+
+D3DXVECTOR3 CMaze::GetExitWorldPosition(float y, float cellSize) const
+{
+	if (!m_HasExit)
+	{
+		// Safe default if not generated yet
+		return CellToWorldRC(m_RegionHeight - 1, m_RegionWidth - 1, y, cellSize);
+	}
+	return CellToWorldRC(m_ExitCell.x, m_ExitCell.y, y, cellSize);
 }

@@ -14,18 +14,19 @@ public:
 	//サウンドリスト列挙型.
 	enum enList
 	{
-		BGM_Bonus,	
-		BGM_Battle,	
-		BGM_Menu,	
-		SE_Jump,		//ジャンプ.
-		SE_Clear,		//クリア.
-		SE_PlayerHit,
-		SE_PlayerShot,	//.
-		SE_EnemyHit,	//.
-		SE_BossShot,	//.
-		SE_BossRotShot,	//.
-		SE_Boss,		//.
-		SE_Explosion,	//.
+		BGM_Title,	//タイトルBGM.
+		BGM_Game,	//ゲームBGM.
+		SE_Select,	//選択音.
+		SE_Decide,	//決定音.
+		SE_Step,	//足音.
+		SE_GameOver,//ゲームオーバー音.
+		SE_ItemGet,	//アイテム取得音
+		SE_GhostIdle,	//ゴースト待機音
+		SE_GhostChase,	//ゴースト追跡音
+		SE_GhostDamage,	//ゴーストダメージ音
+		SE_GhostDead,	//ゴースト死亡音
+		SE_Flashlight,	//懐中電灯音
+		SE_Result,		//リザルト音
 
 		//音が増えたら「ここ」に追加してください.
 		max,		//最大数.

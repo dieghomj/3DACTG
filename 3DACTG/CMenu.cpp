@@ -1,4 +1,5 @@
 ﻿#include "CMenu.h"
+#include "CGameStats.h"
 
 CMenu::CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, pManager)
@@ -99,14 +100,17 @@ void CMenu::Update()
 {
 	CScene::Update();
 
+	CSoundManager::PlayLoop(CSoundManager::BGM_Title);
+
 	m_pMenuBG->Update();
 
 	if (m_IsFading)
 	{
- 		m_FadeAlpha += m_FadeSpeed;
+		m_FadeAlpha += m_FadeSpeed;
 		if (m_FadeAlpha >= 1.0f)
 		{
 			m_FadeAlpha = 1.0f;
+			CSoundManager::Stop(CSoundManager::BGM_Title);
 			m_pManager->ChangeScene("GAME");
 			return;
 		}
@@ -117,22 +121,46 @@ void CMenu::Update()
 		return;
 	}
 
+	// Navigate options
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedOption = MENU_OPTION_START;
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x0001)
 	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedOption = MENU_OPTION_EXIT;
 	}
-	
+
+	// Change difficulty in menu with LEFT/RIGHT arrows
+	if (GetAsyncKeyState(VK_LEFT) & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
+		CGameStats::DIFFICULTY cur = CGameStats::GetDifficulty();
+		if (cur == CGameStats::DIFF_EASY)      CGameStats::SetDifficulty(CGameStats::DIFF_HARD);
+		else if (cur == CGameStats::DIFF_NORMAL)CGameStats::SetDifficulty(CGameStats::DIFF_EASY);
+		else                                 CGameStats::SetDifficulty(CGameStats::DIFF_NORMAL);
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
+		CGameStats::DIFFICULTY cur = CGameStats::GetDifficulty();
+		if (cur == CGameStats::DIFF_EASY)       CGameStats::SetDifficulty(CGameStats::DIFF_NORMAL);
+		else if (cur == CGameStats::DIFF_NORMAL)CGameStats::SetDifficulty(CGameStats::DIFF_HARD);
+		else                                 CGameStats::SetDifficulty(CGameStats::DIFF_EASY);
+	}
+
+	// Select
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
+		CSoundManager::PlaySE(CSoundManager::SE_Decide);
 		if (m_SelectedOption == MENU_OPTION_START)
 		{
+			// Begin fade and use the selected difficulty stored in base CScene
 			m_IsFading = true;
 			m_FadeAlpha = 0.0f;
-			m_FadeSpeed = 0.1f; 
+			m_FadeSpeed = 0.1f;
 			if (m_pFadeSprite)
 			{
 				m_pFadeSprite->SetAlpha(0.0f);
@@ -140,7 +168,6 @@ void CMenu::Update()
 		}
 		else if (m_SelectedOption == MENU_OPTION_EXIT)
 		{
-			// Exit the game
 			PostQuitMessage(0);
 		}
 	}
@@ -148,7 +175,7 @@ void CMenu::Update()
 
 void CMenu::Draw()
 {
-	m_pDx11->SetDepth(false); 
+	m_pDx11->SetDepth(false);
 	m_pMenuBG->Draw();
 
 	m_pMenuFont->SetColor(1.0f, 0.1f, 0.05f);
@@ -160,11 +187,11 @@ void CMenu::Draw()
 
 	if (m_SelectedOption == MENU_OPTION_START)
 	{
-		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f); 
+		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
 	}
 	else
 	{
-		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f); 
+		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
 	}
 	TCHAR startText[64];
 	_stprintf_s(startText, _T("> START GAME"));
@@ -181,16 +208,21 @@ void CMenu::Draw()
 	TCHAR exitText[64];
 	_stprintf_s(exitText, _T("> EXIT"));
 	m_pMenuFont->Render(exitText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 80), 40.0f);
-		
+
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];
-	_stprintf_s(instructText, _T("Use UP/DOWN arrows to navigate, ENTER to select"));
-	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 210), static_cast<float>(WND_H - 50), 35.0f);
+	_stprintf_s(instructText, _T("Use UP/DOWN to select, LEFT/RIGHT to change difficulty, ENTER to start"));
+	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 270), static_cast<float>(WND_H - 50), 35.0f);
+
+	// Show current difficulty
+	m_pMenuFont->SetColor(0.9f, 0.9f, 0.2f);
+	TCHAR diffText[64];
+	_stprintf_s(diffText, _T("DIFFICULTY: %s"), DifficultyToText(CGameStats::GetDifficulty()));
+	m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 120), static_cast<float>(WND_H / 2 + 20), 32.0f);
 
 	// Draw fade overlay last so it covers everything
 	if (m_pFade)
 	{
 		m_pFade->Draw();
 	}
-
 }

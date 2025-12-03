@@ -3,9 +3,11 @@
 #include "CDirectX11.h"
 #include "CTime.h"
 #include "CSceneManager.h"
+#include "CSoundManager.h"
 #include "CCamera.h"
 #include "CCameraController.h"
 #include "CSpotLight.h"
+#include "CGameStats.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -32,6 +34,8 @@ public:
 	bool IsPause() const { return m_IsPause; }
 
 	POINT GetMouseSeudoPos();
+
+	static const TCHAR* DifficultyToText(CGameStats::DIFFICULTY d);
 
 private :
 	void UpdateMousePos();
@@ -71,3 +75,4 @@ private:
 	CScene(const CScene&) = delete;
 	CScene& operator = (const CScene& rhs) = delete;
 };
+

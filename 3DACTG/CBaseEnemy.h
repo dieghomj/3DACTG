@@ -26,9 +26,20 @@ public:
 
 	void Draw(SCENE_DATA& sceneData);
 
+	void Start();
 	void SetPath(std::vector<Pair> path);
+	void SetWidthHeight(int width, int height) {
+		m_MazeWidth = width;
+		m_MazeHeight = height;
+	}
+	void SetRowCol(int row, int col) {
+		m_CurrentRow = row;
+		m_CurrentCol = col;
+	}
 	int GetCurrentRow() const { return m_CurrentRow; }
 	int GetCurrentCol() const { return m_CurrentCol; }
+	
+	int GetState() const { return m_State; }
 
 	void SetTargetPlayer(CGameObject* player) { m_pPlayer = player; }
 
@@ -57,7 +68,7 @@ protected:
 	int m_pathStep;
 
 
-	float m_Health = 1000.f;
+	float m_Health = 100.f;
 	float m_RetreatTimer = 0.f;
 	float m_RetreatDuration = 2.f;
 

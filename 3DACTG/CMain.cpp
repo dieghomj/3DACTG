@@ -5,7 +5,8 @@
 #include "CTest.h"
 #include "CMenu.h"
 #include "CGameTest.h"
-#include "ScorpionScene.h"
+#include "GameOver.h"
+#include "CResult.h"
 
 
 //ウィンドウを画面中央で起動を有効にする.
@@ -35,6 +36,7 @@ CMain::CMain()
 	, m_pTime	( nullptr )
 	, m_pResult	( nullptr )
 	, m_pMenu	( nullptr )
+	, m_pGameOver(nullptr) 
 	, m_pSceneManager (nullptr)
 {
 	m_pDx9	= new CDirectX9();
@@ -101,14 +103,16 @@ HRESULT CMain::Create()
 	m_pGame = new CGameTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	//テストシーンのインスタンス生成.
 	m_pTest = new CTest(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager); 
-	m_pScorpion = new ScorpionScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pGameOver = new CGameOverScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pResult = new CResultScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 
 	//ゲームシーンクラスのインスタンス生成.
 	m_pSceneManager->AddScene(m_pGame, "COMBAT");
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pTest, "GAME");
-	m_pSceneManager->AddScene(m_pScorpion,"SCORPION");
+	m_pSceneManager->AddScene(m_pGameOver,"GAME OVER");
+	m_pSceneManager->AddScene(m_pResult, "RESULT");
 
 	//シーン変更.
 	m_pSceneManager->ChangeScene("MENU");

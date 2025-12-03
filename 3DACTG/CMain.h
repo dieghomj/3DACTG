@@ -9,7 +9,8 @@ class CDirectX11;
 class CTest;
 class CMenu;
 class CGameTest;
-class ScoprionScene;
+class CGameOverScene;
+class CResultScene;
 
 /**************************************************
 *	メインクラス.
@@ -49,7 +50,7 @@ private:
 	CSceneManager*	m_pSceneManager;
 	
 	//シーン
-	CScene* 		m_pScorpion;
+	CScene* 		m_pGameOver;
 	CScene*			m_pTest;
 	CScene*			m_pGame;
 	CScene*			m_pTitle;
