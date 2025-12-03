@@ -25,6 +25,7 @@ CBaseEnemy::CBaseEnemy(std::vector<Pair> path, int width, int height)
 	, m_CurrentCol	(path[0].x)
 	, m_CurrentRow	(path[0].y)
 	, m_State		(Move)
+	, m_pPlayer(nullptr)
 {
 }
 

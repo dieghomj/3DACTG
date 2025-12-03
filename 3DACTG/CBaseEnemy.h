@@ -26,6 +26,8 @@ public:
 	int GetCurrentRow() const { return m_CurrentRow; }
 	int GetCurrentCol() const { return m_CurrentCol; }
 
+	void SetTargetPlayer(CGameObject* player) { m_pPlayer = player; }
+
 private:
 	void GetNextStep();
 
@@ -43,6 +45,8 @@ protected:
 
 	float moveSpeed;
 	float moveTime;
+
+	CGameObject* m_pPlayer;
 
 };
 

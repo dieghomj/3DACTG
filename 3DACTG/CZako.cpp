@@ -6,7 +6,6 @@ CZako::CZako()
 	, attackRange(2.0f)
 	, attackCooldown(3.0f)
 	, attackTimer(0.0f)
-	, m_pPlayer(nullptr)
 {
 
 }
@@ -16,7 +15,6 @@ CZako::CZako(std::vector<Pair> path, int width, int height)
 	, attackRange(2.0f)
 	, attackCooldown(3.0f)
 	, attackTimer(0.0f)
-	, m_pPlayer(nullptr)
 {
 }
 

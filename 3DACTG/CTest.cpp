@@ -310,6 +310,7 @@ HRESULT CTest::LoadData()
 		m_pGhostList[i]->AttachMesh(*m_pGhostMesh);
 		m_pGhostList[i]->SetScale(1.0f);
 		m_pGhostList[i]->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		m_pGhostList[i]->SetTargetPlayer(m_pPlayer);
 	}
 
 	for (int i = 0; i < ENEMY_COUNT; ++i)
