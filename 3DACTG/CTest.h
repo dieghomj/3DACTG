@@ -33,6 +33,7 @@ public:
 	HRESULT LoadData() override;
 	void Start() override;
 	void Update() override;
+	void EnemyCamera();
 	void Draw() override;
 
 private:
@@ -63,6 +64,9 @@ private:
 	
 	CSprite2D* m_pHealthBarSprite;
 	CUIObject* m_pHealthBar;
+
+	CSprite2D* m_pTensionSprite;
+	CUIObject* m_pTensionUI;
 
 	// プレイヤーレイ
 	CRay* m_pPlayerRayY;

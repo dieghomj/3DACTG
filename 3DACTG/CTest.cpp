@@ -153,6 +153,9 @@ void CTest::Create()
 	m_pHealthBarSprite = new CSprite2D();
 	m_pHealthBar = new CUIObject();
 
+	m_pTensionSprite = new CSprite2D();
+	m_pTensionUI = new CUIObject();
+
 	// アイテムメッシュ作成
 	m_TMPItemMesh = new CStaticMesh();		// アイテムで電灯を回復する予定
 
@@ -256,17 +259,34 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
+	// 懐中電灯UI設定
 	CSprite2D::SPRITE_STATE lightBarState = {
 		320.0f, 131.0f,
 		320.0f, 516.0f,
 		320.0f, 131.0f
 	};
 
+	// 体力UI設定
 	CSprite2D::SPRITE_STATE healthBarState = {
 		300.0f, 100.0f,
 		94.f, 64.f,
 		94.f, 26.f
 	};
+
+	//
+	CSprite2D::SPRITE_STATE tensionSpriteState = {
+	WND_W, WND_H,
+	800.0f, 600.0f,
+	800.0f, 600.0f
+	};
+
+	if (FAILED(m_pTensionSprite->Init(
+		*m_pDx11,
+		_T("Data\\Texture\\RED.png"),
+		tensionSpriteState)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pLightBarSprite->Init(
 		*m_pDx11,
@@ -286,7 +306,7 @@ HRESULT CTest::LoadData()
 
 	m_pLightBar->AttachSprite(*m_pLightBarSprite);
 	m_pHealthBar->AttachSprite(*m_pHealthBarSprite);
-
+	m_pTensionUI->AttachSprite(*m_pTensionSprite);
 	//m_pMiniMap->Init(*m_pDx11->GetDevice(), *m_pDx11->GetContext(), m_MazeCellW, m_MazeCellH);
 
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
@@ -451,49 +471,54 @@ void CTest::Update()
 		m_pGhostList[i]->Update();
 	}
 
-	// ゴーストカメラ
-	if (ghostCamera)
-	{
-		m_pCameraController->ThirdPersonCamera(
-			m_pGhostList[0]->GetPosition(),
-			5.f,
-			m_mouseDelta,
-			m_mouseSense);
-		D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
-		m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
-		m_pPlayer->SetRotation(playerRot);
-		m_pPlayerLight->SetIntensity(0.f);
-		UpdateSpotLight(m_pPlayerLight);
 
-		return;
-	}
+
+	// ゴーストカメラ
+	//if (ghostCamera)
+	//{
+	//	EnemyCamera();
+
+	//	return;
+	//}
 	
 	// プレイヤーカメラ
-	if (playerCamera)
-	{
-		UpdatePlayerCamera();
+	//if (playerCamera)
+	//{
+	//	UpdatePlayerCamera();
 
-		//
-		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
-		m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
+	//	//
+	//	m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+	//	m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 
-		if (m_pPlayer->IsFlashOn())
-		{
-			m_pPlayerLight->SetIntensity(3.5f);
-		}
-		else
-		{
-			m_pPlayerLight->SetIntensity(0.0f);
-		}
+	//	if (m_pPlayer->IsFlashOn())
+	//	{
+	//		m_pPlayerLight->SetIntensity(3.5f);
+	//	}
+	//	else
+	//	{
+	//		m_pPlayerLight->SetIntensity(0.0f);
+	//	}
 
-		UpdateSpotLight(m_pPlayerLight);
+	//	UpdateSpotLight(m_pPlayerLight);
 
-		return;
-	}
+	//	return;
+	//}
 
 	// スタティックカメラ
 	if( staticCamera )
 	{
+		m_pPlayer->SetTankControlMode(true);
+		m_pPlayer->Update();
+		
+		if (m_pPlayer->GetPlayerHealth() <= 50)
+		{
+			m_pTensionUI->SetAlpha((50 - m_pPlayer->GetPlayerHealth()) / 50);
+		}
+		else
+		{
+			m_pTensionUI->SetAlpha(0.0f);
+		}
+		
 		UpdateStaticCamera();
 		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
 		m_pPlayerLight->SetDirection(m_pPlayer->GetDirection());
@@ -509,8 +534,22 @@ void CTest::Update()
 		return;
 	}
 
-	UpdateFPCamera();
+	//UpdateFPCamera();
 
+}
+
+void CTest::EnemyCamera()
+{
+	m_pCameraController->ThirdPersonCamera(
+		m_pGhostList[0]->GetPosition(),
+		5.f,
+		m_mouseDelta,
+		m_mouseSense);
+	D3DXVECTOR3 playerRot = m_pPlayer->GetRotation();
+	m_pCameraController->UpdateObjectRotationFromCamera(&playerRot);
+	m_pPlayer->SetRotation(playerRot);
+	m_pPlayerLight->SetIntensity(0.f);
+	UpdateSpotLight(m_pPlayerLight);
 }
 
 void CTest::Draw()
@@ -588,6 +627,8 @@ void CTest::Draw()
 	m_pHealthBar->SetAlpha(1.f);
 	m_pHealthBar->SetFillPercent(m_pPlayer->GetPlayerHealth()/ 100.f, true);
 	m_pHealthBar->Draw();
+
+	m_pTensionUI->Draw();
 
 	// テキスト描画
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  
@@ -878,8 +919,7 @@ void CTest::UpdateFPCamera()
 
 void CTest::UpdateStaticCamera()
 {
-	m_pPlayer->SetTankControlMode(true);
-	m_pPlayer->Update();
+
 	Pair playerRC = WorldToMazeCoords(m_pPlayer->GetPosition());
 	D3DXVECTOR3 staticCamPos = m_pMazeGen->CellToWorldRC(playerRC.x, playerRC.y, 3.f, m_MazeCellSize);
 	D3DXVECTOR3 offset = D3DXVECTOR3(-1.f, 1.f, -1.f);
