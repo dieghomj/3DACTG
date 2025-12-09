@@ -165,6 +165,14 @@ void CBaseEnemy::AttackPlayer()
 
 		if (m_fDistanceFromPlayer < 15.f)
 		{
+
+			if (m_fDistanceFromPlayer < 0.5f)
+			{
+				//Stop
+				m_vPosition -= vDirection * moveSpeed;
+				return;
+			}
+
 			m_vPosition += vDirection * moveSpeed;
 		}
 		else

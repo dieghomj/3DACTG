@@ -388,6 +388,7 @@ void CTest::Start()
 		ghost->Start();
 		ghost->SetWidthHeight(m_MazeCellW, m_MazeCellH);
 		ghost->SetRowCol(m_MazeCellH - i, i);
+		ghost->SetPosition(m_pMazeGen->CellToWorldRC(ghost->GetCurrentCol(), ghost->GetCurrentRow(), 2.f, m_MazeCellSize));
 		ghost->SetPath(m_pMazeGen->GeneratePath(ghost->GetCurrentCol(), ghost->GetCurrentRow()));
 	}
 
@@ -397,7 +398,7 @@ void CTest::Start()
 
 	m_pDx11->SetDepth(true);
 	// ŠÂ‹«Ý’è
-	m_GlobalLight.fIntensity = 0.5f;
+	m_GlobalLight.fIntensity = 0.7f;
 
 	m_Fog.Color = D3DXVECTOR4(0.1f, 0.f, 0.12f, 1.0f);
 	m_Fog.Enable = m_bFog;
@@ -449,8 +450,6 @@ void CTest::Start()
 
 	m_pHealthBar->SetScale(1);
 	m_pHealthBar->SetPosition(5.f, WND_H / 2 - 131.f, 0.f);
-
-
 
 	const D3DXVECTOR3 exitPos = m_pMazeGen->GetExitWorldPosition(3.f, m_MazeCellSize);
 	m_EndSpotLight->SetPosition(exitPos + D3DXVECTOR3(0.f, 10.f, 0.f));
@@ -593,7 +592,7 @@ void CTest::Update()
 		UpdatePlayerCamera();
 
 		//
-		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.0f));
+		m_pPlayerLight->SetPosition(m_pPlayer->GetPosition() + D3DXVECTOR3(0.0f, 1.5f, 0.5f));
 		m_pPlayerLight->SetDirection(m_pCameraController->GetForward());
 
 		if (m_pPlayer->IsFlashOn())
@@ -629,7 +628,7 @@ void CTest::Update()
 		UpdateStaticCamera();
 	
 		
-		D3DXVECTOR3 lightOffset = D3DXVECTOR3(0.0f, 0.5f, 0.0f);
+		D3DXVECTOR3 lightOffset = D3DXVECTOR3(0.0f, 0.5f, 0.2f);
 		
 		D3DXVECTOR3 playerFwd = m_pPlayer->GetDirection();
 		lightOffset += playerFwd * -0.2f ;
