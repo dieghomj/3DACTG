@@ -213,7 +213,7 @@ void CPlayer::HandleInput()
 { 
 	m_pInput->Update();
 
-	if (m_pInput->GetKeyUp(VK_LBUTTON))
+	if (m_pInput->GetKeyUp(VK_LBUTTON) || m_pInput->GetKeyUp('Z'))
 	{
 		m_bIsFlashOn = !m_bIsFlashOn;
 	}
@@ -236,12 +236,12 @@ void CPlayer::HandleInput()
 		else
 			m_MoveState = MoveState::Right;
 	}
-	if (m_pInput->GetKeyDown(VK_SPACE)) {
+	/*if (m_pInput->GetKeyDown(VK_SPACE)) {
 		m_MoveState = MoveState::Up;
 	}
 	if (m_pInput->GetKeyDown(VK_LCONTROL)) {
 		m_MoveState = MoveState::Down;
-	}
+	}*/
 
 	RadioControl();
 	AnimControl();
