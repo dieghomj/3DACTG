@@ -122,7 +122,9 @@ private:
 	int					m_MazeCellW;
 	int					m_MazeStride;
 	float				m_MazeCellSize;
-	int m_EnemyCount;
+	int					m_EnemyCount;
+
+	float				m_GameTimer;
 
 	CSpotLight* m_EndSpotLight;
 

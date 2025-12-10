@@ -69,6 +69,8 @@ CTest::CTest(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_SDFText				(nullptr)
 	, m_pDbgCollider		(nullptr)
 	, m_ShowCollider		(false)
+
+	, m_GameTimer			(0.f)
 {
 	m_pDx11->SetDepth(true);
 }
@@ -356,6 +358,8 @@ void CTest::Release()
 
 void CTest::Start()
 {
+	m_GameTimer = 0.f;
+
 	switch (CGameStats::GetDifficulty())
 	{
 	case CGameStats::DIFF_EASY:
@@ -469,6 +473,7 @@ void CTest::Start()
 void CTest::Update()
 {
 	CSoundManager::PlayLoop(CSoundManager::BGM_Game);
+	m_GameTimer += m_pTime->GetFixedDeltaTime();
 
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
@@ -524,7 +529,7 @@ void CTest::Update()
 	if (m_pPlayer->GetPlayerHealth() <= 0)
 	{
 		CGameStats::EnemiesKilled = m_EnemiesKilled;
-		CGameStats::TimeMs = m_pTime->GetTotalTime();
+		CGameStats::TimeMs = m_GameTimer;
 		CGameStats::ComputeScore();
 		CSoundManager::PlaySE(CSoundManager::SE_GameOver);
 		CSoundManager::Stop(CSoundManager::BGM_Game);
@@ -536,7 +541,7 @@ void CTest::Update()
 		WorldToMazeCoords(playerPos).y == m_pMazeGen->GetExitCell().y)
 	{
 		CGameStats::EnemiesKilled = m_EnemiesKilled;
-		CGameStats::TimeMs = m_pTime->GetTotalTime();
+		CGameStats::TimeMs = m_GameTimer;
 		CGameStats::ComputeScore();
 		CSoundManager::PlaySE(CSoundManager::SE_Result);
 		CSoundManager::Stop(CSoundManager::BGM_Game);
@@ -790,7 +795,7 @@ void CTest::Draw()
 	//m_SDFText->Render(text, 50, 80, 30.f);
 	//m_SDFText->Render(_T("PRESS R TO REGENERATE MAZE"), 50, 700, 25.f);
 
-	float sec = m_pTime->GetTotalTime() / 1000.f;
+	float sec = m_GameTimer / 1000.f;
 	float min = sec / 60.f;
 	float remSec = sec - (static_cast<int>(min) * 60.f);
 
