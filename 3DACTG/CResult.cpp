@@ -57,15 +57,18 @@ void CResultScene::Draw()
 	_stprintf_s(buf, _T("Enemies killed: %d"), CGameStats::EnemiesKilled);
 	m_Font->Render(buf, WND_W / 2 - 220.f, 220.f, 36.f);
 
+	_stprintf_s(buf, _T("Items collected: %d"), CGameStats::ItemsCollected);
+	m_Font->Render(buf, WND_W / 2 - 220.f, 270.f, 36.f);
+
 	float sec = CGameStats::TimeMs / 1000.f;
 	float min = sec / 60.f;
 	float remSec = sec - (static_cast<int>(min) * 60.f);
 
 	_stprintf_s(buf, _T("Time played: %02.f:%02.f"), min, remSec);
-	m_Font->Render(buf, WND_W / 2 - 220.f, 270.f, 36.f);
+	m_Font->Render(buf, WND_W / 2 - 220.f, 320.f, 36.f);
 
 	_stprintf_s(buf, _T("Score: %d"), CGameStats::Score);
-	m_Font->Render(buf, WND_W / 2 - 220.f, 320.f, 42.f);
+	m_Font->Render(buf, WND_W / 2 - 220.f, 380.f, 42.f);
 
 	m_Font->Render(_T("Press ENTER to play again"), WND_W / 2 - 260.f, 420.f, 32.f);
 }

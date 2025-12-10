@@ -88,6 +88,7 @@ void CBaseEnemy::Update()
 
 	case enState::Dead:
 		// Ž€–Sˆ—
+		m_vPosition.y -= 0.05f; // Sink into ground
 		break;
 
 	default:
@@ -158,29 +159,28 @@ void CBaseEnemy::GetNextStep()
 
 void CBaseEnemy::AttackPlayer()
 {
+	// UŒ‚ˆ—
+	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	D3DXVECTOR3 vDirection = SetRotationToTarget(playerPos);
+
+	if (m_fDistanceFromPlayer <= 8.f)
 	{
-		// UŒ‚ˆ—
-		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-		D3DXVECTOR3 vDirection = SetRotationToTarget(playerPos);
-
-		if (m_fDistanceFromPlayer < 15.f)
+			
+		if (m_fDistanceFromPlayer >= 0.7f)
 		{
-
-			if (m_fDistanceFromPlayer < 0.5f)
-			{
-				//Stop
-				m_vPosition -= vDirection * moveSpeed;
-				return;
-			}
-
 			m_vPosition += vDirection * moveSpeed;
+			return;
 		}
-		else
-		{
-			m_State = Move;
-		}
+
+		//Stop
+		m_vPosition -= vDirection * moveSpeed * 2.f;
 
 	}
+	else
+	{
+		m_State = Move;
+	}
+
 }
 
 D3DXVECTOR3 CBaseEnemy::SetRotationToTarget(D3DXVECTOR3 target)
@@ -201,7 +201,7 @@ D3DXVECTOR3 CBaseEnemy::SetRotationToTarget(D3DXVECTOR3 target)
 
 void CBaseEnemy::IdleMove()
 {
-	if (m_fDistanceFromPlayer < 10.f)
+	if (m_fDistanceFromPlayer < 8.f)
 	{
 		m_State = Attack;
 		return;

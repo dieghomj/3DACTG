@@ -155,6 +155,9 @@ void CTest::Create()
 	m_pTensionSprite = new CSprite2D();
 	m_pTensionUI = new CUIObject();
 
+	m_pGameInfoSprite = new CSprite2D();
+	m_pGameInfoUI = new CUIObject();
+
 	// アイテムメッシュ作成
 	m_TMPItemMesh = new CStaticMesh();		// アイテムで電灯を回復する予定
 
@@ -272,12 +275,19 @@ HRESULT CTest::LoadData()
 		94.f, 26.f
 	};
 
-	//
+	// 緊張度UI設定
 	CSprite2D::SPRITE_STATE tensionSpriteState = {
-	WND_W, WND_H,
-	800.0f, 600.0f,
-	800.0f, 600.0f
+		WND_W, WND_H,
+		800.0f, 600.0f,
+		800.0f, 600.0f
 	};
+
+	CSprite2D::SPRITE_STATE gameInfoSpriteState = {
+		320.f, 120.f,
+		320.f, 120.f,
+		320.f, 120.f
+	};
+
 
 	if (FAILED(m_pTensionSprite->Init(
 		*m_pDx11,
@@ -303,10 +313,19 @@ HRESULT CTest::LoadData()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInfoSprite->Init(
+		*m_pDx11,
+		_T("Data\\Texture\\Instructions.png"),
+		gameInfoSpriteState)))
+	{
+		return E_FAIL;
+	}
+
 	m_pLightBar->AttachSprite(*m_pLightBarSprite);
 	m_pHealthBar->AttachSprite(*m_pHealthBarSprite);
 	m_pTensionUI->AttachSprite(*m_pTensionSprite);
 	//m_pMiniMap->Init(*m_pDx11->GetDevice(), *m_pDx11->GetContext(), m_MazeCellW, m_MazeCellH);
+	m_pGameInfoUI->AttachSprite(*m_pGameInfoSprite);
 
 	m_pGround->AttachMesh(*m_pGroundStaticMesh);
 	m_pGround->SetPosition(0.f, 0.f, 0.f);
@@ -391,18 +410,17 @@ void CTest::Start()
 		auto ghost = m_pGhostList[i];
 		ghost->Start();
 		ghost->SetWidthHeight(m_MazeCellW, m_MazeCellH);
-		ghost->SetRowCol(m_MazeCellH - i, i);
+		ghost->SetRowCol(m_MazeCellH - 1 - i, i);
 		ghost->SetPosition(m_pMazeGen->CellToWorldRC(ghost->GetCurrentCol(), ghost->GetCurrentRow(), 2.f, m_MazeCellSize));
 		ghost->SetPath(m_pMazeGen->GeneratePath(ghost->GetCurrentCol(), ghost->GetCurrentRow()));
 	}
 
 	m_pPlayer->SetPosition(m_pMazeGen->CellToWorldRC(0, 0, 2.f, m_MazeCellSize));
-	m_pPlayer->ApplyHeal(100.0f);
-	m_pPlayer->ApplyLightEffect(m_pPlayer->MAX_LIGHT_INT);
+	m_pPlayer->Start();
 
 	m_pDx11->SetDepth(true);
 	// 環境設定
-	m_GlobalLight.fIntensity = 0.7f;
+	m_GlobalLight.fIntensity = 0.75f;
 
 	m_Fog.Color = D3DXVECTOR4(0.1f, 0.f, 0.12f, 1.0f);
 	m_Fog.Enable = m_bFog;
@@ -482,7 +500,7 @@ void CTest::Update()
 
 	m_Fog.Enable = m_bFog;
 
-#if 0 // デバッグ用
+#if 1 // デバッグ用
 	// 迷路再生成
 	if (GetAsyncKeyState('R') & 0x0001)
 	{
@@ -558,6 +576,7 @@ void CTest::Update()
 		{
 			continue;
 		}
+
 		m_pGhostList[i]->Update();
 
 		int currAudio = 0;
@@ -725,6 +744,7 @@ void CTest::Draw()
 		if (isHit)
 		{
 			m_pPlayer->ApplyLightEffect(0.5f);
+			CGameStats::ItemsCollected += 1;
 			CSoundManager::PlaySE(CSoundManager::SE_ItemGet);
 			item->SetPosition(D3DXVECTOR3(1000.f, 1000.f, 1000.f)); // 遠くに移動して消す
 		}
@@ -739,20 +759,20 @@ void CTest::Draw()
 	{
 
 		m_pDx11->SetDepth(false);
-		for (auto& wall : m_pSewerPathArray)
-		{
-			if (auto* col = wall->GetCollider())
-			{
-				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
-					CCollider::COLLIDER_SHAPE_BOX, *col);
-			}
-		}
+		//for (auto& wall : m_pSewerPathArray)
+		//{
+		//	if (auto* col = wall->GetCollider())
+		//	{
+		//		m_pDbgCollider->DrawCollider(*m_pDx11, m_SceneInfo.mView, m_SceneInfo.mProj,
+		//			CCollider::COLLIDER_SHAPE_BOX, *col);
+		//	}
+		//}
 
 		for (int i = 0; i < m_EnemyCount; ++i)
 		{
 			if (auto* col = m_pGhostList[i]->GetCollider())
 			{
-				m_pDbgCollider->DrawCollider(*m_pDx11, m_mView, m_mProj,
+				m_pDbgCollider->DrawCollider(*m_pDx11, m_SceneInfo.mView, m_SceneInfo.mProj,
 					CCollider::COLLIDER_SHAPE_SPHERE, *col);
 			}
 		}
@@ -780,6 +800,9 @@ void CTest::Draw()
 	m_pHealthBar->Draw();
 
 	m_pTensionUI->Draw();
+	m_pGameInfoUI->SetAlpha(0.5f);
+	m_pGameInfoUI->SetPosition(10.f, WND_H - 150.f, 0.f);
+	m_pGameInfoUI->Draw();
 
 	// テキスト描画
 	m_SDFText->SetColor(1.0f, 1.0f, 1.0f);  

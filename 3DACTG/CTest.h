@@ -71,6 +71,9 @@ private:
 	CSprite2D* m_pTensionSprite;
 	CUIObject* m_pTensionUI;
 
+	CSprite2D* m_pGameInfoSprite;
+	CUIObject* m_pGameInfoUI;
+
 	// プレイヤーレイ
 	CRay* m_pPlayerRayY;
 	CRay* m_pCrossRay[4];
@@ -125,6 +128,7 @@ private:
 	int					m_EnemyCount;
 
 	float				m_GameTimer;
+	int					m_ItemsCollected;
 
 	CSpotLight* m_EndSpotLight;
 

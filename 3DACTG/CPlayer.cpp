@@ -5,7 +5,7 @@ CPlayer::CPlayer()
 	: CAnimCharacter()
 	, m_vVelocity	(0.f, 0.f, 0.f)
 	, m_PlayerHealth(100.f)
-	, m_TurnSpeed	(0.05f)
+	, m_TurnSpeed	(0.08f)
 	, m_MoveSpeed	(0.06f)
 	, m_MoveState	(Stop)
 	, m_PlayerState (Idle)
@@ -21,6 +21,15 @@ CPlayer::CPlayer()
 CPlayer::~CPlayer()
 {
 	SAFE_DELETE(m_pInput);
+}
+
+void CPlayer::Start()
+{
+	m_LightIntensity = MAX_LIGHT_INT;
+	m_PlayerHealth = 100.f;
+	m_AnimationState = AnimIdle;
+	m_vRotation = D3DXVECTOR3(0.f, 0.f, 0.f);
+	m_bIsFlashOn = false;
 }
 
 void CPlayer::Update()

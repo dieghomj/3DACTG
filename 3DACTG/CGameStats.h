@@ -13,6 +13,7 @@ struct CGameStats
 	static DIFFICULTY GetDifficulty() { return Difficulty; }
 
 	static int EnemiesKilled;
+	static int ItemsCollected;
 	static unsigned long TimeMs; // total time played in milliseconds
 	static int Score;
 	static DIFFICULTY Difficulty;
@@ -21,6 +22,7 @@ struct CGameStats
 	static void ComputeScore()
 	{
 		const int perKill = 100;
+		const int perItem = 50;
 		int timePenaltyPerSec = 2;
 		int bonus = 0;
 		switch (Difficulty)
@@ -39,7 +41,7 @@ struct CGameStats
 				break;
 		}
 		int seconds = static_cast<int>(TimeMs / 1000);
-		Score = 1000 + (EnemiesKilled * perKill) - (seconds * timePenaltyPerSec);
+		Score = 1000 + (ItemsCollected * perItem) + (EnemiesKilled * perKill) - (seconds * timePenaltyPerSec);
 		if (Score < 0) Score = 0;
 	}
 
@@ -47,6 +49,7 @@ struct CGameStats
 	{
 		EnemiesKilled = 0;
 		TimeMs = 0;
+		ItemsCollected = 0;
 		Score = 0;
 	}
 };
@@ -54,5 +57,6 @@ struct CGameStats
 // Static definitions
 inline int CGameStats::EnemiesKilled = 0;
 inline unsigned long CGameStats::TimeMs = 0;
+inline int CGameStats::ItemsCollected = 0;
 inline int CGameStats::Score = 0;
 inline CGameStats::DIFFICULTY CGameStats::Difficulty = CGameStats::DIFF_NORMAL;

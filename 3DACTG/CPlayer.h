@@ -45,6 +45,7 @@ public:
 public:
 	CPlayer();
 	virtual ~CPlayer() override;
+	void Start();
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
